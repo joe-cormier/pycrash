@@ -21,10 +21,9 @@ each vehicle's coorindate system will determine which edge to monitor
 
 If closing speed vector lies on a vertex, then that single point is monitored for that time step
     - maybe use different stiffness values?
-
-
-
 """
+
+
 import numpy as np
 import math
 # Vehicle velocity in Global coorindate system
