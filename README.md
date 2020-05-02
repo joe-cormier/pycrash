@@ -3,6 +3,20 @@ Pycrash
 
 A comprehensive analytical tool for accident reconstruction
 
+## Process
+
+#### Single Vehicle Motion
+1. Initial position is chosen and input conditions determines output
+
+#### Impact Simulation
+#### Impact Point / Vector
+Type of impact definition determined by model used.  
+1. choose initial conditions for vehicles and run simulations
+2. Use simulations to determine impact location or predefine if known.
+    + impact point is defined as a vector, point, normal/tangent vectors on Vehicle 1
+    + impact edge defined for Vehicle 2
+
+
 Project Organization
 ------------
 
@@ -22,7 +36,7 @@ Project Organization
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project - need separate directories? 
+    ├── src                <- Source code for use in this project - need separate directories?
     │   ├── __init__.py    <- Makes src a Python module
     │   │
     │   ├── data           <- Scripts to download or generate data
@@ -42,5 +56,3 @@ Project Organization
 
 
 --------
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

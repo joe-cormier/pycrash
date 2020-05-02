@@ -3,6 +3,9 @@ To Do List
 
 Integrate with GitHub project
 
+Create project input function - generate dictionary for inputs.  
+
+
 ## Project Type
 1. Single vehicle motion
 2. Impact simulation (with or without pre and post vehicle travel)
@@ -26,6 +29,7 @@ Integrate with GitHub project
 - adjustable based on reasonable inputs
 
 #### Tire Model
+- modular
 - friction circle
 - maximum side slip
 - incorporate tire model in impact simulation
