@@ -25,6 +25,8 @@ will be used to detect impact with edge on vehicle 2
 
 
 """
+import pandas as pd
+import numpy as np
 # create plot of vehicle 1 so that impact point can be chosen
 
 v_info = pd.read_excel('Input.xlsx', sheet_name = 'vehicles', header = 0)

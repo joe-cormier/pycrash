@@ -39,6 +39,7 @@ Create project input function - generate dictionary for inputs.
 - HVE simulations
 
 ## Impact Simulation
+- create categorical values for impact simulation types (SV, SDOF, SDOF_Width, Sideswipe, IMPC)
 - use impact plane for all types - defines point of impact and force vector?
 - create function to vary impact plane location / angle
 - import current terrain descriptors
