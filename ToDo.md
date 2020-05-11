@@ -5,6 +5,11 @@ Integrate with GitHub project
 
 Create project input function - generate dictionary for inputs.  
 
+### Classes
++ create class for vehicle geometry / static Inputs
+https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-python
+
+
 
 ## Project Type
 1. Single vehicle motion
