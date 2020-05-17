@@ -77,3 +77,7 @@ https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-p
 
 
 ## Validation
+
+
+## Visualization
+- add input to x, y, heading angle for vehicle simulations to update initial position in notebook
