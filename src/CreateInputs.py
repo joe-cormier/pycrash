@@ -64,15 +64,6 @@ def create_inputs():
     "k",
     "v_initial"]
 
-    pname = input('Project Name:')
-    pdesc = input('Project Description:')
-    impact_type = input('Impact Type:')
-    sim_type = input('Simulation Type (SV/MV):')
-    note = input('Note:')
-
-    info = {'pdesc':pdesc, 'impact_type':impact_type, 'sim_type':sim_type, 'note':note}
-    veh_one_inputs = list(range(len(veh_inputs)))
-    veh_two_inputs = list(range(len(veh_inputs)))
 
     if sim_type == 'SV':
         veh_one_inputs = list(range(len(veh_inputs)))

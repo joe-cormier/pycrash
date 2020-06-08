@@ -1,0 +1,23 @@
+Steering ratio,steer_ratio,16.5
+Vehicle width (ft),v_width,6
+Vehicle length (ft),v_length,19.3
+CG height (ft),hcg,2
+CG to front axle (ft),lcgf,4.88
+CG to rear axle (ft),lcgr,6.96
+Wheelbase (ft),wb,11.84
+Track width (ft),track,6.6
+Front overhang (ft),f_hang,3.2
+Rear overhang (ft),r_hang,4.1
+Tire diameter (ft),tire_d,2.716666667
+Tire width (ft),tire_w,0.866666667
+Izz (slug - ft^2),izz,13615
+Front wheel drive (0/1),fwd,0
+Rear wheel drive (0/1),rwd,1
+All wheel drive (0/1),awd,0
+A,A,100
+B,B,41
+k,k,1000
+Initial velocity (mph),v_initial,5
+Initial X position (ft),init_x_pos,0
+Initial Y position (ft),init_y_pos,0
+Heading angle (deg),head_angle,0
