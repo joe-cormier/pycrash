@@ -4,28 +4,29 @@ Tranformation functions
 import math
 import numpy as np
 # global frame to vehicle Frame
-def GlobaltoVeh(theta, X, Y):
+def GlobaltoVeh(pX, pY, theta):
     """
     theta - rotation angle in radians
-    X, Y - point coorinates in global frame
+    pX, pY - point coorinates in global frame
     """
-    x = X * math.cos(theta) + Y * math.sin(theta)
-    y = -1 * X * math.sin(theta) + Y * math.cos(theta)
+    px = pX * math.cos(theta) + pY * math.sin(theta)
+    py = -1 * pX * math.sin(theta) + pY * math.cos(theta)
 
     return np.array([x, y])
 
-def VehtoGlobal(theta, x, y):
+def VehtoGlobal(cg_x, cg_y, px, py, theta):
     """
-    theta - rotation angle in radians
-    x, y - point coorinates in vehicle frame
+    theta - heading angle in radians
+    cg_x, cg_y, - linear translation of cg
+    px, py - point coorinates in vehicle frame
     """
 
-    X = x * math.cos(theta) - y * math.sin(theta)
-    Y = x * math.sin(theta) + y * math.cos(theta)
+    X = px * math.cos(theta) - py * math.sin(theta)
+    Y = px * math.sin(theta) + py * math.cos(theta)
 
     return np.array([X, Y])
 
-theta = 180 * (math.pi/180)
-GlobaltoVeh(theta, 10, 0)
+theta = 90 * (math.pi/180)
+GlobaltoVeh(theta, 0, 0, 10, 0)
 
-VehtoGlobal(theta, -10, 0)
+VehtoGlobal(0, 0, 10, 0, theta)

@@ -1,9 +1,8 @@
 """
-Translate vehicle motion into global coordinates
 requires output from vehicle Model
 translates vehicle motion to global DataFrame
 X - positive to the right
-Y - positive up
+Y - positive down
 vin - from impact model
 delta_rad (steer tire turn angle)
 beta_rad (velocity vector)

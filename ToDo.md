@@ -3,7 +3,7 @@ To Do List
 
 Integrate with GitHub project
 
-Create project input function - generate dictionary for inputs.  
+Create project input function - generate dictionary for inputs.
 
 ### Classes
 + create class for vehicle geometry / static Inputs
@@ -21,8 +21,9 @@ https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-p
 + planar impulse momentum
 + sideswipe (point-edge interaction, long duration)
 
-## Single Vehicle Motion
+##  Vehicle Motion
 - allow single vehicle model to accept external force
+- improve criteria for stopping simulation, currently uses V < 0
 
 #### Terrain
 - boundaries for surface friction / grade / bank

@@ -96,7 +96,6 @@ def global_frame_df(vin, vehi):
         # translate vehicle coordinates above to global frame
         # create new dataframes for global coordinates
 
-
     cgx = vin[['Dx']].copy()                                                    # CG location in inertial frame
     cgy = vin[['Dy']].copy()
 
