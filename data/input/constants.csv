@@ -1,2 +1,2 @@
-maximum available friction,mu_max,0.9
-time step,dt,0.1
+maximum available friction,mu_max,0.90
+time step,dt,0.10

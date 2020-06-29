@@ -128,7 +128,7 @@ def vehicle_model(vehi):
 
 
         # these do not need to be part of the if statements, they are functions of the changing variables above
-        delta_deg = vin.loc[i, 'sw_angle']/ v_dict['steer_ratio']               # steer angle (delta) will always be derived from edr data - or manual driver input
+        delta_deg = vin.loc[i, 'sw_angle']/ v_dict['steer_ratio']               # steer angle (delta) will always be derived from driver input
         delta_rad = delta_deg * (math.pi/180)
         turn_rX =  Vy / oz_rad                                                  # turning radius in x direction
         turn_rY =  Vx / oz_rad                                                  # turning radius in y direction
@@ -172,7 +172,7 @@ def vehicle_model(vehi):
         # run tire model to get forces
         lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz = tire_model(v_model, vehi, i)
 
-
+   # TODO: can this be changed to intitial = v_dict['init_x_pos']?
     v_model['Dx'] = v_dict['init_x_pos'] + integrate.cumtrapz(list(v_model.Vx), list(v_model.t), initial=0)     # integrate vx to get distance traveled in x direction
     v_model['Dy'] = v_dict['init_y_pos'] + integrate.cumtrapz(list(v_model.Vy), list(v_model.t), initial=0)     # integrate vy to get distance traveled in y direction
 

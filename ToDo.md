@@ -1,14 +1,25 @@
-To Do List
+To Do
 =============================
 
 Integrate with GitHub project
 
 Create project input function - generate dictionary for inputs.
 
+### Saving Data
++ Create archive for all project data and save single file for current project
++ create new folder for each project (input / reports)
+
+
 ### Classes
 + create class for vehicle geometry / static Inputs
-https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-python
+(https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-python)
++ add plot functions - arguments for changing color / size etc.
+  - save plots using project name?
++ subplots for model results (fdx, v, a)
++ record delta-v as a vehicle attribute
 
+### functions
++ function for multiple plots - plot_runs(run1, run2, run3, etc.)
 
 
 ## Project Type

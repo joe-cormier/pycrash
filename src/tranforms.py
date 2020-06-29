@@ -30,3 +30,10 @@ theta = 90 * (math.pi/180)
 GlobaltoVeh(theta, 0, 0, 10, 0)
 
 VehtoGlobal(0, 0, 10, 0, theta)
+
+
+# point tracking for sideswipe model
+# point coordiante is provided wrt vehicle 1 CG
+# give choices?  left front corner, right front corner, front mid, etc.
+# use VehtoGlobal to translate to global coorindate
+# check against impact plane for veh 2
