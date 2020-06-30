@@ -2,7 +2,7 @@
 # always import this file first
 
 # get string for current directory and change it to the data directory
-import os
+#import os
 #os.chdir("..")
-datadir = os.path.abspath(os.curdir) + '\\data\\input'
-os.chdir(datadir)
+#datadir = os.path.abspath(os.curdir) + '\\data\\input'
+#os.chdir(datadir)

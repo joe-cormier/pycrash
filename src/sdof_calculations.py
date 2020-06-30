@@ -12,8 +12,7 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     cons = {}
     for row in readCSV:
         cons[row[1]] = float(row[2])
-print('Current values for defined constants:')
-print(cons)
+
 mu_max = cons['mu_max']    # maximum available friction
 
 # Functions

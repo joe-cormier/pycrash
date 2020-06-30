@@ -12,10 +12,14 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     cons = {}
     for row in readCSV:
         cons[row[1]] = float(row[2])
-print('Current values for defined constants:')
-print(cons)
+
 mu_max = cons['mu_max']    # maximum available friction
-dt = cons['dt']           # iteration time step
+dt = cons['dt']            # iteration time step
+
+print('Current values for defined constants:')
+print(f'maximum available friction = {mu_max}')
+print(f'time step for vehicle motion = {dt} s')
+
 
 
 # %% Create Classes for Project and Vehicles

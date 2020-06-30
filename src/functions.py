@@ -1,151 +1,145 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May 12 09:59:52 2019
-
-@author: joemc
-
-contains all functions needed by other modules
-"""
-
-from scipy import integrate
+# various equations for reconstruction
 import numpy as np
-import pandas as pd
-import os
-dt = 0.1
 
 
-
-def vehicle_data():
+def b1values(bo, L, C, W):
     """
-    Load vehicle information from excel file
-    Global variables - v_info, v_df, v1_input, v2_input
+    calculate b1 given bo, damage length (L), damage depth (C) and vehicle weight (W)
+    calculate b1 and bo values
+    bo = damage offset speed (mph)
+    b1 = slope of barrier impact speed and residual crush (mph/in)
+    L = with of direct damage
+    w = vehicle weight
     """
-    global v_info, v_df, v1_input, v2_input, v1_post, v2_post
-    v1_input = pd.read_excel('Input.xlsx', sheet_name = 'v1_input', header = 0, usecols = 'A:L')
-    v2_input = pd.read_excel('Input.xlsx', sheet_name = 'v2_input', header = 0, usecols = 'A:L')
-    v1_post = pd.read_excel('Input.xlsx', sheet_name = 'v1_post', header = 0, usecols = 'A:D')
-    v2_post = pd.read_excel('Input.xlsx', sheet_name = 'v2_post', header = 0, usecols = 'A:D')
-    v_info = pd.read_excel('Input.xlsx', sheet_name = 'vehicles', header = 0, usecols = 'A:E')
-    v_df = v_info[['label','v1','v2']].copy().set_index('label')
-    v_df = v_df.rename(columns = {'v1':'1', 'v2':'2'})
-    return v_info, v_df
+    
+    return -1 * bo / C + np.sqrt((bo**2 + 2))
 
 
-def constants(vehi):
+def ABfrombob1(W, bo, b1, L):
     """
-    Create dictionary of constants
-    """
-    mu_max = 0.9    # maximum available friction
-    alpha_max = 20*3.14159/180  # maximum allowable tire slip Angle (20 deg)    [rad]
-    roll_rate = 6   # semi-firm 7 = semi soft, 3 = extremely firm (corvette) (degrees / g)
-    rc_cg = 18/12    # passenger car - roll center to cg height (h1)  (ft)
-    roll_h = 6/12    # roll center height
-    cor = 0.2        # coefficent of restitution
-    cof = 0.3        # coefficent of friction for impact model
-
-    if vehi == 1:
-        weight = v_info.iloc[2, 1]
-    if vehi == 2:
-        weight = v_info.iloc[2, 2]
-
-    roll_k = 0.5*(weight * rc_cg / roll_rate + weight * rc_cg)  # roll stiffness
-
-    # create dictionary of values for constants
-    cons = {'mu_max': mu_max, 'alpha_max': alpha_max, 'roll_rate': 6, 'rc_cg':rc_cg, 'roll_h': roll_h, 'roll_k':roll_k , 'cor':cor, 'cof':cof}
-    return cons
-
-def sign(x):
-    # returns the sign of a number
-    if x > 0:
-        return 1
-    elif x < 0:
-        return -1
-    elif x == 0:
-        return 0
-    else:
-        return x
-
-def dfdt(x,t,win):
-# create function for taking derivative
-# x = column variable to differentiate
-# t = column of time data
-# win = window length for averaging
-    dx = np.zeros(len(x))
-    for i in range(len(x)):
-        if i == 0:
-            dx[i] = 0
-        elif i > 1:
-            dx[i] = (x[i] - x[i-1]) / (t[i] - t[i-1])
-
-    dx = pd.DataFrame(dx)
-    dx_out = dx.rolling(win, min_periods = 1).mean()  # average data over 10 ms to remove large changes over 1 ms intervals
-    return dx_out
-
-def premotion(v_num):
-    """
-    read vehicle data and process initial vehicle motion from input file
+    return A and B stiffness values from Weight, b0, b1 and damage length (L)
+    calculate A anb B values from bo and b1
+    L = damage length [in]
+    W = vehicle weigth [lb]
+    bo = damage offset speed [mph]
+    b1 = slope of BEV - residual crush [mph/in]
     """
 
-    if v_num == 1:
-        vdf = v1_input  # detailed input from EDR type data
-    if v_num == 2:
-        vdf =v2_input   # detailed input from EDR type data
+    A = 0.802 * W * bo * b1 / L
+    B = 0.802 * W * b1**2 / L
+    return [A, B]
 
-    # Create column vector for time at interval dt. Length will be determined by initial  time of input data and zero
-    t = list(np.arange(vdf.input_t[0],0+dt,dt))                                    # last time in df will be 0
-
-    df = pd.DataFrame()                                                             # create dataframe for vehicle input with interpolated values
-    df['t'] = t
-
-    # merge dataframe time column with input file by its time column
-    vdf['input_t'] = vdf.input_t.round(3)  # force two time columns to have the same number of significant digits
-    df['t'] = df.t.round(3)
-    df = pd.merge(df, vdf, how = 'left', left_on = 't', right_on = 'input_t')
-    df = df.interpolate(method = 'linear') # interpolate NaN values left after merging
-    df['vx_edr'] = (df['vx_edr'] * 1.46667).round(1) # this is defined as the edr speed and is not the actual speed since it does not account for sliding and initial condidions
-    df['vy_edr'] = (df['vy_edr'] * 1.46667).round(1) # this is defined as the edr speed and is not the actual speed since it does not account for sliding and initial conditions
-    df['v_edr'] = (df['v_edr'] * 1.46667).round(1) # this is defined as the edr speed and is not the actual speed since it does not account for sliding and initial conditions
-    df = df.drop(columns = ['input_t', 't'])  # drop input time column
-    df['t'] = t # reset time column due to interpolating
-    df['t'] = df.t.round(3) # reset signficant digits
-
-    df_in = df  # reasign dataframe and delete old variables
-    del df, vdf, t
-    df_in = df_in.reset_index(drop = True)
-
-    df_in['distx_edr'] = integrate.cumtrapz(list(df_in.vx_edr), list(df_in.t), initial=0)     # integrate edr speed to get overall distance - need initial=0 value to match length
-    df_in['disty_edr'] = integrate.cumtrapz(list(df_in.vy_edr), list(df_in.t), initial=0)     # integrate edr speed to get overall distance - need initial=0 value to match length
-    df_in['a_edr'] = dfdt(df_in.v_edr, df_in.t, 10)                                           # calcualte derivative of velocity from EDR to get acceleration fps/s
-
-    return df_in
-
-def post_input(v_num):
+def CrushEnergyAB(A, B, L, C):
     """
-    interpolate steering wheel angle, throttle and brake data for post impact motion
+    crush energy from A and B values
+    L - crush length [in]
+    C - crush depth  [in]
     """
 
-    if v_num == 1:
-        vdf = v1_post  # detailed input from EDR type data
-    if v_num == 2:
-        vdf =v2_post   # detailed input from EDR type data
+    return L * (A*C + (B * C**2 / 2)  + (A**2 / (2*B)))
 
-    # Create column vector for time at interval dt. Length will be determined by initial  time of input data and zero
-    t = list(np.arange(0,vdf.input_t.max()+dt,dt))                                    # first time in df will be 0
+def CrushForceAB(A, B, L, C):
+    """
+    calculate force from crush using A and B
+    A [lb/in]
+    B [lb/in/in]
+    L crush length [in]
+    C crush depth [in]
+    """
 
-    df = pd.DataFrame()                                                             # create dataframe for vehicle input with interpolated values
-    df['t'] = t
+    return L * (A + B * C)
 
-    # merge dataframe time column with input file by its time column
-    vdf['input_t'] = vdf.input_t.round(3)  # force two time columns to have the same number of significant digits
-    df['t'] = df.t.round(3)
-    df = pd.merge(df, vdf, how = 'left', left_on = 't', right_on = 'input_t')
-    df = df.interpolate(method = 'linear') # interpolate NaN values left after merging
-    df = df.drop(columns = ['input_t', 't'])  # drop input time column
-    df['t'] = t # reset time column due to interpolating
-    df['t'] = df.t.round(3) # reset signficant digits
+def StrikingDV(m1, m2, v1, v2, rest):
+    return m2 / (m1 + m2) * (1 + rest) * (v1 - v2)
 
-    df_in = df  # reasign dataframe and delete old variables
-    del df, vdf, t
-    df_in = df_in.reset_index(drop = True)
+def StruckDV(m1, m2, v1, v2, rest):
+    return m1 / (m1 + m2) * (1 + rest) * (v1 - v2)
 
-    return df_in
+
+def EnergyDV(w1, w2, Edis, cor):
+    """
+    see Rose SAE #2005-01-1200
+    vehicle 1 and 2 delta-V [mph]
+    Edis = dissipated energy [ft-lb]
+    cor = coefficient of restitution
+    """
+
+    m1 = w1 / 32.2
+    m2 = w2 / 32.2
+    A = (m1 * m2) / (m1 + m2)
+    B = (1 + cor) / (1 - cor)
+    dv1 = (1/m1) * np.sqrt(A * 2 * B * Edis)
+    dv2 = (1/m2) * np.sqrt(A * 2 * B * Edis)
+    return [dv1*0.681818181818181, dv2*0.681818181818181]
+
+def formFactor(crush_list_mm):
+    """
+    crush_list is a list of 6 crush measurements in mm
+    """
+
+    c = crush_list_mm * 0.0393701
+    cbar = c
+    cbar[0] = cbar[0] / 2
+    cbar[5] = cbar[5] / 2
+    cbar = np.sum(cbar) / 5
+    A = 1 / (15 * cbar**2)
+    B = c[0]**2 + c[0]*c[1] + 2*c[1]**2 + c[1]*c[2] + 2*c[2]**2 + c[2]*c[3] + 2*c[3]**2 + \
+        c[3]*c[4] + 2*c[4]**2 + c[4]*c[5] + c[5]**2
+    return A * B
+
+def formFactorin(crush_list_in):
+    """
+    crush_list is a list of 6 crush measurements in mm
+    """
+
+    c = crush_list_in
+    cbar = c
+    cbar[0] = cbar[0] / 2
+    cbar[5] = cbar[5] / 2
+    cbar = np.sum(cbar) / 5
+    A = 1 / (15 * cbar**2)
+    B = c[0]**2 + c[0]*c[1] + 2*c[1]**2 + c[1]*c[2] + 2*c[2]**2 + c[2]*c[3] + 2*c[3]**2 + \
+        c[3]*c[4] + 2*c[4]**2 + c[4]*c[5] + c[5]**2
+    return A * B
+
+def BarrierCrushEnergy(W, s):
+    """
+    W [lb] = weight of test vehicle
+    s [mph] = barrier impact speed
+    """
+
+    return 0.5 * (W/32.2) * (s*1.46667)**2
+
+def cipriani(ClosingSpeed):
+    """
+    calculate restitution based on closing speed in mph
+    based on regression performed by Cipriani
+    """
+
+    A = 0.47477
+    B = 0.26139 * np.log10(abs(ClosingSpeed) * 0.44704)
+    C = 0.03382 * np.log10(abs(ClosingSpeed) * 0.44704)**2
+    D = 0.11639 * np.log10(abs(ClosingSpeed) * 0.44704)**3
+    return A - B + C - D
+
+def CrushEnergyInt(dx, f):
+    """
+    calculate dissipated energy from force-deformation data
+    dx [ft]
+    f [lb]
+    """
+
+    return np.trapz(f, x=dx)
+
+def SpringSeriesKeff(k1, k2):
+    """
+    calcualte effective stiffness for two springs in series
+    """
+    
+    return 1 / (1/k1 + 1/k2)
+
+def BEVfromE(W, E):
+    """
+    calculate Barrier Equivalent Velocity [mph] from Energy [ft/lb]
+    """
+    return np.sqrt(2*E/(W/32.2)) * 0.681818
