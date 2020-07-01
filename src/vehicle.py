@@ -1,3 +1,9 @@
+# TODO: check properties of each input - use list of data types
+# TODO: option to save inputs and outputs to csv
+
+# %% modules
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import text
 from tabulate import tabulate
 from itertools import count
 import pandas as pd
@@ -17,12 +23,18 @@ mu_max = cons['mu_max']    # maximum available friction
 dt = cons['dt']            # iteration time step
 
 print('Current values for defined constants:')
-print(f'maximum available friction = {mu_max}')
-print(f'time step for vehicle motion = {dt} s')
+print(f'maximum available friction (mu_max) = {mu_max}')
+print(f'time step for vehicle motion (dt) = {dt} s')
 
-
+# TODO: create input for figure size - loads from "defaults" folder?
+figure_size = (16,9)
 
 # %% Create Classes for Project and Vehicles
+
+# vehicle inputs - values used in csv file for input should match these below
+# additional values requires a value for input_query, veh_input, dtype be provided
+# must be in same position in each list
+
 input_query = ["Model year",
 "Vehicle make",
 "Vehicle model",
@@ -32,7 +44,7 @@ input_query = ["Model year",
 "Steering ratio",
 "Initial X position (ft)",
 "Initial Y position (ft)",
-"Heading angle (deg)",
+"Initial heading angle (deg)",
 "Vehicle width (ft)",
 "Vehicle length (ft)",
 "CG height (ft)",
@@ -54,10 +66,7 @@ input_query = ["Model year",
 "Damage length L [in]",
 "Crush depth c [in]",
 "Initial forward velocity Vx (mph)",
-"Initial lateral velocity Vy (mph)",
-"Initial X position (ft)",
-"Initial Y position (ft)",
-"Initial heading angle (deg)"]
+"Initial lateral velocity Vy (mph)"]
 
 veh_inputs = ["year",
 "make",
@@ -90,47 +99,48 @@ veh_inputs = ["year",
 "L",
 "c",
 "vx_initial",
-"vy_initial",
-"x_pos",
-"y_pos",
-"head_angle"]
+"vy_initial"]
 
 
 
-# Create vehicle class
+
 class Vehicle:
-    """requires 'Name' - used to idenify vehicle in simulations
+    """
+    Vehicle - contains all data assigned to a vehicle used to run various simulations
+    not all values are required to create a vehicle instance
+    requires 'Name' - used to idenify vehicle in simulations
     can be useful to create mutiple iterations of the same vehicles
-    Veh1_W1, Veh1_W2, etc.
+    Veh1_Weight1, Veh1_Weight2, etc.
     """
 
     def __init__(self, name):
-        self.name = name
-        self.type = "vehicle" # class type
-#        self.year = int(input("Model Year: "))
-#        self.make = input("Vehicle Make: ")
-#        self.model = input("Vehicle Model: ")
-#        self.weight = float(input("Vehicle Weight (lb): "))
-
-#        print(tabulate([["Vehicle", "Year", "Make", "Model", "Weight"],
-#                    [self.name, self.year, self.make, self.model, self.weight]]))
+        self.name = str(name)
+        self.type = "vehicle"   # class type for reference 
 
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):
                 userEntry = input(input_query[i])
-                setattr(self, veh_inputs[i], userEntry)
+                try:
+                    setattr(self, veh_inputs[i], float(userEntry))  # convert to float if possible
+                except:
+                    setattr(self, veh_inputs[i], userEntry)
                 print(f'{input_query[i]} = {userEntry}')
 
     def load_specs(self, filename):
-        """ provide path and file name to .csv file with defined layout
+        """ provide file name to .csv file with defined layout
+            file must be located in "input" directory
             uses contents of csv to determine attributes for vehicle variables
             altering the key names will break functionality of the simulation
         """
-        with open(filename) as csvfile:
+        with open(os.path.join(os.getcwd(), "data", "input", filename)) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in readCSV:
                 print(f'{row[0]} = {row[2]}')
-                setattr(self, row[1], row[2])
+                try:
+                    setattr(self, row[1], float(row[2]))  # convert to float if possible
+                except:
+                    setattr(self, row[1], row[2])
+
 
     def show(self):
         """ display all attributes assigned to the vehicle """
@@ -197,3 +207,191 @@ class Vehicle:
         Driver inputs | vehicle travel distance (ft) | braking (%) | steering (%) |
         will override other inputs applied to vehicle
         """
+
+    def impact_point(self):
+        """
+        generates a point in vehicle 1 (striking) reference frame
+        sideswipe collisions - px, py will determine the extent of vehcle engagement with respect
+        to contacting edge in vehicle 2 (struck)
+        impact momentum model - px, py will be used along with the impact plane to determine time
+        of impact and direction of normal and tangential contact planes    
+        """
+        # test for required inputs
+        if not self.lcgf:
+            self.lcgf = float(input("Enter CG to front axle (ft)"))
+        
+        if not self.lcgr:
+            self.lcgr = float(input("Enter CG to rear axle (ft)"))
+
+        if not self.f_hang:
+            self.f_hang = float(input("Enter front overhang (ft)"))
+
+        if not self.r_hang:
+            self.r_hang = float(input("Enter rear overhang (ft)"))
+
+        if not self.v_width:
+            self.v_width = float(input("Enter vehicle width (ft)"))
+
+        # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
+        # option 5 = custom location
+        
+        # x,y coordinates of vehicle outline:
+        # left front corner
+        self._b_lfc_x = self.lcgf + self.f_hang  
+        self._b_lfc_y = -1 * self.v_width / 2
+        # right front corner
+        self._b_rfc_x = self.lcgf + self.f_hang
+        self._b_rfc_y = self.v_width / 2
+        # right rear corner
+        self._b_rrc_x = -1 * self.lcgr - self.r_hang
+        self._b_rrc_y = self.v_width / 2
+        # left rear corner
+        self._b_lrc_x = -1 * self.lcgr - self.r_hang
+        self._b_lrc_y = -1* self.v_width / 2
+
+        bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
+        bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
+
+        # generate plot to show vehicle outline and default points for impact
+        plt.figure(figsize=figure_size)
+        plt.xlim([self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
+
+        # adjust y axis length to keep aspect ratio defined in figure size
+        x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
+        plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
+                0.5 * x_axis_length * figure_size[1] / figure_size[0]])
+        
+        plt.plot(bdy_x, bdy_y, 'k')  # body outline
+        plt.scatter(bdy_x, bdy_y, c = 'r', s = 300)  # corner points
+        plt.scatter(0, 0, c = 'g', s = 500)
+
+        plt.text(self._b_lfc_x * 1.2, self._b_lfc_y, "1", horizontalalignment = 'right', size = 22)
+        plt.text(self._b_rfc_x * 1.2, self._b_rfc_y, "2", horizontalalignment = 'right', size = 22)
+        plt.text(self._b_rrc_x * 1.15, self._b_rrc_y, "3", horizontalalignment = 'left', size = 22)
+        plt.text(self._b_lrc_x * 1.15, self._b_lrc_y, "4", horizontalalignment = 'left', size = 22)
+
+        plt.text(1, -1, "CG", horizontalalignment = 'center', size = 22)
+        plt.arrow(0, 0, 5, 0, head_width=.5, head_length=0.5, fc='k', ec='k')     # vehicle axes
+        plt.arrow(0, 0, 0, 5, head_width=.5, head_length=0.5, fc='b', ec='b')     # vehicle axes
+        plt.gca().invert_yaxis()
+        plt.show(block = False)
+
+
+        impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99"))
+
+        if impact_option not in [1, 2, 3, 4, 99]:
+            print("Invalid impact point option - enter 1, 2, 3, 4 or 5")
+            impact_option = int(input("Choose option for impact location"))
+        elif impact_option != 99:
+            if impact_option == 1:
+                self.pimpact_x = self.lcgf + self.f_hang
+                self.pimpact_y = -1 * self.v_width / 2
+            elif impact_option == 2:
+                self.pimpact_x = self.lcgf + self.f_hang
+                self.pimpact_y = self.v_width / 2
+            elif impact_option == 3:
+                self.pimpact_x = -1 * self.lcgr - self.r_hang
+                self.pimpact_y = self.v_width / 2
+            elif impact_option == 4:
+                self.pimpact_x = -1 * self.lcgr - self.r_hang
+                self.pimpact_y = -1* self.v_width / 2
+        elif impact_option == 99:
+            self.pimpact_x = float(input("Enter x-coordinate of impact point in vehicle frame (ft):"))
+            self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))       
+
+    def impact_edge(self):
+        """
+        generates an edge in vehicle 2 (struck) reference frame
+        sideswipe collisions - edge will determine the extent of vehcle engagement with respect
+        to contacting point in vehicle 1 (striking)
+        impact momentum model - impact edge will be used along with the impact plane to determine time
+        of impact
+        """
+        # test for required inputs
+        if not self.lcgf:
+            self.lcgf = float(input("Enter CG to front axle (ft)"))
+        
+        if not self.lcgr:
+            self.lcgr = float(input("Enter CG to rear axle (ft)"))
+
+        if not self.f_hang:
+            self.f_hang = float(input("Enter front overhang (ft)"))
+
+        if not self.r_hang:
+            self.r_hang = float(input("Enter rear overhang (ft)"))
+
+        if not self.v_width:
+            self.v_width = float(input("Enter vehicle width (ft)"))
+
+        # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
+        # option 5 = custom location
+        
+        # x,y coordinates of vehicle outline:
+        # left front corner
+        self._b_lfc_x = self.lcgf + self.f_hang  
+        self._b_lfc_y = -1 * self.v_width / 2
+        # right front corner
+        self._b_rfc_x = self.lcgf + self.f_hang
+        self._b_rfc_y = self.v_width / 2
+        # right rear corner
+        self._b_rrc_x = -1 * self.lcgr - self.r_hang
+        self._b_rrc_y = self.v_width / 2
+        # left rear corner
+        self._b_lrc_x = -1 * self.lcgr - self.r_hang
+        self._b_lrc_y = -1* self.v_width / 2
+
+        bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
+        bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
+
+        # generate plot to show vehicle outline and default points for impact
+        plt.figure(figsize=figure_size)
+        plt.xlim([self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
+
+        # adjust y axis length to keep aspect ratio defined in figure size
+        x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
+        plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
+                0.5 * x_axis_length * figure_size[1] / figure_size[0]])
+        
+        plt.plot(bdy_x[:2], bdy_y[:2], 'k')
+        plt.plot(bdy_x[1:3], bdy_y[1:3], 'b')
+        plt.plot(bdy_x[2:4], bdy_y[2:4], 'g')
+        plt.plot(bdy_x[3:5], bdy_y[3:5], 'orange')
+        plt.scatter(0, 0, c = 'g', s = 500)
+
+        plt.text(self._b_lfc_x * 1.2, 0, "1", horizontalalignment = 'right', size = 22)
+        plt.text(-2, 1.2 * self.v_width / 2, "2", horizontalalignment = 'center', size = 22)
+        plt.text(self._b_rrc_x * 1.2, 0, "3", horizontalalignment = 'left', size = 22)
+        plt.text(-2, -1.2 * self.v_width / 2, "4", horizontalalignment = 'center', size = 22)
+        
+        plt.text(1, -1, "CG", horizontalalignment = 'center', size = 22)
+        plt.arrow(0, 0, 5, 0, head_width=.5, head_length=0.5, fc='k', ec='k')     # vehicle axes
+        plt.arrow(0, 0, 0, 5, head_width=.5, head_length=0.5, fc='b', ec='b')     # vehicle axes
+
+        plt.gca().invert_yaxis()
+        plt.show(block=False)
+
+        impact_option = int(input("Choose option for impact edge"))
+
+        if impact_option not in [1, 2, 3, 4]:
+            raise ValueError("Invalid impact edge option - enter 1, 2, 3, 4")
+        else:
+            if impact_option == 1:
+                self.edgeimpact_x1 = self.lcgf + self.f_hang
+                self.edgeimpact_y1 = -1 * self.v_width / 2
+                self.edgeimpact_x2 = self.lcgf + self.f_hang
+                self.edgeimpact_y2 = self.v_width / 2 
+            elif impact_option == 2:
+                self.edgeimpact_x1 = self.lcgf + self.f_hang
+                self.edgeimpact_y1 = self.v_width / 2
+                self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
+                self.edgeimpact_y2 = self.v_width / 2
+            elif impact_option == 3:
+                self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
+                self.edgeimpact_y1 = self.v_width / 2
+                self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
+                self.edgeimpact_y2 = -1* self.v_width / 2
+            elif impact_option == 4:
+                self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
+                self.edgeimpact_y1 = -1 * self.v_width / 2
+                self.edgeimpact_x2 = self.lcgf + self.f_hang
+                self.edgeimpact_y2 = -1 * self.v_width / 2      

@@ -2,7 +2,7 @@ To Do
 =============================
 
 Integrate with GitHub project
-
+Add raise errors 
 Create project input function - generate dictionary for inputs.
 
 ### Saving Data
@@ -17,6 +17,7 @@ Create project input function - generate dictionary for inputs.
   - save plots using project name?
 + subplots for model results (fdx, v, a)
 + record delta-v as a vehicle attribute
++ vehicle - automatically search for vehicle inputs? 
 
 ### functions
 + function for multiple plots - plot_runs(run1, run2, run3, etc.)

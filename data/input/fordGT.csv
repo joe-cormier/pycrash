@@ -1,6 +1,6 @@
 Model year,year,2016,int
-Vehicle make,make,Subaru,str
-Vehicle model,mode,WRX Sti,str
+Vehicle make,make,Ford,str
+Vehicle model,mode,GT,str
 Vehicle weight (lb),weight,3000,float
 Vehicle Identification Number (VIN),vin,123abc,str
 Percent Braking,brake,0,float

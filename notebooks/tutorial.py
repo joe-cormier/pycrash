@@ -22,7 +22,7 @@ import json
 pd.options.display.max_columns = None
 from IPython import get_ipython
 from IPython.display import display
-get_ipython().run_line_magic('matplotlib', 'qt')
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 # %% Create Project
 # projects are used to store basic information about the project
@@ -31,13 +31,25 @@ get_ipython().run_line_magic('matplotlib', 'qt')
 
 proj = Project()
 
+# TODO: create dictionary for vehicle inputs, then add function for reproducing dictionary
+
 # %% Vehicle 1
+# "Vehicle" stores information about a single vehicle - all possible inputs do not need to be entered
+# creating a Vehicle requries a "name" which is used to identify the vehicle in outputs / plots etc. 
+
 veh1 = Vehicle('Veh1')
-veh1.manual_specs()
+veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
+#veh1.manual_specs()  # user prompted for input
+
+# %% impact point
+veh1.impact_point()
+
+# %% impact edge
+veh1.impact_edge()
 
 # %% Vehicle 2
 veh2 = Vehicle('Veh2')
-veh2.manual_specs()
+veh2.load_specs('fordGT.csv')
 
 # %% Save Project with vehicle
 proj.save_project(veh1, veh2)
