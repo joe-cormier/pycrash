@@ -113,9 +113,40 @@ class Vehicle:
     Veh1_Weight1, Veh1_Weight2, etc.
     """
 
-    def __init__(self, name):
+    def __init__(self, name, input_dict=None):
         self.name = str(name)
-        self.type = "vehicle"   # class type for reference 
+        self.type = "vehicle"   # class type for reference
+
+        if input_dict != None:
+            self.year = int(input_dict['year'])
+            self.make = str(input_dict['make'])
+            self.model = str(input_dict['model'])
+            self.weight = float(input_dict['weight'])
+            self.vin = str(input_dict['vin'])
+            self.brake = float(input_dict['brake'])
+            self.steer_ratio = float(input_dict['steer_ratio'])
+            self.init_x_pos = float(input_dict['init_x_pos'])
+            self.init_y_pos = float(input_dict['init_y_pos'])
+            self.v_width = float(input_dict['v_width'])
+            self.hcg = float(input_dict['hcg'])
+            self.lcgf = float(input_dict['lcgf'])
+            self.lcgr = float(input_dict['lcgr'])
+            self.wb = float(input_dict['wb'])   # can calculate
+            self.track = float(input_dict['track'])
+            self.f_hang = float(input_dict['f_hang'])
+            self.r_hang = float(input_dict['r_hang'])
+            self.tire_d = float(input_dict['tire_d'])
+            self.izz = float(input_dict['izz'])
+            self.fwd = int(input_dict['fwd'])   # consolidate
+            self.rwd = int(input_dict['rwd'])   # consolidate
+            self.awd = int(input_dict['awd'])   # consolidate
+            self.A = float(input_dict['A'])     # unused
+            self.B = float(input_dict['B'])     # unused
+            self.k = float(input_dict['k'])
+            self.L = float(input_dict['L'])     # unused
+            self.c = float(input_dict['c'])     # unused
+            self.vx_initial = float(input_dict['vx_initial'])
+            self.vy_initial = float(input_dict['vy_initial'])
 
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):
@@ -141,13 +172,41 @@ class Vehicle:
                 except:
                     setattr(self, row[1], row[2])
 
+    def input_dict(self):
+        vehicle_input_dict = {"year":self.year,
+        "make":self.make,
+        "model":self.model,
+        "weight":self.weight,
+        "vin":self.vin,
+        "brake":self.brake,
+        "steer_ratio":self.steer_ratio,
+        "init_x_pos":self.init_x_pos,
+        "init_y_pos":self.init_y_pos,
+        "head_angle":self.head_angle,
+        "v_width":self.v_width,
+        "v_length":self.v_length,
+        "hcg":self.hcg,
+        "lcgf":self.lcgf,
+        "lcgr":self.lcgr,
+        "wb":self.wb,
+        "track":self.track,
+        "f_hang":self.f_hang,
+        "r_hang":self.r_hang,
+        "tire_d":self.tire_d,
+        "tire_w":self.tire_w,
+        "izz":self.izz,
+        "fwd":self.fwd,
+        "rwd":self.rwd,
+        "awd":self.awd,
+        "A":self.A,
+        "B":self.B,
+        "k":self.k,
+        "L":self.L,
+        "c":self.c,
+        "vx_initial":self.vx_initial,
+        "vy_initial":self.vy_initial}
 
-    def show(self):
-        """ display all attributes assigned to the vehicle """
-        for i in inspect.getmembers(self):
-            if not i[0].startswith('_'):
-                if not inspect.ismethod(i[1]):
-                    print(i)
+        return vehicle_input_dict
 
     def time_inputs(self, time, brake, steer):
         """
@@ -214,12 +273,12 @@ class Vehicle:
         sideswipe collisions - px, py will determine the extent of vehcle engagement with respect
         to contacting edge in vehicle 2 (struck)
         impact momentum model - px, py will be used along with the impact plane to determine time
-        of impact and direction of normal and tangential contact planes    
+        of impact and direction of normal and tangential contact planes
         """
         # test for required inputs
         if not self.lcgf:
             self.lcgf = float(input("Enter CG to front axle (ft)"))
-        
+
         if not self.lcgr:
             self.lcgr = float(input("Enter CG to rear axle (ft)"))
 
@@ -234,10 +293,10 @@ class Vehicle:
 
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
         # option 5 = custom location
-        
+
         # x,y coordinates of vehicle outline:
         # left front corner
-        self._b_lfc_x = self.lcgf + self.f_hang  
+        self._b_lfc_x = self.lcgf + self.f_hang
         self._b_lfc_y = -1 * self.v_width / 2
         # right front corner
         self._b_rfc_x = self.lcgf + self.f_hang
@@ -260,7 +319,7 @@ class Vehicle:
         x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
         plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
                 0.5 * x_axis_length * figure_size[1] / figure_size[0]])
-        
+
         plt.plot(bdy_x, bdy_y, 'k')  # body outline
         plt.scatter(bdy_x, bdy_y, c = 'r', s = 300)  # corner points
         plt.scatter(0, 0, c = 'g', s = 500)
@@ -297,7 +356,7 @@ class Vehicle:
                 self.pimpact_y = -1* self.v_width / 2
         elif impact_option == 99:
             self.pimpact_x = float(input("Enter x-coordinate of impact point in vehicle frame (ft):"))
-            self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))       
+            self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))
 
     def impact_edge(self):
         """
@@ -310,7 +369,7 @@ class Vehicle:
         # test for required inputs
         if not self.lcgf:
             self.lcgf = float(input("Enter CG to front axle (ft)"))
-        
+
         if not self.lcgr:
             self.lcgr = float(input("Enter CG to rear axle (ft)"))
 
@@ -325,10 +384,10 @@ class Vehicle:
 
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
         # option 5 = custom location
-        
+
         # x,y coordinates of vehicle outline:
         # left front corner
-        self._b_lfc_x = self.lcgf + self.f_hang  
+        self._b_lfc_x = self.lcgf + self.f_hang
         self._b_lfc_y = -1 * self.v_width / 2
         # right front corner
         self._b_rfc_x = self.lcgf + self.f_hang
@@ -351,7 +410,7 @@ class Vehicle:
         x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
         plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
                 0.5 * x_axis_length * figure_size[1] / figure_size[0]])
-        
+
         plt.plot(bdy_x[:2], bdy_y[:2], 'k')
         plt.plot(bdy_x[1:3], bdy_y[1:3], 'b')
         plt.plot(bdy_x[2:4], bdy_y[2:4], 'g')
@@ -362,7 +421,7 @@ class Vehicle:
         plt.text(-2, 1.2 * self.v_width / 2, "2", horizontalalignment = 'center', size = 22)
         plt.text(self._b_rrc_x * 1.2, 0, "3", horizontalalignment = 'left', size = 22)
         plt.text(-2, -1.2 * self.v_width / 2, "4", horizontalalignment = 'center', size = 22)
-        
+
         plt.text(1, -1, "CG", horizontalalignment = 'center', size = 22)
         plt.arrow(0, 0, 5, 0, head_width=.5, head_length=0.5, fc='k', ec='k')     # vehicle axes
         plt.arrow(0, 0, 0, 5, head_width=.5, head_length=0.5, fc='b', ec='b')     # vehicle axes
@@ -379,7 +438,7 @@ class Vehicle:
                 self.edgeimpact_x1 = self.lcgf + self.f_hang
                 self.edgeimpact_y1 = -1 * self.v_width / 2
                 self.edgeimpact_x2 = self.lcgf + self.f_hang
-                self.edgeimpact_y2 = self.v_width / 2 
+                self.edgeimpact_y2 = self.v_width / 2
             elif impact_option == 2:
                 self.edgeimpact_x1 = self.lcgf + self.f_hang
                 self.edgeimpact_y1 = self.v_width / 2
@@ -394,4 +453,4 @@ class Vehicle:
                 self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
                 self.edgeimpact_y1 = -1 * self.v_width / 2
                 self.edgeimpact_x2 = self.lcgf + self.f_hang
-                self.edgeimpact_y2 = -1 * self.v_width / 2      
+                self.edgeimpact_y2 = -1 * self.v_width / 2
