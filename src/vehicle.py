@@ -1,7 +1,6 @@
 # TODO: check properties of each input - use list of data types
 # TODO: option to save inputs and outputs to csv
 
-# %% modules
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import text
 from tabulate import tabulate
@@ -127,7 +126,9 @@ class Vehicle:
             self.steer_ratio = float(input_dict['steer_ratio'])
             self.init_x_pos = float(input_dict['init_x_pos'])
             self.init_y_pos = float(input_dict['init_y_pos'])
+            self.head_angle = float(input_dict['head_angle'])
             self.v_width = float(input_dict['v_width'])
+            self.v_length = float(input_dict['v_length'])
             self.hcg = float(input_dict['hcg'])
             self.lcgf = float(input_dict['lcgf'])
             self.lcgr = float(input_dict['lcgr'])
@@ -136,6 +137,7 @@ class Vehicle:
             self.f_hang = float(input_dict['f_hang'])
             self.r_hang = float(input_dict['r_hang'])
             self.tire_d = float(input_dict['tire_d'])
+            self.tire_w = float(input_dict['tire_w'])
             self.izz = float(input_dict['izz'])
             self.fwd = int(input_dict['fwd'])   # consolidate
             self.rwd = int(input_dict['rwd'])   # consolidate
@@ -335,7 +337,6 @@ class Vehicle:
         plt.gca().invert_yaxis()
         plt.show(block = False)
 
-
         impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99"))
 
         if impact_option not in [1, 2, 3, 4, 99]:
@@ -354,7 +355,7 @@ class Vehicle:
             elif impact_option == 4:
                 self.pimpact_x = -1 * self.lcgr - self.r_hang
                 self.pimpact_y = -1* self.v_width / 2
-        elif impact_option == 99:
+        elif impact_option == 99:   # TODO: update to take user inputs
             self.pimpact_x = float(input("Enter x-coordinate of impact point in vehicle frame (ft):"))
             self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))
 
@@ -383,7 +384,6 @@ class Vehicle:
             self.v_width = float(input("Enter vehicle width (ft)"))
 
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
-        # option 5 = custom location
 
         # x,y coordinates of vehicle outline:
         # left front corner

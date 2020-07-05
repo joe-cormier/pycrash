@@ -38,30 +38,7 @@ class Project:
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
                          [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
-    def save_project(self, vehicle1, vehicle2):
-        """ save project to filename along with vehicles of Class Vehicle
-        saved in an appended file that contains all prior project data
-        Will append the current project to the prexisting dataset if it exists
-        TODO: add functionality for 3+ vehicles and model runs
-        """
-
-        project_data = [self, vehicle1, vehicle2]
-
-        # test if ProjectData.pkl exists
-        if os.path.exists(os.path.join(os.getcwd(), "data", "project", "ProjectData.pkl")) == True:
-            with open(os.path.join(os.getcwd(), "data", "project", "ProjectData.pkl"), 'rb') as handle:
-                allProjectData = pickle.load(handle)
-            # add new project to data file
-            allProjectData[self.name] = project_data
-        elif os.path.exists(os.path.join(os.getcwd(), "data" "project", "ProjectData.pkl")) == False:
-            # create new file for saving project data
-            allProjectData = {}
-            allProjectData[self.name] = project_data
-
-        with open(os.path.join(os.getcwd(), "data", "project", "ProjectData.pkl"), 'wb') as handle:
-            pickle.dump(allProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    def save_project_test(self, *args):
+    def save_project(self, *args):
         """ save project to filename along with vehicles of Class Vehicle
         saved in an appended file that contains all prior project data
         Will append the current project to the prexisting dataset if it exists

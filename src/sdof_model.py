@@ -2,24 +2,30 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from src.sdof_calculations import SingleDOFmodel
+from copy import deepcopy
 import inspect
 import csv
 import os
 
 class SDOF_Model():
     """
-    Inputs can be provided using a predefined dictionary "model_inputs" or
-    inputs can be entered through user prompts
-    if "None" is used for tstop model will run until vehicles seperate otherwise model will run to tstop if seperation as ocurred
+    Inputs can be provided using a predefined dictionary "model_inputs"
+
+
+    or inputs can be entered through user prompts
+    if "None" is used for tstop model will run until vehicles seperate otherwise model will run to tstop if seperation
+    has ocurred
     if a single value is used for model stiffness k, vehicle response will be calculated using a constant stiffness
-    if a dataframe with 2 columns is entered, vehicle response will be calculated using dataframe as a lookup table for force at a given displacement
+    if a dataframe with 2 columns is entered [disp(in) | force(lb)], vehicle response will be calculated using dataframe as a lookup table
+    for force at a given displacement
     """
 
     def __init__(self, veh1, veh2, model_inputs=None):
-        self.__dt = 0.0001        # default time step for collisions
-        self.type = "sdof"      # class type
-        self.veh1 = veh1
-        self.veh2 = veh2
+        self.__dt = 0.0001        # TODO: default time step for collisions - create input for this
+        self.type = "sdof"        # class type
+        # create independent copy of vehicle class instances
+        self.veh1 = deepcopy(veh1)
+        self.veh2 = deepcopy(veh2)
         # manually create inputs if not provided
         if (model_inputs == None):
             self.name = input('Enter name of SDOF model run:')
@@ -32,13 +38,14 @@ class SDOF_Model():
             self.k = model_inputs['k']
             self.tstop = model_inputs['tstop']
 
+        print("------------ Model Inputs ---------------")
         print(f"Model Run = {self.name}")
         print(f"Coefficient of Restitution = {self.cor}")
         if (isinstance(self.k, int)) or (isinstance(self.k, float)):
-            print(f"Mutual Stiffness = {self.k} lb/in ")
+            print(f"Constant Mutual Stiffness = {self.k} lb/in ")
             self.__ktype = 'constantK'               # define stiffness type for model
-        elif (type(self.k) == 'pandas.core.frame.DataFrame'):
-            print(f"Stiffness Function = {self.k}")
+        elif isinstance(self.k, pd.DataFrame):
+            print(f"Stiffness Function Dataframe of shape = {self.k.shape}")
             self.__ktype = 'tableK'                   # define stiffness type for model
 
         if (isinstance(self.tstop, int)) or (isinstance(self.tstop, float)):
@@ -52,11 +59,15 @@ class SDOF_Model():
             self.__ttype = 0                           # define t stop criteria
 
         # collect vehicle specific inputs
-        print("------------- Vehicle Inputs ------------")
-        print("-- Vehicle 1 --")
+
+        print("")
+        print("|------------ Vehicle Inputs -----------|")
+        print("")
+        print("<- Vehicle 1 ->")
+        print("")
         try:
             if (isinstance(self.veh1.brake, int)) or (isinstance(self.veh1.brake, float)):
-                print(f"{self.veh1.name} braking at {self.veh1.brake}%")
+                print(f"{self.veh1.name} braking at {self.veh1.brake*100}%")
             else:
                 print(f"{self.veh1.name} does not have a valid 'brake' entry")
                 print(f"{self.veh1.name} - braking  set to 0 %")
@@ -77,10 +88,11 @@ class SDOF_Model():
             self.veh1.vx_initial = 0
 
         print("")
-        print("-- Vehicle 2 --")
+        print("<- Vehicle 2 ->")
+        print("")
         try:
             if (isinstance(self.veh2.brake, int)) or (isinstance(self.veh2.brake, float)):
-                print(f"{self.veh2.name} braking at {self.veh2.brake}%")
+                print(f"{self.veh2.name} braking at {self.veh2.brake*100}%")
             else:
                 print(f"{self.veh2.name} does not have a valid 'brake' entry")
                 print(f"{self.veh2.name} - braking  set to 0 %")
@@ -101,7 +113,7 @@ class SDOF_Model():
             self.veh2.vx_initial = 0
 
         print(f"Model Closing Speed = {self.veh1.vx_initial - self.veh2.vx_initial} mph")
-        print("<------- Input Complete ---------->")
+        print("|----------- Input Complete ------------|")
         print("")
 
     #  Run SDOF Model
@@ -118,6 +130,8 @@ class SDOF_Model():
                                         ttype = self.__ttype,
                                         dt = self.__dt)
 
+        # TODO: create attribute for vehicel inputs for saving / plotting run
+
     def input_dict(self):
         """
         return a dictionary to save / modify inputs
@@ -129,7 +143,7 @@ class SDOF_Model():
                 }
 
     def show(self):
-        """ display all attributes assigned to the vehicle """
+        """ display all attributes assigned to the sdof model """
         for i in inspect.getmembers(self):
             if not i[0].startswith('_'):
                 if not inspect.ismethod(i[1]):

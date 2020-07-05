@@ -1,41 +1,39 @@
 To Do
 =============================
 
-Integrate with GitHub project
-Add raise errors 
+Integrate with GitHub project  
+Add raise errors  
 Create project input function - generate dictionary for inputs.
 
 ### Saving Data
-+ Create archive for all project data and save single file for current project
 + create new folder for each project (input / reports)
 
 
 ### Classes
-+ create class for vehicle geometry / static Inputs
-(https://stackoverflow.com/questions/33072570/when-should-i-be-using-classes-in-python)
 + add plot functions - arguments for changing color / size etc.
   - save plots using project name?
 + subplots for model results (fdx, v, a)
 + record delta-v as a vehicle attribute
-+ vehicle - automatically search for vehicle inputs? 
++ vehicle - automatically search for vehicle inputs?
 
-### functions
+### Parametric
 + function for multiple plots - plot_runs(run1, run2, run3, etc.)
-
 
 ## Project Type
 1. Single vehicle motion
 2. Impact simulation (with or without pre and post vehicle travel)
 
+## Load cell barrier data
++ functions to process data
+
 ## Impact Models
 + SDOF model (effective stiffness)
-+ SDOF model (effective stiffness | overlap)
-+ planar impulse momentum
++ SDOF model (effective stiffness | overlap) - later
++ planar impulse momentum (Carpenter)
 + sideswipe (point-edge interaction, long duration)
 
 ##  Vehicle Motion
 - allow single vehicle model to accept external force
-- improve criteria for stopping simulation, currently uses V < 0
 
 #### Terrain
 - boundaries for surface friction / grade / bank
@@ -65,8 +63,8 @@ Create project input function - generate dictionary for inputs.
 ## Impact Models
 ### SDOF Model (effective stiffness)
 - is force only applied through CG?
+    - offset value to create moment
 - colinear impacts
-- effective stiffness
 - braking effects
 
 ### SDOF Model (effective stiffness | overlap)

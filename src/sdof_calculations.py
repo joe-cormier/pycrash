@@ -12,7 +12,6 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     cons = {}
     for row in readCSV:
         cons[row[1]] = float(row[2])
-
 mu_max = cons['mu_max']    # maximum available friction
 
 # Functions
@@ -48,17 +47,15 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
     # import correct spring force model based on model type
     if (ktype == 'constantK'):
-        print("Constant Stiffness Model")
         from src.spring_models import SpringForce as SpringForce
-        input_k_disp = 0  # junk input so same function can be used for both conditions
+        input_k_disp = 0                # ununsed input so same function can be used for both conditions
         input_k_force = 0
     elif (ktype == 'tableK'):
-        print("Lookup-Table Stiffness Model")
         from src.spring_models import SpringFdx as SpringForce
         # inputs for model
-        input_k_disp = k[0]
-        input_k_force = k[1]
-        k = 0 # ununsed input for table based stiffness
+        input_k_disp = k.iloc[:, 0]
+        input_k_force = k.iloc[:, 1]
+        k = 0                           # ununsed input for table based stiffness
     else:
         print("Unknown Model Type")
 
@@ -79,7 +76,8 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
     kreturn = np.nan  # initial values of nan
     dxperm = np.nan   # initial values of nan
     stop = 0
-    print('Starting Model...')
+    print("")
+    print('Model Initiated ============>')
     while stop == 0:
         if v2_initial >= v1_initial:
             print('Vehicles are seperating at onset: Stopping Model')
@@ -152,10 +150,10 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
                     dxmax = dx_past
                     dxperm = dxmax * (1 - cor**2)  # permanent crush
                     kreturn = Fmax / abs(dxmax - dxperm)  # return stiffness
-                    print('====== Seperation =======>')
+                    print('===== Seperation ===========>')
                     print(f'Time (s) = {t}')
-                    print(f'Peak Mutual Crush (in) = {dx_past *-12}')
-                    print(f'Peak Force (lb) = {Fmax}')
+                    print(f'Peak Mutual Crush (in) = {dx_past *-12:.2f}')
+                    print(f'Peak Force (lb) = {Fmax:.2f}')
 
             springF = SpringForce(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm)
 
@@ -170,7 +168,8 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
             if (closing == 0) & (dx >= dxperm) & (t >= tstop): # vehicles are seperating and dx is less than permanent crush
                 stop = 1
-                print(f'Stopped t (s) = {t}')
+                print("")
+                print(f'========> Stopped t (s) = {t:.3f}')
                 break
 
             # store initial data in dataframe
