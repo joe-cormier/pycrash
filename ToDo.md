@@ -14,7 +14,7 @@ Create project input function - generate dictionary for inputs.
 ### Classes
 + add plot functions - arguments for changing color / size etc.
   - save plots using project name - "reports directory"
-+ subplots for model results (fdx, v, a)
++ subplots for model results (fdx, v, a) - SDOF model
 + record delta-v as a vehicle attribute
 + vehicle - automatically search for vehicle inputs?
 

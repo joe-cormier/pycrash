@@ -39,7 +39,7 @@ class SDOF_Model():
             self.tstop = model_inputs['tstop']
 
         print("------------ Model Inputs ---------------")
-        print(f"Model Run = {self.name}")
+        print(f"SDOF Run = {self.name}")
         print(f"Coefficient of Restitution = {self.cor}")
         if (isinstance(self.k, int)) or (isinstance(self.k, float)):
             print(f"Constant Mutual Stiffness = {self.k} lb/in ")
