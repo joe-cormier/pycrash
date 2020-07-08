@@ -6,13 +6,16 @@ import os
 """
 Performs interative calculations for the SDOF impact simulation
 """
+
 # load constants
 with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfile:
     readCSV = csv.reader(csvfile, delimiter=',')
     cons = {}
     for row in readCSV:
         cons[row[1]] = float(row[2])
+
 mu_max = cons['mu_max']    # maximum available friction
+dt_impact = cons['dt_impact']
 
 # Functions
 # v2 brake force wil oppose the spring force as long as the vehicle is moving forward
@@ -38,7 +41,7 @@ def sign(x):
         return x
 
 def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
-                    tstop, ktype, ttype, dt):
+                    tstop, ktype, ttype):
 
     _tstop = 0 # default limit for ttype == 0 will use tstop otherwise
 
@@ -47,15 +50,15 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
     # import correct spring force model based on model type
     if (ktype == 'constantK'):
-        from src.spring_models import SpringForce as SpringForce
-        input_k_disp = 0                # ununsed input so same function can be used for both conditions
+        from src.spring_models import SpringForce as SpringForce  # TODO: fix import name
+        input_k_disp = 0                # unused input so same function can be used for both conditions
         input_k_force = 0
     elif (ktype == 'tableK'):
         from src.spring_models import SpringFdx as SpringForce
         # inputs for model
         input_k_disp = k.iloc[:, 0]
         input_k_force = k.iloc[:, 1]
-        k = 0                           # ununsed input for table based stiffness
+        k = 0                           # unused input for table based stiffness
     else:
         print("Unknown Model Type")
 
@@ -84,7 +87,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
             stop = 1
             break
 
-        t = i * dt
+        t = i * dt_impact
 
         if i == 0:
 
@@ -123,8 +126,8 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
         if i > 0:
 
             # calculate vehicle motion [ft] based on prior velocity
-            x1 = x1 + v1 * dt
-            x2 = x2 + v2 * dt
+            x1 = x1 + v1 * dt_impact
+            x2 = x2 + v2 * dt_impact
 
             if closing == 1:
             # crush is equal to difference in vehicle motion during closing
@@ -138,8 +141,8 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
                 dx = dxperm
 
             # calculate vehicle velocity [ft/s] based on prior acceleration
-            v1 = v1 + a1 * dt
-            v2 = v2 + a2 * dt
+            v1 = v1 + a1 * dt_impact
+            v2 = v2 + a2 * dt_impact
 
             dx_past = spring_model.loc[i-1, 'dx']
             # check for closing / seperating status

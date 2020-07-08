@@ -1,12 +1,10 @@
-"""
-The spring model used can vary depending on the user Inputs
-Additional spring models can be created here, all inputs need to remain the same across all functions
-to preserve functinality 
-"""
+
+import numpy as np
 
 # Spring force from two lists
 def SpringFdx(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
     """
+    spring force using lookup table of displacement [ft], force [lb]
     input_k_disp from model - [ft]
     input_k_force from input - [lb]
     k - unused
@@ -27,7 +25,7 @@ def SpringFdx(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
 def SpringForce(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
     """
     Spring force using linear spring assumption
-    k - spring stiffness [lb/in]
+    k - spring stiffness [lb/ft]
     input_k_disp - unused
     input_k_force - unused
     """
@@ -35,7 +33,7 @@ def SpringForce(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
         return 0
 
     if closing == 1:
-        return k * abs(dx) * 12
+        return k * abs(dx)
 
     if (closing == 0) & ((dx - dxperm) < 0): # closing and dx has not reached dxperm
         return kreturn * abs(dx - dxperm)

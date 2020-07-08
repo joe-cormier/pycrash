@@ -11,6 +11,7 @@ from src.vehicle import Vehicle
 import pandas as pd
 import numpy as np
 from scipy import integrate
+from copy import deepcopy
 import math
 import csv
 import os
@@ -22,10 +23,9 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     for row in readCSV:
         cons[row[1]] = row[2]
 
-print(cons)
-mu_max = cons['mu_max']    # maximum available friction
-dt = cons['dt']           # iteration time step for vehicle motion
-
+mu_max = cons['mu_max']                 # maximum available friction
+dt_motion = cons['dt_motion']           # iteration time step for vehicle motion
+dt_impact = cons['dt_impact']
 
 # look for Environment data, load if present
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
@@ -44,10 +44,26 @@ class Kinematics():
     Generates vehicle motion based on inputs defined within Vehicle class
     No external forces
     Environment slope and bank is optionally defined as a function of X,Y components
+    creates independent copy of vehicle at instantiation
     """
     def __init__(self, name, veh):
         self.name = name
+        self.veh = deepcopy(veh)
         self.type = 'kinematic'  # class type for saving files later
+
+        # check for driver inputs
+        if isinstance(self.veh.driver_input, pd.DataFrame):
+            print(f"Driver input dataframe of shape = {self.veh.driver_input.shape}"))
+        else:
+            print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
+            print(f'Current driver input of type: {type(self.veh.driver_input)}')
+            self.veh.driver_input =
+
+        # check for model inputs
+
+        # run vehicle model
+
+
 
     def vehicle_info(self):
         """
@@ -55,63 +71,14 @@ class Kinematics():
         """
         print(f'Vehicle name is {self.veh.name}')
 
-    def time_inputs(self, filename):
-        """
-        Driver inputs | time (s) | braking (%) | steering (%) |
-        time step can be user defined, inputs will be interpolated to match dt for simulation
-        """
-        if os.path.isfile(filename):
-            time_inputs = pd.read_csv(filename)
-            if len(time_inputs) == 0:
-                print('Time input file appears blank')
-            else:
-                t = list(np.arange(0, dt, time_inputs.loc[len(time_inputs.time)-1, 'time']))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
-                df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
-                df['t'] = t
-                time_inputs['input_t'] = time_inputs.time.round(3)
-                df.t = df.t.round(3)
-                df = pd.merge(df, time_inputs, how = 'left', left_on = 't', right_on = 'input_t') # merge input data with time data at specified time step
-                df = df.interpolate(method = 'linear') # interpolate NaN values left after merging
-                df.drop(columns = ['input_t', 't'], inplace = True)  # drop input time column
-                df['t'] = t # reset time column due to interpolating
-                df['t'] = df.t.round(3) # reset signficant digits
-                df = df.reset_index(drop = True)
-                self.time_input = df
-        else:
-            print('No Time Input File Provided')
 
-    def dist_inputs(self, filename):
-        """
-        Driver inputs | vehicle travel distance (ft) | braking (%) | steering (%) |
-        """
-
-    def motion(self):
-
-time_inputs = pd.read_csv('D:\\OneDrive\\pycrash\\data\\input\\DriverInputTime.csv')
-len(time_inputs.time)
-time_inputs.loc[len(time_inputs.time)-1, 'time']
-t = list(np.arange(0, dt, time_inputs.loc[len(time_inputs.time)-1, 'time']))
-t = list(np.arange(0, dt, 1))
-dt
-
-
-veh1_motion = Kinematics(veh1)
-veh1_motion.time_inputs('D:\\OneDrive\\pycrash\\data\\input\\DriverInputTime.csv')
-veh1_motion.time_input.head()
-
-
-
-veh1_motion.motion()
-
-
-veh1 = Vehicle('STi')
 
 
 
 
 def vehicle_model(vehi):
     """
-    Calculate vehicle dynamics from edr / driver inputs
+    Calculate vehicle dynamics from driver inputs and environmental inputs
     """
     # convert dataframe of vehicle info to a dictionary for the designated vehicle
     if vehi == 1:
@@ -142,7 +109,7 @@ def vehicle_model(vehi):
 
     # Vehicle loop start here -
     for i in (range(len(vin))):
-        t = i*dt
+        t = i * dt_motion
 
         if i == 0:
             # set all tire forces in vehicle frame to zero

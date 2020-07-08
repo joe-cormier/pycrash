@@ -11,17 +11,17 @@ class SDOF_Model():
     """
     Inputs can be provided using a predefined dictionary "model_inputs"
 
-
     or inputs can be entered through user prompts
-    if "None" is used for tstop model will run until vehicles seperate otherwise model will run to tstop if seperation
-    has ocurred
-    if a single value is used for model stiffness k, vehicle response will be calculated using a constant stiffness
-    if a dataframe with 2 columns is entered [disp(in) | force(lb)], vehicle response will be calculated using dataframe as a lookup table
+    if "None" is used for tstop model will run until vehicles seperate otherwise
+    model will run to tstop if seperation has ocurred
+    if a single value is used for model stiffness k, vehicle response will be
+    calculated using a constant stiffness
+    if a dataframe with 2 columns is entered [disp(ft) | force(lb)],
+    vehicle response will be calculated using dataframe as a lookup table
     for force at a given displacement
     """
 
     def __init__(self, veh1, veh2, model_inputs=None):
-        self.__dt = 0.0001        # TODO: default time step for collisions - create input for this
         self.type = "sdof"        # class type
         # create independent copy of vehicle class instances
         self.veh1 = deepcopy(veh1)
@@ -38,14 +38,15 @@ class SDOF_Model():
             self.k = model_inputs['k']
             self.tstop = model_inputs['tstop']
 
+        print("")
         print("------------ Model Inputs ---------------")
-        print(f"SDOF Run = {self.name}")
+        print(f"Model Run = {self.name}")
         print(f"Coefficient of Restitution = {self.cor}")
         if (isinstance(self.k, int)) or (isinstance(self.k, float)):
-            print(f"Constant Mutual Stiffness = {self.k} lb/in ")
+            print(f"Constant Mutual Stiffness = {self.k} lb/ft ")
             self.__ktype = 'constantK'               # define stiffness type for model
         elif isinstance(self.k, pd.DataFrame):
-            print(f"Stiffness Function Dataframe of shape = {self.k.shape}")
+            print(f"Stiffness Function Dataframe [disp (ft) | force (lb)] of shape = {self.k.shape}")
             self.__ktype = 'tableK'                   # define stiffness type for model
 
         if (isinstance(self.tstop, int)) or (isinstance(self.tstop, float)):
@@ -113,6 +114,7 @@ class SDOF_Model():
             self.veh2.vx_initial = 0
 
         print(f"Model Closing Speed = {self.veh1.vx_initial - self.veh2.vx_initial} mph")
+        print("")
         print("|----------- Input Complete ------------|")
         print("")
 
@@ -127,10 +129,10 @@ class SDOF_Model():
                                         cor = self.cor,
                                         tstop = self.tstop,
                                         ktype = self.__ktype,
-                                        ttype = self.__ttype,
-                                        dt = self.__dt)
+                                        ttype = self.__ttype
+                                        )
 
-        # TODO: create attribute for vehicel inputs for saving / plotting run
+        # TODO: create attribute for vehicle inputs for saving / plotting run
 
     def input_dict(self):
         """
@@ -170,6 +172,7 @@ class SDOF_Model():
         fig.show()
 
     def plot_v(self):
+
         """
         plot vehicle velocities
         """

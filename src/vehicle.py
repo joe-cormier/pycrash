@@ -1,6 +1,7 @@
 # TODO: check properties of each input - use list of data types
 # TODO: option to save inputs and outputs to csv
 
+# %% modules
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import text
 from tabulate import tabulate
@@ -19,11 +20,11 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
         cons[row[1]] = float(row[2])
 
 mu_max = cons['mu_max']    # maximum available friction
-dt = cons['dt']            # iteration time step
+dt_motion = cons['dt_motion']            # iteration time step
 
 print('Current values for defined constants:')
 print(f'maximum available friction (mu_max) = {mu_max}')
-print(f'time step for vehicle motion (dt) = {dt} s')
+print(f'time step for vehicle motion (dt) = {dt_motion} s')
 
 # TODO: create input for figure size - loads from "defaults" folder?
 figure_size = (16,9)
@@ -221,7 +222,7 @@ class Vehicle:
             print('No driver input applied to vehicle')
         else:
             inputdf = pd.DataFrame(list(zip(brake, steer)), columns = ['brake', 'steer'])
-            t = list(np.arange(0, max(time)+dt, dt))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
+            t = list(np.arange(0, max(time)+dt_motion, dt_motion))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
             df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
             df['t'] = t
             inputdf['input_t'] = time.round(3)
@@ -247,7 +248,7 @@ class Vehicle:
             if len(time_inputs) == 0:
                 print('Time input file appears blank')
             else:
-                t = list(np.arange(0, dt+time_inputs.loc[len(time_inputs.time)-1, 'time']), dt)  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
+                t = list(np.arange(0, dt_motion+time_inputs.loc[len(time_inputs.time)-1, 'time']), dt_motion)  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
                 df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
                 df['t'] = t
                 time_inputs['input_t'] = time_inputs.time.round(3)
@@ -337,6 +338,7 @@ class Vehicle:
         plt.gca().invert_yaxis()
         plt.show(block = False)
 
+
         impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99"))
 
         if impact_option not in [1, 2, 3, 4, 99]:
@@ -355,7 +357,7 @@ class Vehicle:
             elif impact_option == 4:
                 self.pimpact_x = -1 * self.lcgr - self.r_hang
                 self.pimpact_y = -1* self.v_width / 2
-        elif impact_option == 99:   # TODO: update to take user inputs
+        elif impact_option == 99:
             self.pimpact_x = float(input("Enter x-coordinate of impact point in vehicle frame (ft):"))
             self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))
 
@@ -384,6 +386,7 @@ class Vehicle:
             self.v_width = float(input("Enter vehicle width (ft)"))
 
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
+        # option 5 = custom location
 
         # x,y coordinates of vehicle outline:
         # left front corner

@@ -11,7 +11,7 @@ def b1values(bo, L, C, W):
     L = with of direct damage
     w = vehicle weight
     """
-    
+
     return -1 * bo / C + np.sqrt((bo**2 + 2))
 
 
@@ -135,7 +135,7 @@ def SpringSeriesKeff(k1, k2):
     """
     calcualte effective stiffness for two springs in series
     """
-    
+
     return 1 / (1/k1 + 1/k2)
 
 def BEVfromE(W, E):

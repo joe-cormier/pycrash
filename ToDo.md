@@ -3,36 +3,25 @@ To Do
 
 Integrate with GitHub project  
 Add raise errors  
-Create project input function - generate dictionary for inputs.
 
 ### Saving Data
 + create new folder for each project (input / reports)
 
-### Miscellaneous functions
-+ how to include?
+### Miscellaneous functions - create class functions
++ load cell barrier data
 
 ### Classes
 + add plot functions - arguments for changing color / size etc.
   - save plots using project name - "reports directory"
 + subplots for model results (fdx, v, a) - SDOF model
 + record delta-v as a vehicle attribute
-+ vehicle - automatically search for vehicle inputs?
-
-### Parametric
-+ function for multiple plots - plot_runs(run1, run2, run3, etc.)
-
-## Project Type
-1. Single vehicle motion
-2. Impact simulation (with or without pre and post vehicle travel)
-
-## Load cell barrier data
-+ functions to process data
++ vehicle - add capability to run multiple simulations
 
 ## Impact Models
-+ SDOF model (effective stiffness)
-+ SDOF model (effective stiffness | overlap) - later
-+ planar impulse momentum (Carpenter)
-+ sideswipe (point-edge interaction, long duration)
++ SDOF model (effective stiffness) - 90% complete
++ SDOF model (effective stiffness | overlap) - secondary
++ Impulse Momentum Planar Collision model (Carpenter 2019)
++ Sideswipe (point-edge interaction, long duration)
 
 ##  Vehicle Motion
 - allow single vehicle model to accept external force
@@ -53,8 +42,8 @@ Create project input function - generate dictionary for inputs.
 - incorporate tire model in impact simulation
 
 #### Validation
-- Kineticorp data
-- HVE simulations
+- Vehicle motion
+- Impact model
 
 ## Impact Simulation
 - create categorical values for impact simulation types (SV, SDOF, SDOF_Width, Sideswipe, IMPC)

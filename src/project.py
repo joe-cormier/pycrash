@@ -1,3 +1,4 @@
+
 from tabulate import tabulate
 import os
 import pickle
@@ -14,22 +15,29 @@ class Project:
     note - user note
     """
 
-    def __init__(self):
-        self.name = input("Project Name: ")
-        self.pdesc = input("Project Description: ")
-        self.sim_type = input("Simulation Type [Single Vehicle = SV/ Multi-Vehicle = MV]: ")
-        self.type = "project"      # class type
+    def __init__(self, project_input = None):
+        if (project_input == None):
+            self.name = input("Project Name: ")
+            self.pdesc = input("Project Description: ")
+            self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
+            self.type = "project"      # class type
 
-        if self.sim_type == "MV":
-            self.impact_type = input("Impact Type (SS, IMPC, SDOF): ")
+            if self.sim_type == "MV":
+                self.impact_type = input("Impact Type (SDOF, SS, IMPC): ")
 
-            if (self.impact_type not in ["SS", "IMPC", "SDOF"]):
-                print("Not a valid impact type, choose SS, IMPC or SDOF. Value set to SDOF")
-                self.impact_type == "SDOF"
+                if (self.impact_type not in ["SS", "IMPC", "SDOF"]):
+                    print("Not a valid impact type, choose SS, IMPC or SDOF. Value set to SDOF")
+                    self.impact_type == "SDOF"
+            else:
+                self.impact_type = "none"
+
+            self.note = input("Note: ")
         else:
-            self.impact_type = "none"
-
-        self.note = input("Note: ")
+            self.name = project_input['name']
+            self.pdesc = project_input['pdesc']
+            self.sim_type = project_input['sim_type']
+            self.impact_type = project_input['impact_type']
+            self.note = project_input['note']
 
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
                     [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
@@ -46,6 +54,7 @@ class Project:
         """
         nvehicles = 0
         nsdof_models = 0
+        nsideswipe = 0
         project_objects = {}
         project_objects.update({self.name:self})
 
@@ -56,6 +65,9 @@ class Project:
             elif (a.type == 'sdof'):
                 nsdof_models += 1
                 project_objects.update({f'run{nsdof_models}':a})
+            elif (a.type == 'sideswipe'):
+                nsideswipe += 1
+                project_objects.update({f'run{nsideswipe}':a})
             else:
                 print(f"Unknown object type for {a} of type {type(a)}")
 
