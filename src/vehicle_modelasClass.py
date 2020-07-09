@@ -90,7 +90,7 @@ class Kinematics():
         check for impact at each time step
         tranform impact point from veh1 to veh2 frame
         """
-        
+
         self.veh1_motion =
         self.veh2_motion =
         self.impact_model =
@@ -174,7 +174,7 @@ def vehicle_model(veh):
                                                    -1 * rr_fx * track / 2, -1* rr_fy * lcgr, lr_fx * track /2 , -1 * lr_fy * lcgr])
 
             # update heading angle
-            theta_rad = theta_rad + dt * np.mean([v_model.loc[i-1, 'oz_rad'], oz_rad])
+            theta_rad = theta_rad + dt * np.smean([v_model.loc[i-1, 'oz_rad'], oz_rad])
 
             # inertial frame components
             Vx = Vx + dt*np.mean([Ax, (ax * math.cos(theta_rad) - ay * math.sin(theta_rad))])
