@@ -10,8 +10,7 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
         cons[row[1]] = float(row[2])
 
 mu_max = cons['mu_max']    # maximum available friction
-dt = cons['dt']            # iteration time step
-
+dt_impact = cons['dt_impact']  # iteration time step
 
 class Sideswipe():
     """
@@ -20,7 +19,7 @@ class Sideswipe():
     edge in struck vehicle (Vehicle 2)
     """
     def __init__(self,veh1, veh2, model_inputs = None):
-        self.__dt = 0.0001              # TODO: default time step for collisions - create input for this
+        self.__dt = dt_impact
         self.type = "sideswipe"         # class type
         # create independent copy of vehicle class instances
         self.veh1 = deepcopy(veh1)

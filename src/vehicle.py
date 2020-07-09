@@ -66,7 +66,8 @@ input_query = ["Model year",
 "Damage length L [in]",
 "Crush depth c [in]",
 "Initial forward velocity Vx (mph)",
-"Initial lateral velocity Vy (mph)"]
+"Initial lateral velocity Vy (mph)",
+"Initial Yaw Rate (deg/s)"]
 
 veh_inputs = ["year",
 "make",
@@ -99,7 +100,8 @@ veh_inputs = ["year",
 "L",
 "c",
 "vx_initial",
-"vy_initial"]
+"vy_initial",
+"omega_z"]
 
 
 
@@ -150,6 +152,7 @@ class Vehicle:
             self.c = float(input_dict['c'])     # unused
             self.vx_initial = float(input_dict['vx_initial'])
             self.vy_initial = float(input_dict['vy_initial'])
+            self.omega_z = float(input_dict['omega_z'])
 
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):
@@ -207,7 +210,8 @@ class Vehicle:
         "L":self.L,
         "c":self.c,
         "vx_initial":self.vx_initial,
-        "vy_initial":self.vy_initial}
+        "vy_initial":self.vy_initial,
+        "omega_z":self.omega_z}
 
         return vehicle_input_dict
 

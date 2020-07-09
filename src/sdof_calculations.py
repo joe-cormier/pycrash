@@ -14,7 +14,7 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     for row in readCSV:
         cons[row[1]] = float(row[2])
 
-mu_max = cons['mu_max']    # maximum available friction
+mu_max = cons['mu_max']       # maximum available friction
 dt_impact = cons['dt_impact']
 
 # Functions
