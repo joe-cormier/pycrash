@@ -52,11 +52,14 @@ class Kinematics():
         self.veh1 = deepcopy(veh1)
         # check for driver inputs
         if isinstance(self.veh1.driver_input, pd.DataFrame):
-            print(f"Driver input dataframe for {self.veh1.name} of shape = {self.veh1.driver_input.shape}"))
+            print(f"Driver input for {self.veh.name} of shape = {self.veh.driver_input.shape}")
         else:
-            print(f'Driver input for {self.veh1.name} not provided - no braking or steering applied')
-            print(f'Current driver input of type: {type(self.veh1.driver_input)}')
-            # TODO: if no time input, input time for simulation?
+            print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
+            print(f'Current driver input of type: {type(self.veh.driver_input)}')
+            end_time = int(input('Enter duration for simulation (seconds):'))
+            df = {'t':[0, end_time], 'brake':[0, 0], 'steer':[0,0]}
+            self.veh.driver_input = df
+            print(f'Driver input for {self.veh.name}: {print(self.veh.driver_input)}')
 
 
         if veh2 != None:
@@ -70,7 +73,7 @@ class Kinematics():
                 # TODO: if no time input, input time for simulation?
         # TODO: check for impact point and edge
 
-
+         # run vehicle model
 
     def vehicle_info(self):
         """

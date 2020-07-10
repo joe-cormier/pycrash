@@ -1,3 +1,4 @@
-maximum available friction,mu_max,0.9
 motion time step,dt_motion,0.1
 impact time step,dt_impact,0.0001
+maximum available friction,mu_max,0.9
+maximum tire slip angle,alpha_max,0.349065556

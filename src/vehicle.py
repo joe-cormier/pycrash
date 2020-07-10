@@ -19,8 +19,8 @@ with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfil
     for row in readCSV:
         cons[row[1]] = float(row[2])
 
-mu_max = cons['mu_max']    # maximum available friction
-dt_motion = cons['dt_motion']            # iteration time step
+mu_max = float(cons['mu_max'])    # maximum available friction
+dt_motion = float(cons['dt_motion'])            # iteration time step
 
 print('Current values for defined constants:')
 print(f'maximum available friction (mu_max) = {mu_max}')
@@ -153,6 +153,7 @@ class Vehicle:
             self.vx_initial = float(input_dict['vx_initial'])
             self.vy_initial = float(input_dict['vy_initial'])
             self.omega_z = float(input_dict['omega_z'])
+            self.driver_input = input_dict['driver_input']    # dataframe (t | brake | steer)
 
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):
@@ -186,7 +187,7 @@ class Vehicle:
         "vin":self.vin,
         "brake":self.brake,
         "steer_ratio":self.steer_ratio,
-        "init_x_pos":self.init_x_pos,
+        "init_x_pos":self ,
         "init_y_pos":self.init_y_pos,
         "head_angle":self.head_angle,
         "v_width":self.v_width,
@@ -217,7 +218,7 @@ class Vehicle:
 
     def time_inputs(self, time, brake, steer):
         """
-        Driver inputs | time (s) | braking (%) | steering (%) |
+        Driver inputs | time (s) | throttle (%) | braking (%) | steering (deg) |
         time step can be user defined, inputs will be interpolated to match dt for simulation
         user create data frame with the necessary columns
         """
@@ -225,7 +226,7 @@ class Vehicle:
             print('Input data for time has zero length')
             print('No driver input applied to vehicle')
         else:
-            inputdf = pd.DataFrame(list(zip(brake, steer)), columns = ['brake', 'steer'])
+            inputdf = pd.DataFrame(list(zip(brake, steer)), columns = ['throttle', 'brake', 'steer'])
             t = list(np.arange(0, max(time)+dt_motion, dt_motion))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
             df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
             df['t'] = t
@@ -242,17 +243,19 @@ class Vehicle:
 
     def read_time_inputsCSV(self, filename):
         """
-        Driver inputs | time (s) | braking (%) | steering (%) |
+        Driver inputs | time (s) | throttle (%) | brake (%) | steer (deg) |
         time step can be user defined, inputs will be interpolated to match dt for simulation
         reads data from csv file
         will override other inputs applied to vehicle
         """
+        header_list = ["time", "throttle", "brake", "steer"]
         if os.path.isfile(filename):
-            time_inputs = pd.read_csv(filename)
+            time_inputs = pd.read_csv(filename, skiprows=1, header=None, names = header_list)
+            time_inputs = time_inputs.astype(float)
             if len(time_inputs) == 0:
                 print('Time input file appears blank')
             else:
-                t = list(np.arange(0, dt_motion+time_inputs.loc[len(time_inputs.time)-1, 'time']), dt_motion)  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
+                t = list(np.arange(0, dt_motion+time_inputs.loc[len(time_inputs.time)-1, 'time'], dt_motion))  # create time array from 0 to max time in inputs, this will be end time for simulation
                 df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
                 df['t'] = t
                 time_inputs['input_t'] = time_inputs.time.round(3)
@@ -264,13 +267,13 @@ class Vehicle:
                 df['t'] = df.t.round(3) # reset signficant digits
                 df = df.reset_index(drop = True)
                 self.driver_input = df
-                print('Driver inputs applied as "driver_input"')
+                print(f'Driver inputs applied as {self.name}.driver_input')
         else:
             print('No Time Input File Provided')
 
     def dist_inputs(self, filename):
         """
-        Driver inputs | vehicle travel distance (ft) | braking (%) | steering (%) |
+        Driver inputs | vehicle travel distance (ft) | brake (%) | steer (deg) |
         will override other inputs applied to vehicle
         """
 

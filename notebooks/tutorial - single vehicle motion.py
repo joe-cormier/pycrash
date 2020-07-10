@@ -33,7 +33,7 @@ project_inputs = {'name':'Practice', 'pdesc':'single motion', 'sim_type':'SV', '
                   'note':'single vehicle motion demo'}
 proj = Project(project_inputs)
 
-# %% Create vehicle instances
+# %% Create vehicle
 # Vehicle 1:
 # "Vehicle" stores information about a single vehicle - all possible inputs do not need to be entered
 # creating a Vehicle requries a "name" which is used to identify the vehicle in outputs / plots etc. 
@@ -86,62 +86,13 @@ veh1 = Vehicle('Veh1', vehicle_input_dict)
 #veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
 #veh1.manual_specs()  # user prompted for input
 
-# %% impact point
-veh1.impact_point()
-
-# %% impact edge
-veh1.impact_edge()
-
-# %% Vehicle 2
-veh2 = Vehicle('Veh2')
-veh2.load_specs('fordGT.csv')
-
-# %% Save Project with vehicle
-proj.save_project(veh1, veh2)
-
-# %% Save Project with vehicle
-proj.save_project_test(veh1, veh2)
-
-
-
-
-# %% vehicle input dictionary
-
-vehicle_input_dict = {"year":2016,
-"make":"Subaru",
-"model":"WRX Sti",
-"weight":3000,
-"vin":"123abc",
-"brake":0,
-"steer_ratio":16.5,
-"init_x_pos":0,
-"init_y_pos":0,
-"head_angle":0,
-"v_width":6,
-"v_length":19.3,
-"hcg":2,
-"lcgf":4.88,
-"lcgr":6.96,
-"wb":11.84,
-"track":6.6,
-"f_hang":3.2,
-"r_hang":4.1,
-"tire_d":2.716666667,
-"tire_w":0.866666667,
-"izz":13615,
-"fwd":0,
-"rwd":1,
-"awd":0,
-"A":100,
-"B":41,
-"k":1000,
-"L":0,
-"c":0,
-"vx_initial":5,
-"vy_initial":0}
-
-
+# %% Load File with vehicle motion
+veh1.read_time_inputsCSV('D:\\OneDrive\\pycrash\\data\\input\\vehicle_motion.csv')
+veh1.vx_initial = 20
 
 # %% vehicle motion
-
 motion = SingleMotion('motion1', veh1)
+motion.plot_motion()
+motion.CG_motion()
+
+# %%
