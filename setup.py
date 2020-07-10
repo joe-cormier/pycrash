@@ -1,10 +1,23 @@
-from setuptools import find_packages, setup
+import setuptools
 
-setup(
-    name='src',
-    packages=find_packages(),
-    version='0.1.0',
-    description='accident reconstruction tool',
-    author='JMC',
-    license='',
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name="pycrash-joe-cormier",
+    version="0.0.1",
+    author="Joe Cormier",
+    author_email="joemcormier@outlook.com",
+    description="software tool for simulating vehicle motion and impacts based on \
+    fundamental physics and accident reconstruction techniques",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/joe-cormier/pycrash",
+    packages=setuptools.find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.6',
 )
