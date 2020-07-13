@@ -99,7 +99,6 @@ def global_frame_df(vin, vehi):
     cgx = vin[['Dx']].copy()                                                    # CG location in inertial frame
     cgy = vin[['Dy']].copy()
 
-
     draw_gx = draw_vx.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
     draw_gy = draw_vy.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
 

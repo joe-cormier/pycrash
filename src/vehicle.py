@@ -285,6 +285,9 @@ class Vehicle:
         impact momentum model - px, py will be used along with the impact plane to determine time
         of impact and direction of normal and tangential contact planes
         """
+        # set impact edge to zero
+        self.edgeimpact = 0
+
         # test for required inputs
         if not self.lcgf:
             self.lcgf = float(input("Enter CG to front axle (ft)"))
@@ -445,21 +448,25 @@ class Vehicle:
             raise ValueError("Invalid impact edge option - enter 1, 2, 3, 4")
         else:
             if impact_option == 1:
+                self.edgeimpact = 1
                 self.edgeimpact_x1 = self.lcgf + self.f_hang
                 self.edgeimpact_y1 = -1 * self.v_width / 2
                 self.edgeimpact_x2 = self.lcgf + self.f_hang
                 self.edgeimpact_y2 = self.v_width / 2
             elif impact_option == 2:
+                self.edgeimpact = 2
                 self.edgeimpact_x1 = self.lcgf + self.f_hang
                 self.edgeimpact_y1 = self.v_width / 2
                 self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
                 self.edgeimpact_y2 = self.v_width / 2
             elif impact_option == 3:
+                self.edgeimpact = 3
                 self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
                 self.edgeimpact_y1 = self.v_width / 2
                 self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
                 self.edgeimpact_y2 = -1* self.v_width / 2
             elif impact_option == 4:
+                self.edgeimpact = 4
                 self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
                 self.edgeimpact_y1 = -1 * self.v_width / 2
                 self.edgeimpact_x2 = self.lcgf + self.f_hang

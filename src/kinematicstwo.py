@@ -39,201 +39,49 @@ else:
     print('No Environment File Provided')
 
 
-class Kinematics():
+class KinematicsTwo():
     """
     Generates vehicle motion based on inputs defined within Vehicle class
     No external forces
     Environment slope and bank is optionally defined as a function of X,Y components
     creates independent copy of vehicle at instantiation
     """
-    def __init__(self, name, veh1, veh2 = None):
+    def __init__(self, name, veh1, veh2):
         self.name = name
-        self.type = 'kinematic'  # class type for saving files
+        self.type = 'twomotion'  # class type for saving files
         self.veh1 = deepcopy(veh1)
-        # check for driver inputs
+        self.veh2 = deepcopy(veh2)
+        # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
-            print(f"Driver input for {self.veh.name} of shape = {self.veh.driver_input.shape}")
+            print(f"Driver input for {self.veh1.name} of shape = {self.veh1.driver_input.shape}")
         else:
-            print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
-            print(f'Current driver input of type: {type(self.veh.driver_input)}')
+            print(f'Driver input for {self.veh1.name} not provided - no braking or steering applied')
+            print(f'Current driver input of type: {type(self.veh1.driver_input)}')
             end_time = int(input('Enter duration for simulation (seconds):'))
-            df = {'t':[0, end_time], 'brake':[0, 0], 'steer':[0,0]}
-            self.veh.driver_input = df
-            print(f'Driver input for {self.veh.name}: {print(self.veh.driver_input)}')
+            t = list(np.arange(0, end_time+dt_motion, dt_motion))  # create time array from 0 to end time from user
+            throttle = [0] * len(t)
+            brake = [0] * len(t)
+            steer = [0] * len(t)
+            driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
+            self.veh1.driver_input = pd.DataFrame.from_dict(driver_input_dict)
+            print(f'Driver inputs for {self.veh1.name} set to zero for {end_time} seconds')
+        # check for driver inputs - Vehicle 2
+        if isinstance(self.veh2.driver_input, pd.DataFrame):
+            print(f"Driver input for {self.veh2.name} of shape = {self.veh2.driver_input.shape}")
+        else:
+            print(f'Driver input for {self.veh2.name} not provided - no braking or steering applied')
+            print(f'Current driver input of type: {type(self.veh2.driver_input)}')
+            end_time = int(input('Enter duration for simulation (seconds):'))
+            t = list(np.arange(0, end_time+dt_motion, dt_motion))  # create time array from 0 to end time from user
+            throttle = [0] * len(t)
+            brake = [0] * len(t)
+            steer = [0] * len(t)
+            driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
+            self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
+            print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
+         # run vehicle models iteratively to evaluate for impact
+         self.veh_motion = vehicle_model(self.veh)
 
-        if veh2 != None:
-            self.veh2 = deepcopy(veh2)
-
-            if isinstance(self.veh2.driver_input, pd.DataFrame):
-                print(f"Driver input dataframe for {self.veh2.name} of shape = {self.veh2.driver_input.shape}"))
-            else:
-                print(f'Driver input for {self.veh1.name} not provided - no braking or steering applied')
-                print(f'Current driver input of type: {type(self.veh2.driver_input)}')
-                # TODO: if no time input, input time for simulation?
-        # TODO: check for impact point and edge
-
-         # run vehicle model
-
-    def vehicle_info(self):
-        """
-        get input on the vehicle used to create Kinematics object
-        """
-        print(f'Vehicle name is {self.veh.name}')
-
-
-    if veh1 == None:
-        """
-        single vehicle motion simulation
-        """
-        self.veh1_motion = vehicle_model(self.veh1)
-    else:
-        """
-        two vehicle motion simulation
-        check for impact at each time step
-        tranform impact point from veh1 to veh2 frame
-        """
-
-        self.veh1_motion =
-        self.veh2_motion =
-        self.impact_model =
-
-def vehicle_model(veh):
-    """
-    Calculate vehicle dynamics from driver inputs and environmental inputs
-    """
-
-        # assign values from dictionary
-        W = veh.weight
-        lcgr = veh.lcgr
-        lcgf = veh.lcgf
-        wb = veh.wb
-        track = veh.track
-        izz = veh.izz
-        vin = veh.driver_input
-
-    # Vehicle loop start here -
-    for i in (range(len(vin))):
-        t = i * dt_motion
-
-        if i == 0:
-            # set all tire forces in vehicle frame to zero
-            # Forward and Rightward Forces
-            lf_fx = 0
-            lf_fy = 0
-            rf_fx = 0
-            rf_fy = 0
-            rr_fx = 0
-            rr_fy = 0
-            lr_fx = 0
-            lr_fy = 0
-
-            # vertical forces
-            lf_fz = 0.5 * W * lcgr / wb
-            rf_fz = 0.5 * W * lcgr / wb
-            rr_fz = 0.5 * W * lcgf / wb
-            lr_fz = 0.5 * W * lcgf / wb
-
-            # Slip angle
-            lf_alpha = 0
-            rf_alpha = 0
-            rr_alpha = 0
-            lr_alpha = 0
-            lr_alpha = 0
-
-            # Tire lock status
-            lf_lock = 0
-            rf_lock = 0
-            rr_lock = 0
-            lr_lock = 0
-
-            # these values are initially taken from edr / input data
-            vx = veh.vx_initial
-            vy = veh.vy_initial
-            ax = 32.2 * mu_max * (veh.driver_input.loc[i, 'throttle'] - veh.driver_input.loc[i, 'brake'])  # defined throttle and braking - not directly from "EDR" columns
-            ay = 0
-
-            # inertial frame  - capital letters
-            theta_rad = veh.head_angle * math.pi / 180
-            Ax = ax * math.cos(theta_rad) - ay * math.sin(theta_rad)
-            Ay = ax * math.sin(theta_rad) + ay * math.cos(theta_rad)
-            Vx = vx * math.cos(theta_rad) - vy * math.sin(theta_rad)
-            Vy = vx * math.sin(theta_rad) + vy * math.cos(theta_rad)
-            oz_rad = veh.omega_z * (math.pi/180)
-            alphaz = 0
-
-
-        if i > 0:                                                               # vehicle motion is calculated based on equations of motion
-            # update velocity and oz_rad before redefining ax, ay, alphaz
-            oz_rad = oz_rad + dt*np.mean([alphaz, (1/izz) * np.sum([lf_fx * track / 2, lf_fy * lcgf, -1*rf_fx * track / 2, rf_fy * lcgf,
-                                                   -1 * rr_fx * track / 2, -1* rr_fy * lcgr, lr_fx * track/2 , -1 * lr_fy * lcgr])])
-
-            vx = vx + dt * np.mean([ax, (1/(W/32.2)) * np.sum([lf_fx, rf_fx, rr_fx, lr_fx]) + oz_rad * vy])   # integrates ax (actual i-1) and the current ax calculated - corrected for rotating reference frame
-            vy = vy + dt * np.mean([ay, (1/(W/32.2)) * np.sum([lf_fy, rf_fy, rr_fy, lr_fy]) - oz_rad * vx])   # integrates ax (actual i-1) and the current ax calculated
-
-            ax = 32.2 / W * np.sum([lf_fx, rf_fx, rr_fx, lr_fx])  # inertial components of acceleration
-            ay = 32.2 / W * np.sum([lf_fy, rf_fy, rr_fy, lr_fy])  # inertial components of acceleration
-            alphaz = (1/izz) * np.sum([lf_fx * track / 2, lf_fy * lcgf, -1*rf_fx * track/2, rf_fy * lcgf,
-                                                   -1 * rr_fx * track / 2, -1* rr_fy * lcgr, lr_fx * track /2 , -1 * lr_fy * lcgr])
-
-            # update heading angle
-            theta_rad = theta_rad + dt * np.smean([v_model.loc[i-1, 'oz_rad'], oz_rad])
-
-            # inertial frame components
-            Vx = Vx + dt*np.mean([Ax, (ax * math.cos(theta_rad) - ay * math.sin(theta_rad))])
-            Vy = Vy + dt*np.mean([Ay, (ax * math.sin(theta_rad) + ay * math.cos(theta_rad))])
-            Ax = ax * math.cos(theta_rad) - ay * math.sin(theta_rad)
-            Ay = ax * math.sin(theta_rad) + ay * math.cos(theta_rad)
-
-
-        # these do not need to be part of the if statements, they are functions of the changing variables above
-        delta_deg = veh.driver_input.loc[i, 'sw_angle'] / veh.steer_ratio               # steer angle (delta) will always be derived from edr data - or manual driver input
-        delta_rad = delta_deg * (math.pi/180)
-        turn_rX =  Vy / oz_rad                                                  # turning radius in x direction
-        turn_rY =  Vx / oz_rad                                                  # turning radius in y direction
-        turn_rR = math.sqrt(turn_rX**2 + turn_rY**2)
-        alphaz_deg = alphaz * 180 / math.pi
-        oz_deg = oz_rad * 180 / math.pi
-        theta_deg = theta_rad * 180 / math.pi
-
-        Vr = math.sqrt(Vx**2 + Vy**2)
-        Ar = math.sqrt(Ax**2 + Ay**2)
-
-        # velocity vector in inertial frame
-        beta_rad = math.atan2(Vy, Vx)
-        beta_deg = beta_rad * 180/math.pi
-
-        # transform vehicle ax, ay to non-rotating vehicle frame
-        au = ax                                                                 # - inertial component for tire model
-        av = ay                                                                 # - inertial component for tire model
-        ax = ax + oz_rad * vy
-        ay = ay - oz_rad * vx
-
-
-        columns = ['t','throttle', 'brake', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg','delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax','ay', 'Ax', 'Ay', 'Ar', 'alphaz', 'alphaz_deg', 'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy', 'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy',
-                'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha', 'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz', 'theta_rad', 'theta_deg']
-        data = [t, vin.loc[i, 'throttle'], vin.loc[i, 'brake'], vx, vy, Vx, Vy, Vr, oz_deg, oz_rad, delta_deg, delta_rad, turn_rX, turn_rY, turn_rR, au, av, ax, ay, Ax, Ay, Ar, alphaz, alphaz_deg, beta_deg, beta_rad,
-                lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz, theta_rad, theta_deg]
-
-        # create dataframe and add data row
-        if i == 0:
-                v_model = pd.DataFrame(columns = columns)
-                v_model = v_model.append(pd.Series(data, index = columns), ignore_index=True)
-
-        # append data to dataframe after i = 0
-        if i > 0:
-                v_model = v_model.append(pd.Series(data, index = columns), ignore_index=True)
-
-        del data
-
-        if i > 10 and Vx <= 0 and v_model.loc[i-1, 'Vx'] > 0:                                                # stop vehicle model if Vx passes through zero
-            break
-
-        # run tire model to get forces
-        lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz = tire_model(v_model, vehi, i)
-
-
-    v_model['Dx'] = v_dict['init_x_pos'] + integrate.cumtrapz(list(v_model.Vx), list(v_model.t), initial=0)     # integrate vx to get distance traveled in x direction
-    v_model['Dy'] = v_dict['init_y_pos'] + integrate.cumtrapz(list(v_model.Vy), list(v_model.t), initial=0)     # integrate vy to get distance traveled in y direction
-
-    return v_model
+         # create point data in vehicle and global frame
+         self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)
