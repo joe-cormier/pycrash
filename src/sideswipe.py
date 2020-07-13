@@ -2,15 +2,6 @@ from copy import deepcopy
 import csv
 import os
 
-# load constants
-with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    cons = {}
-    for row in readCSV:
-        cons[row[1]] = float(row[2])
-
-mu_max = cons['mu_max']    # maximum available friction
-dt_impact = cons['dt_impact']  # iteration time step
 
 class Sideswipe():
     """

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
+from data.defaults.config import default_dict
 from copy import deepcopy
 from src.vehicle_model import vehicle_model
 from src.vehicle_motion_plot import position_data
@@ -12,16 +13,9 @@ import os
 # TODO: create inputs for plots
 figure_size = (16,9)
 
-# load constants
-with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    cons = {}
-    for row in readCSV:
-        cons[row[1]] = row[2]
-
-mu_max = float(cons['mu_max'])                  # maximum available friction
-dt_motion = float(cons['dt_motion'])           # iteration time step for vehicle motion
-
+# load defaults
+mu_max = default_dict['mu_max']    # maximum available friction
+dt_motion = default_dict['dt_motion']            # iteration time step
 
 # look for Environment data, load if present
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):

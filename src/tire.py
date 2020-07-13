@@ -4,22 +4,18 @@ accounts for pitch due to braking and roll from cornering forces
 
 Dependencies - v, vx, vy, au, av, omega, constants
 """
+from data.defaults.config import default_dict
 import math
 import numpy as np
 import pandas as pd
 import csv
 import os
 
-# load constants
-with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    cons = {}
-    for row in readCSV:
-        cons[row[1]] = row[2]
+# load defaults
+mu_max = default_dict['mu_max']                  # maximum available friction
+dt_motion = default_dict['dt_motion']            # iteration time step
+alpha_max = float(cons['alpha_max'])             # maximum tire slip angle (rad)
 
-mu_max = float(cons['mu_max'])                  # maximum available friction
-dt_motion = float(cons['dt_motion'])            # time step for vehicle motion (s)
-alpha_max = float(cons['alpha_max'])            # maximum tire slip angle (rad)
 
 """
 TODO: detailed suspension properties

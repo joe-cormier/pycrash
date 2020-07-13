@@ -8,6 +8,7 @@ Interpolates braking steering with time / distance
 from src.tire import tire_model
 from src.functions import vehicle_data, constants, premotion
 from src.vehicle import Vehicle
+from data.defaults.config import default_dict
 import pandas as pd
 import numpy as np
 from scipy import integrate
@@ -16,16 +17,10 @@ import math
 import csv
 import os
 
-# load constants
-with open(os.path.join(os.getcwd(), "data", "input", "constants.csv")) as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    cons = {}
-    for row in readCSV:
-        cons[row[1]] = row[2]
-
-mu_max = cons['mu_max']                 # maximum available friction
-dt_motion = cons['dt_motion']           # iteration time step for vehicle motion
-dt_impact = cons['dt_impact']
+# load defaults
+mu_max = default_dict['mu_max']                 # maximum available friction
+dt_motion = default_dict['dt_motion']           # iteration time step
+dt_impact = default_dict['dt_impact']           # impact time step
 
 # look for Environment data, load if present
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):

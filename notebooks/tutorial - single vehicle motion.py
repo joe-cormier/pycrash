@@ -5,6 +5,8 @@ data_directory = os.path.join(path_parent, "data")
 os.chdir(path_parent)
 
 
+# %% 
+from data.defaults.config import default_dict
 # %% Import Modules
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import text
