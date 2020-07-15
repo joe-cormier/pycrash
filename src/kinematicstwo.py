@@ -5,14 +5,14 @@ Inputs - pulled from Vehicle class - initial speed (static), variable - braking 
 Interpolates braking steering with time / distance
 """
 
-from src.tire import tire_model
-from src.functions import vehicle_data, constants, premotion
-from src.vehicle import Vehicle
+from scipy import integrate
+import matplotlib.pyplot as plt
 from data.defaults.config import default_dict
+from copy import deepcopy
+from src.vehicle_model import vehicle_model
+from src.position_data import position_data
 import pandas as pd
 import numpy as np
-from scipy import integrate
-from copy import deepcopy
 import math
 import csv
 import os
@@ -43,9 +43,10 @@ class KinematicsTwo():
     """
     def __init__(self, name, veh1, veh2):
         self.name = name
-        self.type = 'twomotion'  # class type for saving files
+        self.type = 'twomotion'             # class type for saving files
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
+
         # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
             print(f"Driver input for {self.veh1.name} of shape = {self.veh1.driver_input.shape}")
@@ -60,6 +61,7 @@ class KinematicsTwo():
             driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
             self.veh1.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh1.name} set to zero for {end_time} seconds')
+
         # check for driver inputs - Vehicle 2
         if isinstance(self.veh2.driver_input, pd.DataFrame):
             print(f"Driver input for {self.veh2.name} of shape = {self.veh2.driver_input.shape}")
@@ -75,8 +77,9 @@ class KinematicsTwo():
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
-         # run vehicle models iteratively to evaluate for impact
-         self.veh_motion = vehicle_model(self.veh)
+        # run vehicle models iteratively to evaluate for impact
+        self.veh_motion = vehicle_model(self.veh2)
+        self.veh_motion = vehicle_model(self.veh1)
+        # create point data in vehicle and global frame
 
-         # create point data in vehicle and global frame
-         self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)
+        self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)

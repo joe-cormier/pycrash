@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from data.defaults.config import default_dict
 from copy import deepcopy
 from src.vehicle_model import vehicle_model
-from src.vehicle_motion_plot import position_data
+from src.position_data import position_data
 import math
 import csv
 import os

@@ -2,7 +2,7 @@
 # TODO: option to save inputs and outputs to csv
 
 # %% modules
-from src.defaults.config import default_dict
+from data.defaults.config import default_dict
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import text
 from tabulate import tabulate

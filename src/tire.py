@@ -14,7 +14,7 @@ import os
 # load defaults
 mu_max = default_dict['mu_max']                  # maximum available friction
 dt_motion = default_dict['dt_motion']            # iteration time step
-alpha_max = float(cons['alpha_max'])             # maximum tire slip angle (rad)
+alpha_max = default_dict['alpha_max']             # maximum tire slip angle (rad)
 
 
 """

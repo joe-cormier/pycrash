@@ -153,7 +153,7 @@ def vehicle_model(veh):
         # run tire model to get forces
         lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz = tire_model(v_model, veh, i)
 
-   # TODO: can this be changed to intitial = v_dict['init_x_pos']?
+   
     v_model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(v_model.Vx), list(v_model.t), initial=0)     # integrate vx to get distance traveled in x direction
     v_model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(v_model.Vy), list(v_model.t), initial=0)     # integrate vy to get distance traveled in y direction
 

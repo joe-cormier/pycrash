@@ -45,9 +45,9 @@ throttle = [0] * len(t)                                # no throttle
 brake = [0] * len(t)                                   # no braking
 steer = [0] * len(t)                                   # no steering
 driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
-driver_input_df = pd.DataFrame.from_dict(driver_input_dict)
+driver_input_df1 = pd.DataFrame.from_dict(driver_input_dict)
 
-vehicle_input_dict = {"year":2016,
+vehicle_input_dict1 = {"year":2016,
 "make":"Subaru",
 "model":"WRX Sti",
 "weight":3000,
@@ -80,9 +80,62 @@ vehicle_input_dict = {"year":2016,
 "vx_initial":5,
 "vy_initial":0,
 "omega_z":0,
-"driver_input":driver_input_df}
+"driver_input":driver_input_df1}
 
-veh1 = Vehicle('Veh1', vehicle_input_dict)
+veh1 = Vehicle('Veh1', vehicle_input_dict1)
+#veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
+#veh1.manual_specs()  # user prompted for input
+
+# %% Create vehicle
+# Vehicle 2:
+# "Vehicle" stores information about a single vehicle - all possible inputs do not need to be entered
+# creating a Vehicle requries a "name" which is used to identify the vehicle in outputs / plots etc. 
+
+# for vehicle motion simluation, driver input is provided as a dataframe
+end_time = 5  # 5 second simulation
+t = list(np.arange(0, end_time+0.1, 0.1))  # create time array from 0 to end time from user
+throttle = [0] * len(t)                                # no throttle
+brake = [0] * len(t)                                   # no braking
+steer = [0] * len(t)                                   # no steering
+driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
+driver_input_df2 = pd.DataFrame.from_dict(driver_input_dict)
+
+vehicle_input_dict2 = {"year":2016,
+"make":"Subaru",
+"model":"WRX Sti",
+"weight":3000,
+"vin":"123abc",
+"brake":0,
+"steer_ratio":16.5,
+"init_x_pos":0,
+"init_y_pos":0,
+"head_angle":0,
+"v_width":6,
+"v_length":19.3,
+"hcg":2,
+"lcgf":4.88,
+"lcgr":6.96,
+"wb":11.84,
+"track":6.6,
+"f_hang":3.2,
+"r_hang":4.1,
+"tire_d":2.716666667,
+"tire_w":0.866666667,
+"izz":13615,
+"fwd":0,
+"rwd":1,
+"awd":0,
+"A":100,
+"B":41,
+"k":1000,
+"L":0,
+"c":0,
+"vx_initial":5,
+"vy_initial":0,
+"omega_z":0,
+"driver_input":driver_input_df2}
+
+veh2 = Vehicle('Veh2', vehicle_input_dict2)
 #veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
 #veh1.manual_specs()  # user prompted for input
 
