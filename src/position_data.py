@@ -104,7 +104,7 @@ def position_data(SingleMotion, MV=False):
               if (MV == True and SingleMotion.veh.edgeimpact == 0):
                 # impact point (veh1 - striking vehicle)
                 impactp_gx.pimpact_x[i] = cgx.Dx[i] + SingleMotion.veh.pimpact_x * math.cos(SingleMotion.veh_motion.loc[i,'theta_rad']) - SingleMotion.veh.pimpact_y * math.sin(SingleMotion.veh_motion.loc[i,'theta_rad'])
-                impactp_gy.pimpact_y[i] = cgx.Dy[i] + SingleMotion.veh.pimpact_x * math.sin(SingleMotion.veh_motion.loc[i,'theta_rad']) + SingleMotion.veh.pimpact_y * math.cos(SingleMotion.veh_motion.loc[i,'theta_rad'])                                    # time variant vehicle geometry for plotting in vehicle frame
+                impactp_gy.pimpact_y[i] = cgy.Dy[i] + SingleMotion.veh.pimpact_x * math.sin(SingleMotion.veh_motion.loc[i,'theta_rad']) + SingleMotion.veh.pimpact_y * math.cos(SingleMotion.veh_motion.loc[i,'theta_rad']) # time variant vehicle geometry for plotting in vehicle frame
 
     # copy locked info from vehicle model
     p_gx['lf_lock'] = motion.lf_lock.copy()

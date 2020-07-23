@@ -9,7 +9,7 @@ from scipy import integrate
 import matplotlib.pyplot as plt
 from data.defaults.config import default_dict
 from copy import deepcopy
-from src.vehicle_model import vehicle_model
+from src.multi_vehicle_model import multi_vehicle_model
 from src.position_data import position_data
 import pandas as pd
 import numpy as np
@@ -78,8 +78,9 @@ class KinematicsTwo():
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
         # run vehicle models iteratively to evaluate for impact
-        self.veh_motion = vehicle_model(self.veh2)
-        self.veh_motion = vehicle_model(self.veh1)
+        [self.veh1, self.veh2] = multi_vehicle_model([self.veh1, self.veh2])
+        
+
         # create point data in vehicle and global frame
 
         self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)

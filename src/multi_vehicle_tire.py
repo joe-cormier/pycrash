@@ -25,7 +25,9 @@ roll_h = 6/12    # roll center height
 """
 
 def multi_tire_model(veh, i):
-    # global lf_fz, rf_fz, rr_fz, lr_fz, lf_lonf, lf_latf, rf_lonf, rf_latf, rr_lonf, rr_latf, lr_lonf, lr_latf
+    """
+    calculate tire forces for the given time step
+    """
 
     # create dataframe and add data row
     if i == 0:  # setting initial vertical force
@@ -44,12 +46,6 @@ def multi_tire_model(veh, i):
     fraxl = frs
 
     # --------- Loop through tire force calculations --------------------------- #
-
-    au = v.loc[i, 'au']
-    av = v.loc[i, 'av']
-    vx = v.loc[i, 'vx']
-    vy = v.loc[i, 'vy']
-    oz_rad = v.loc[i, 'oz_rad']
 
     # Forward / Rearward weight shift due to braking or acceleration
     if veh.veh_model.au[i] == 0:
@@ -77,7 +73,7 @@ def multi_tire_model(veh, i):
         veh.veh_model.rf_fz[i = ffaxl / 2 - df_roll  # inside tire
         veh.veh_model.rr_fz[i] = fraxl / 2 - dr_roll  # inside tire
         veh.veh_model.lr_fz[i] = fraxl / 2 + dr_roll  # outside tire
-    elif av < 0:
+    elif veh.veh_model.av[i] < 0:
         veh.veh_model.lf_fz[i] = ffaxl / 2 - df_roll  # inside tire
         veh.veh_model.rf_fz[i] = ffaxl / 2 + df_roll  # outside tire
         veh.veh_model.rr_fz[i] = fraxl / 2 + dr_roll  # outside tire
@@ -208,12 +204,4 @@ def multi_tire_model(veh, i):
     veh.veh_model.lr_fx[i] = lr_lonf
     veh.veh_model.lr_fy[i] = lr_latf
 
-    # compile data into row
-    # data = [t, ffs, frs, ffaxl, fraxl, mf, mr, lf_fz, rf_fz, rr_fz, lr_fz, lf_lock, lf_alpha, lf_latf, lf_lonf , lf_app, rf_lock, rf_alpha, rf_latf, rf_lonf, rf_app,
-    #        rr_lock, rr_alpha, rr_latf, rr_lonf, rr_app, lr_lock, lr_alpha, lr_latf, lr_lonf, lr_app]
-
-    # append data to dataframe after i = 0
     return veh
-
-
-#del lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz, lf_lonf, lf_latf, rf_lonf, rf_latf, rr_lonf, rr_latf, lr_lonf, lr_latf

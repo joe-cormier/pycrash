@@ -24,7 +24,7 @@ column_list = ['t','throttle', 'brake', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', '
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
            'theta_rad', 'theta_deg']
 
-def vehicle_model(vehicle_list):
+def multi_vehicle_model(vehicle_list):
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
     vehicle_list is a list of vehicle class instances [veh1, veh2] - two currently
@@ -144,15 +144,14 @@ def vehicle_model(vehicle_list):
             veh.veh_model.ax[i] = veh.veh_model.ax[iveh.veh_model.] [i+ vveh.veh_model.eh[i.veveh.veh_model.h_mode[i]l.oz_rad[i] * veh.veh_model.vy[i]
             veh.veh_model.ay[i = veh.veh_model.ay[i] - veh.veh_model.oz_rad[i] * veh.veh_model.vx[i]
 
-            # run tire model to get forces
-            #lf_fx, lf_fy, rf_fx, rf_fy, rr_fx, rr_fy, lr_fx, lr_fy, lf_alpha, rf_alpha, rr_alpha, lr_alpha, lf_lock, rf_lock, rr_lock, lr_lock, lf_fz, rf_fz, rr_fz, lr_fz = multi_tire_model(v_model, veh, i)
+            # get tire forces for the current time step
             veh = multi_tire_model(veh, i)
 
+            veh.veh_model.v_model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.veh_model.Vx), list(veh.veh_model.t), initial=0)     # integrate vx to get distance traveled in x direction
+            veh.veh_model.v_model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.veh_model.Vy), list(veh.veh_model.t), initial=0)     # integrate vy to get distance traveled in y direction
 
-
-    veh.veh_model.v_model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.veh_model.Vx), list(veh.veh_model.t), initial=0)     # integrate vx to get distance traveled in x direction
-    veh.veh_model.v_model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.veh_model.Vy), list(veh.veh_model.t), initial=0)     # integrate vy to get distance traveled in y direction
-
+            # function for detecting impact
+            impact_detect(vehicle_list)
 
 
     return vehicle_list
