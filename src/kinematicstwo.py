@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from data.defaults.config import default_dict
 from copy import deepcopy
 from src.multi_vehicle_model import multi_vehicle_model
-from src.position_data import position_data
+from src.position_data import position_data_static
 import pandas as pd
 import numpy as np
 import math
@@ -21,6 +21,9 @@ import os
 mu_max = default_dict['mu_max']                 # maximum available friction
 dt_motion = default_dict['dt_motion']           # iteration time step
 dt_impact = default_dict['dt_impact']           # impact time step
+
+figure_size = (16,9)
+
 
 # look for Environment data, load if present
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
@@ -77,10 +80,42 @@ class KinematicsTwo():
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
-        # run vehicle models iteratively to evaluate for impact
-        [self.veh1, self.veh2] = multi_vehicle_model([self.veh1, self.veh2])
+    # plot initial positions and any motion data to show vehicle paths
+    def positions(self):
+        if isinstance(self.veh1.veh_motion, pd.DataFrame):
+            # plot motion of each vehicle
+        else:
+            # plot initial positions
+            # grid grid based on initial positoin of vehicle
+            # scale x,y axes accordingly
+            fig = plt.figure(figsize=figure_size)
+            ax = fig.gca()
+            # determine extent of vehicle plot
+            min_x_axis = min([self.veh1.init_x_pos, self.veh2.init_x_pos]) - 20
+            max_x_axis = max([self.veh1.init_x_pos, self.veh2.init_x_pos]) + 20
+
+            min_y_axis = min([self.veh1.init_y_pos, self.veh2.init_y_pos]) - 20
+            max_y_axis = max([self.veh1.init_y_pos, self.veh2.init_y_pos]) + 20
+
+            bdy_x1 = (self.p_vx.b_lfc[i], self.p_vx.b_rfc[i], self.p_vx.b_rrc[i], self.p_vx.b_lrc[i], self.p_vx.b_lfc[i])
+            bdy_y1 = (self.p_vy.b_lfc[i], self.p_vy.b_rfc[i], self.p_vy.b_rrc[i], self.p_vy.b_lrc[i], self.p_vy.b_lfc[i])
+
+
+            plt.xlim([min_x_axis, max_x_axis])
+            plt.ylim([min_y_axis, max_y_axis])
+
+            plt.grid()
+            plt.gca().invert_yaxis()
+            plt.show()
+
+
+
+    # run vehicle models iteratively to evaluate for impact
+    def simulate(self, impact_type, ignore_driver):
+        # run multi vehicle simulation model
+        self.veh1, self.veh2 = multi_vehicle_model([self.veh1, self.veh2], impact_type, ignore_driver = False)
         
 
         # create point data in vehicle and global frame
 
-        self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)
+        #self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from data.defaults.config import default_dict
 from copy import deepcopy
 from src.vehicle_model import vehicle_model
-from src.position_data import position_data
+from src.position_data import position_data_motion
 import math
 import csv
 import os
@@ -62,7 +62,7 @@ class SingleMotion():
         self.veh_motion = vehicle_model(self.veh)
 
         # create point data in vehicle and global frame
-        self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data(self.veh_motion)
+        self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data_motion(self.veh_motion)
 
     def plot_inputs(self):
         fig, ax1 = plt.subplots(figsize = figure_size)
@@ -196,7 +196,7 @@ class SingleMotion():
         plt.scatter(self.p_vx.cg[i], self.p_vy.cg[i],s = 500, c = 'k')
 
         # velocity vector
-        plt.arrow(self.p_vx.cg[i], draw_vy.cg[i], self.p_vx.vel_v[i] - self.p_vx.cg[i], self.p_vy.vel_v[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='r', ec='r')
+        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.vel_v[i] - self.p_vx.cg[i], self.p_vy.vel_v[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='r', ec='r')
 
         # vehicle axes
         plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.xaxis[i] - self.p_vx.cg[i], self.p_vy.xaxis[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')

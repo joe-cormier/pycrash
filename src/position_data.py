@@ -8,7 +8,7 @@ column_list = ['b_lfc', 'b_rfc', 'b_rrc', 'b_lrc', 'lfw', 'lfw_a', 'lfw_b',
                 'lrw_b', 'lrw_c', 'lrw_d', 'cg', 'xaxis', 'yaxis', 'vel_v']
 
 
-def position_data(SingleMotion, MV=False):
+def position_data_motion(SingleMotion, MV=False):
     """
     set MV to True to return location of impact point in vehicle 1
     """
@@ -120,3 +120,76 @@ def position_data(SingleMotion, MV=False):
         p_gy = p_vy.join(impactp_gy)
 
     return p_vx, p_vy, p_gx, p_gy
+
+
+# columns for vehicle motion DataFrame
+column_list = ['b_lfc', 'b_rfc', 'b_rrc', 'b_lrc', 'lfw', 'lfw_a', 'lfw_b',
+               'lfw_c', 'lfw_d', 'rfw', 'rfw_a', 'rfw_b', 'rfw_c', 'rfw_d',
+                'rrw', 'rrw_a',	'rrw_b', 'rrw_c', 'rrw_d', 'lrw',  'lrw_a',
+                'lrw_b', 'lrw_c', 'lrw_d', 'cg', 'xaxis', 'yaxis', 'vel_v']
+
+def position_data_static(veh1, veh2):
+        for veh in [veh1, veh2]:
+            veh.px = p_vx.append({'b_lfc': SingleMotion.veh.lcgf + SingleMotion.veh.f_hang,     # body outline
+                                    'b_rfc': SingleMotion.veh.lcgf + SingleMotion.veh.f_hang,
+                                    'b_rrc': -1* SingleMotion.veh.lcgr + SingleMotion.veh.r_hang,
+                                    'b_lrc': -1* SingleMotion.veh.lcgr + SingleMotion.veh.r_hang,
+                                    'lfw':   SingleMotion.veh.lcgf,                         # left front wheel
+                                    'lfw_a': SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - -1 * SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_b': SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_c': SingleMotion.veh.lcgf + -1 * SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_d': SingleMotion.veh.lcgf + -1 * SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - -1 * SingleMotion.veh.tire_w / 2*math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw':   SingleMotion.veh.lcgf,                         # Right front wheel
+                                    'rfw_a': SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - -1 * SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_b': SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_c': SingleMotion.veh.lcgf + -1 * SingleMotion.veh.tire_d / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_d': SingleMotion.veh.lcgf + -1 * SingleMotion.veh.tire_d / 2*math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) - -1 * SingleMotion.veh.tire_w / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rrw':   -1 * SingleMotion.veh.lcgf,                          # Right rear wheel
+                                    'rrw_a': -1 * SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2,
+                                    'rrw_b': -1 * SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2,
+                                    'rrw_c': -1 * SingleMotion.veh.lcgf - SingleMotion.veh.tire_d / 2,
+                                    'rrw_d': -1 * SingleMotion.veh.lcgf - SingleMotion.veh.tire_d / 2,
+                                    'lrw':   -1 * SingleMotion.veh.lcgf,                          # Left rear wheel
+                                    'lrw_a': -1 * SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2,
+                                    'lrw_b': -1 * SingleMotion.veh.lcgf + SingleMotion.veh.tire_d / 2,
+                                    'lrw_c': -1 * SingleMotion.veh.lcgf - SingleMotion.veh.tire_d / 2,
+                                    'lrw_d': -1 * SingleMotion.veh.lcgf - SingleMotion.veh.tire_d / 2,
+                                    'cg': 0,                                         # CG
+                                    'xaxis': SingleMotion.veh.lcgf + SingleMotion.veh.f_hang + 1.5,   # line for x-axis
+                                    'yaxis': 0,                                      # line for y-axis
+                                    'vel_v': 10 * math.cos(SingleMotion.SingleMotion.veh_motion.beta_rad[i])}, ignore_index=True)  # line for velocity vector
+
+            veh.py = p_vy.append({'b_lfc': -1 * SingleMotion.veh.v_width / 2,     # body outline
+                                    'b_rfc': SingleMotion.veh.v_width / 2,
+                                    'b_rrc': SingleMotion.veh.v_width / 2,
+                                    'b_lrc': -1 * SingleMotion.veh.v_width / 2,
+                                    'lfw':   -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2),                         # left front wheel
+                                    'lfw_a': -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + SingleMotion.veh.tire_d / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + -1 * SingleMotion.veh.tire_w / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_b': -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + SingleMotion.veh.tire_d / 2 *math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + SingleMotion.veh.tire_w / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_c': -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + -1 * SingleMotion.veh.tire_d / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + vSingleMotion.veh.tire_w / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'lfw_d': -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + -1 * SingleMotion.veh.tire_d / 2 * math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + -1 * SingleMotion.veh.tire_w / 2 * math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw':   (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2),                         # Right front wheel
+                                    'rfw_a': (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + v_dict['tire_d']/2*math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_b': (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + v_dict['tire_d']/2*math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_c': (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + -1*v_dict['tire_d']/2*math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rfw_d': (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2) + -1*v_dict['tire_d']/2*math.sin(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(SingleMotion.SingleMotion.veh_motion.loc[i,'delta_rad']),
+                                    'rrw':   (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2),                          # Right rear wheel
+                                    'rrw_a': SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w,
+                                    'rrw_b': SingleMotion.veh.v_width / 2,
+                                    'rrw_c': SingleMotion.veh.v_width / 2,
+                                    'rrw_d': SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w,
+                                    'lrw':   -1 * (SingleMotion.veh.v_width / 2 - SingleMotion.veh.tire_w / 2),                          # Left rear wheel
+                                    'lrw_a': -1 * SingleMotion.veh.v_width / 2,
+                                    'lrw_b': -1 * SingleMotion.veh.v_width / 2 + SingleMotion.veh.tire_w,
+                                    'lrw_c': -1 * SingleMotion.veh.v_width / 2 + SingleMotion.veh.tire_w,
+                                    'lrw_d': -1 * SingleMotion.veh.v_width / 2,
+                                    'cg':    0,                                         # CG
+                                    'xaxis': 0,   # line for x-axis
+                                    'yaxis': SingleMotion.veh.tire_w / 2 + 1.5,                                      # line for y-axis
+                                    'vel_v': 10 * math.sin(SingleMotion.SingleMotion.veh_motion.beta_rad[i])}, ignore_index=True)  # line for velocity vector
+
+        cgx = SingleMotion.veh_motion[['Dx']].copy()                          # CG location in inertial frame
+        cgy = SingleMotion.veh_motion[['Dy']].copy()   
+
+                p_gx.iloc[i, j] = cgx.Dx[i] + p_vx.iloc[i,j]*math.cos(SingleMotion.veh_motion.loc[i,'theta_rad']) - p_vy.iloc[i,j] * math.sin(SingleMotion.veh_motion.loc[i,'theta_rad'])
+                p_gy.iloc[i, j] = cgy.Dy[i] + p_vx.iloc[i,j]*math.sin(SingleMotion.veh_motion.loc[i,'theta_rad']) + p_vy.iloc[i,j] * math.cos(SingleMotion.veh_motion.loc[i,'theta_rad'])

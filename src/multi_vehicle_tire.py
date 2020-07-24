@@ -70,7 +70,7 @@ def multi_tire_model(veh, i):
         veh.veh_model.lr_fz[i] = fraxl / 2
     elif veh.veh_model.av[i] > 0:
         veh.veh_model.lf_fz[i] = ffaxl / 2 + df_roll  # outside tire
-        veh.veh_model.rf_fz[i = ffaxl / 2 - df_roll  # inside tire
+        veh.veh_model.rf_fz[i] = ffaxl / 2 - df_roll  # inside tire
         veh.veh_model.rr_fz[i] = fraxl / 2 - dr_roll  # inside tire
         veh.veh_model.lr_fz[i] = fraxl / 2 + dr_roll  # outside tire
     elif veh.veh_model.av[i] < 0:
@@ -97,7 +97,7 @@ def multi_tire_model(veh, i):
     elif veh.rwd == 1:
         lf_app = -1 * veh.veh_model.lf_fz[i] * (mu_max * veh.driver_input.brake[i])  # rear wheel drive, front wheel will not apply accelerative force
     elif veh.awd == 1:
-        lf_app = lf_fz * (mu_max * (veh.driver_input.throttle[i] / 4 - veh.driver_input.brake[i]))
+        lf_app = veh.veh_model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 4 - veh.driver_input.brake[i]))
 
     if math.sqrt(lf_app ** 2 + lf_latf ** 2) >= mu_max * veh.veh_model.lf_fz[i]:  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.veh_model.lf_lock[i] = 1
@@ -124,7 +124,7 @@ def multi_tire_model(veh, i):
     elif veh.rwd == 1:
         rf_app = -1 * veh.veh_model.rf_fz[i] * (mu_max * veh.driver_input.brake[i])  # rear wheel drive, front wheel will not apply accelerative force
     elif veh.awd == 1:
-        rf_app = rf_fz * (mu_max * (veh.driver_input.throttle[i] / 4) - veh.driver_input.brake[i])
+        rf_app = veh.veh_model.rf_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 4) - veh.driver_input.brake[i])
 
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) >= mu_max * veh.veh_model.rf_fz[i]:
         veh.veh_model.rf_lock[i] = 1
@@ -138,8 +138,8 @@ def multi_tire_model(veh, i):
     # ------------------------ Right Rear Tire ----------------------------------- #
     veh.veh_model.rr_lock[i] = 0  # locked status - initially set to unlocked
 
-    veh.veh_model.rr_alpha[i] = -1 * np.arctan2(veh.veh_model.vy[i] - oz_rad * veh.lcgr,
-                               (veh.veh_model.vx[i] - oz_rad * (veh.track / 2)))  # tire slip angle (rad)
+    veh.veh_model.rr_alpha[i] = -1 * np.arctan2(veh.veh_model.vy[i] - veh.veh_model.oz_rad[i] * veh.lcgr,
+                               (veh.veh_model.vx[i] - veh.veh_model.oz_rad[i] * (veh.track / 2)))  # tire slip angle (rad)
 
     if math.fabs(veh.veh_model.rr_alpha[i]) >= alpha_max:  # following Steffan 1996 SAE No. 960886
         rr_latf = np.sign(veh.veh_model.rr_alpha[i]) * mu_max * veh.veh_model.rr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
@@ -148,16 +148,16 @@ def multi_tire_model(veh, i):
 
     # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
-        rr_app = -1 * rr_fz * (mu_max * veh.driver_input.brake[i])  # front wheel drive, rear wheel will not apply accelerative force
+        rr_app = -1 * veh.veh_model.rr_fz[i] * (mu_max * veh.driver_input.brake[i])  # front wheel drive, rear wheel will not apply accelerative force
     elif veh.rwd == 1:
-        rr_app = rr_fz * (mu_max * (veh.driver_input.throttle[i] / 2 - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
+        rr_app = veh.veh_model.rr_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 2 - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
     elif veh.awd == 1:
         rr_app = veh.veh_model.rr_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 4 - veh.driver_input.brake[i]))
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) >= mu_max * veh.veh_model.rr_fz[i]:
         veh.veh_model.rr_lock[i] = 1
-        rr_lonf = -1 * math.cos(rr_alpha) * mu_max * veh.veh_model.rr_fz[i]
-        rr_latf = math.sin(rr_alpha) * mu_max * veh.veh_model.rr_fz[i]
+        rr_lonf = -1 * math.cos(veh.veh_model.rr_alpha[i]) * mu_max * veh.veh_model.rr_fz[i]
+        rr_latf = math.sin(veh.veh_model.rr_alpha[i]) * mu_max * veh.veh_model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) < mu_max * veh.veh_model.rr_fz[i]:
         veh.veh_model.rr_lock[i] = 0
         rr_lonf = rr_app
@@ -175,9 +175,9 @@ def multi_tire_model(veh, i):
 
     # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
-        lr_app = -1 * lr_fz * (mu_max * veh.driver_input.brake[i])  # front wheel drive, rear wheel will not apply accelerative force
+        lr_app = -1 * veh.veh_model.lr_fz[i] * (mu_max * veh.driver_input.brake[i])  # front wheel drive, rear wheel will not apply accelerative force
     elif veh.rwd == 1:
-        lr_app = lr_fz * (mu_max * (veh.driver_input.throttle[i] / 2 - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
+        lr_app = veh.veh_model.lr_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 2 - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
     elif veh.awd == 1:
         lr_app = veh.veh_model.lr_fz[i] * (mu_max * (veh.driver_input.throttle[i] / 4 - veh.driver_input.brake[i]))
 
