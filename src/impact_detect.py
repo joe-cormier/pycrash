@@ -27,29 +27,33 @@ def impact_dect(vehicle_list):
     edgeimpact_x2 = cgx2 + vehicle_list[1].veh.edgeimpact_x2 * math.cos(theta_rad1) - vehicle_list[1].veh.edgeimpact_y2 * math.sin(theta_rad1)
     edgeimpact_y2 = cgy2 + vehicle_list[1].veh.edgeimpact_x2 * math.sin(theta_rad1) + vehicle_list[1].veh.edgeimpact_y2 * math.cos(theta_rad1)
 
-    impact = 0
+    impact = False
     crushdx = 0
     crushdy = 0
 
     if vehicle_list[2].edgeimpact == 1:
         crushdx = impactp_veh2x - edgeimpact_x1
         if (crushdx <= 0) & (impactp_veh2y > edgeimpact_y1) & (impactp_veh2y < edgeimpact_y2):
-            impact = 1
+            impact = True
             crushdy = impactp_veh2y
+            mutual_crush = crushdx # extent of crush used to calculate force (sideswipe)
     elif vehicle_list[2].edgeimpact == 2:
         crushdy = impactp_veh2y - edgeimpact_y1
         if (crushdy <= 0) & (impactp_veh2x < edgeimpact_x1) & (impactp_veh2x > edgeimpact_x2):
-            impact = 1
+            impact = True
             crushdx = impactp_veh2x
+            mutual_crush = crushdy
     elif vehicle_list[2].edgeimpact == 3:
         crushdx = edgeimpact_x1 - impactp_veh2x
         if (crushdx <= 0) & (impactp_veh2y > edgeimpact_y1) & (impactp_veh2y < edgeimpact_y2):
-            impact = 1
+            impact = True
             crushdy = impactp_veh2y
+            mutual_crush = crushdx
     elif vehicle_list[2].edgeimpact == 4:
         crushdy = edgeimpact_y1 - impactp_veh2y
         if (crushdy <= 0) & (impactp_veh2x < edgeimpact_x1) & (impactp_veh2x > edgeimpact_x2):
-            impact = 1
+            impact = True
             crushdx = impactp_veh2x
+            mutual_crush = crushdy
 
-    return {'impact':impact, 'crushdx':crushdx, 'crushdy':crushdy}
+    return {'impact':impact, 'crushdx':crushdx, 'crushdy':crushdy, 'mutual_crush':mutual_crush}

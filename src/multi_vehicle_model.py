@@ -13,7 +13,7 @@ import os
 # load defaults
 mu_max = default_dict['mu_max']             # maximum available friction
 dt_motion = default_dict['dt_motion']       # iteration time step
-
+impact_occurred = False                     # indicates if an impact has been detected
 
 
 # column list for vehicle model
@@ -22,15 +22,22 @@ column_list = ['t','throttle', 'brake', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', '
            'alphaz', 'alphaz_deg', 'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
            'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
-           'theta_rad', 'theta_deg']
+           'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
 
-def multi_vehicle_model(vehicle_list):
-    """
-    Calculate vehicle dynamics from driver inputs and environmental inputs
-    vehicle_list is a list of vehicle class instances [veh1, veh2] - two currently
-    model will use the max time from vehicle 1 for input, all vehicles
-    need the same total driver input time
-    """
+# TODO: ignore driver inputs after impact
+# TODO: disable tire after impact
+
+def multi_vehicle_model(vehicle_list, impact_type, ignore_driver = False):
+"""
+Calculate vehicle dynamics from driver inputs and environmental inputs
+vehicle_list is a list of vehicle class instances [veh1, veh2] - two currently
+model will use the max time from vehicle 1 for input, all vehicles
+need the same total driver input time
+model_type indicates the type of impact to be simulated (sideswipe (ss), or impulse-momentum (impc))
+ignore_driver (False) will use driver_inputs after impact.  True will ignore all driver inputs and keep
+last input for remainder of simulation
+"""
+
     print(f"Two vehicle simulation will run for {max(vehicle_list[0].driver_input.t)} s")
 
     for veh in vehicle_list:
@@ -141,7 +148,7 @@ def multi_vehicle_model(vehicle_list):
             # transform vehicle ax, ay to non-rotating vehicle frame
             veh.veh_model.au[i] = veh.veh_model.ax[i]                                                               # - inertial component for tire model
             veh.veh_model.av[i] = veh.veh_model.ay[i]                                                                 # - inertial component for tire model
-            veh.veh_model.ax[i] = veh.veh_model.ax[iveh.veh_model.] [i+ vveh.veh_model.eh[i.veveh.veh_model.h_mode[i]l.oz_rad[i] * veh.veh_model.vy[i]
+            veh.veh_model.ax[i] = veh.veh_model.ax[i] + veh.veh_model.oz_rad[i] * veh.veh_model.vy[i]
             veh.veh_model.ay[i = veh.veh_model.ay[i] - veh.veh_model.oz_rad[i] * veh.veh_model.vx[i]
 
             # get tire forces for the current time step
@@ -151,7 +158,23 @@ def multi_vehicle_model(vehicle_list):
             veh.veh_model.v_model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.veh_model.Vy), list(veh.veh_model.t), initial=0)     # integrate vy to get distance traveled in y direction
 
             # function for detecting impact
-            impact_detect(vehicle_list)
+            impact_detect = impact_detect(vehicle_list)
+
+            if (impact_dectect['impact']):
+                impact_occurred = 1
+                if (impact_type == 'impc'):
+                    impc_result = impc(vehicle_list)              # run impc model - create inputs using vehicle class
+                elif (impact_type == 'ss'):
+                    impact_force = ss(vehicle_list, impact_detect)
+                else:
+                    print(f'impact_type {impact_type} is not defined')
+                    break
+            else:
+                veh.veh_model.Fx[i] = 0
+                veh.veh_model.Fy[i] = 0
+                veh.veh_model.Mz[i] = 0
+
+
 
 
     return vehicle_list
