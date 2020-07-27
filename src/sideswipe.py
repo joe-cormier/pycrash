@@ -1,7 +1,7 @@
 
-import os
 from data.defaults.config import default_dict
-
+import numpy as np
+import os
 
 vehicle_mu = default_dict['vehicle_mu']
 
@@ -10,17 +10,48 @@ calculates intervehicular forces using a sideswipe model (mutual crush + frictio
 validated using Funk () see validation directory for simulations and reports
 """
 
-
-def ss(vehicle_list, impact_detect):
+def ss(vehicle_list, crush_data, kmutual, i):
     """
     normal force is applied normal to the struck vehicle (vehicle 2)
     frictional force is applied along the impacting plane opposite to striking vehicle (vehicle 1) velocity
     """
-    print(f'Sideswipe Model Accessed at t = {vehicle_list[0].veh_model.t.iloc[-1]} seconds')
-    # get relative velocity along impacting plane
+    print(f'Sideswipe Model Accessed at t = {vehicle_list[0].veh_model.t[i]} seconds')
+    # get velocity of impact point on V1 and V2 to relative velocity along impact edge
+    # translate to global frame for comparison
+    # if relative velocity is zero, friction force is zero
+
+    # instead of relative velocity, try edge location - compare current to prior
+    relative_edge_motion = crush_data.edge_loc[i] - crush_data.edge_loc[i-1]
+
+    # crush force is a function of normal displacement and mutualstiffness
+    fmutual = crush_data.normal_crush[i] * k_mutual
 
 
+    if vehicle_list[1].edgeimpact == 1:
+        vehicle_list[1].veh_model.Fx[i] = - 1 * fmutual
+        vehicle_list[1].veh_model.Fy[i] = - 1 * np.sign(relative_edge_motion) * fmutual * vehicle_mu
+    elif vehicle_list[1].edgeimpact == 2:
+        vehicle_list[1].veh_model.Fx[i] = fmutual * vehicle_mu
+        vehicle_list[1].veh_model.Fy[i] = - 1 * fmutual
+    elif vehicle_list[1].edgeimpact == 3:
+        vehicle_list[1].veh_model.Fx[i] = fmutual
+        vehicle_list[1].veh_model.Fy[i] = - 1 * np.sign(relative_edge_motion) * fmutual * vehicle_mu
+    elif vehicle_list[1].edgeimpact == 4:
+        vehicle_list[1].veh_model.Fx[i] = -1 * fmutual * vehicle_mu
+        vehicle_list[1].veh_model.Fy[i] = fmutual
 
+
+    # forces in Vehicle 2 reference frame:
+    fnorm = kmutual * impact_detect['normal_crush']  # normal forces
+    ffriction = vehicle_mu * fnorm
+
+    vehicle_list[0].veh_model.Fx = 0
+    vehicle_list[0].veh_model.Fy = 0
+    vehicle_list[0].veh_model.Mz = 0
+
+    vehicle_list[1].veh_model.Fx = 0
+    vehicle_list[1].veh_model.Fy = 0
+    vehicle_list[1].veh_model.Mz = 0
 
     # calculate force and moment applied to each vehicle
     # striking vehicle
@@ -29,3 +60,5 @@ def ss(vehicle_list, impact_detect):
 
 
     # struck vehicle
+
+    return vehicle_list

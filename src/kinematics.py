@@ -59,17 +59,17 @@ class SingleMotion():
         # TODO: check for init_x_pos, init_y_pos
 
         # run planar vehicle motion simulation
-        self.veh_motion = vehicle_model(self.veh)
+        self.veh.veh_motion = vehicle_model(self.veh)
 
         # create point data in vehicle and global frame
-        self.p_vx, self.p_vy, self.p_gx, self.p_gy = position_data_motion(self.veh_motion)
+        self.veh = position_data_motion(self.veh)
 
     def plot_inputs(self):
         fig, ax1 = plt.subplots(figsize = figure_size)
-        ax1.scatter(self.veh.driver_input.t, self.veh.driver_inpu.throttle * 100, color='g', label = 'throttle')
-        ax1.scatter(self.veh.driver_input.t, self.veh.driver_inpu.brake * 100, color='r', label = 'brake')
+        ax1.scatter(self.veh.driver_input.t, self.veh.driver_input.throttle * 100, color='g', label = 'throttle')
+        ax1.scatter(self.veh.driver_input.t, self.veh.driver_input.brake * 100, color='r', label = 'brake')
         ax2 = ax1.twinx()
-        ax2.scatter(self.veh.driver_input.t, self.veh.driver_inpu.steer, color='k', label = 'steer')
+        ax2.scatter(self.veh.driver_input.t, self.veh.driver_input.steer, color='k', label = 'steer')
         ax1.set_ylabel('Throttle | Brake (%)')
         ax1.set_xlabel('Time (s)')
         ax2.set_ylabel('Steer Angle (deg)')
