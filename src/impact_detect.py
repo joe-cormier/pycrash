@@ -43,31 +43,34 @@ def detect(vehicle_list, i):
     """
     if i == 0:
         crush_data = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)),
-                                columns = ['impact', 'edge_loc', 'normal_crush'])
+                                columns = ['impact', 'edge_loc', 'normal_crush', 'impactp_veh2x', 'impactp_veh2y'])
 
     if vehicle_list[1].edgeimpact == 1:
         crushdx = impactp_veh2x - vehicle_list[1].edgeimpact_x1
         if (crushdx <= 0) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y2):
-            impact[i] = True
-            edge_lo[i]c = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
-            normal_crush[i] = crushdx # extent of crush used to calculate force (sideswipe)
+            crush_data.impact[i] = True
+            crush_data.edge_lo[i]c = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
+            crush_data.normal_crush[i] = crushdx # extent of crush used to calculate force (sideswipe)
     elif vehicle_list[1].edgeimpact == 2:
         crushdy = impactp_veh2y - vehicle_list[1].edgeimpact_y1
         if (crushdy <= 0) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x2):
-            impact[i] = True
-            edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
-            normal_crush[i] = crushdy
+            crush_data.impact[i] = True
+            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
+            crush_data.normal_crush[i] = crushdy
     elif vehicle_list[1].edgeimpact == 3:
         crushdx = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
         if (crushdx <= 0) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y2):
-            impact[i] = True
-            edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
-            normal_crush = crushdx
+            crush_data.impact[i] = True
+            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
+            crush_data.normal_crush = crushdx
     elif vehicle_list[1].edgeimpact == 4:
         crushdy = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
         if (crushdy < 0) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x2):
-            impact[i] = True
-            edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
-            normal_crush[i] = crushdy
+            crush_data.impact[i] = True
+            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
+            crush_data.normal_crush[i] = crushdy
+
+    crush_data.impactp_veh2x[i] = impactp_veh2x
+    crush_data.impactp_veh2y[i] = impactp_veh2y
 
     return crush_data

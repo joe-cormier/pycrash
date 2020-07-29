@@ -155,7 +155,7 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             veh.veh_model.ay[i] = veh.veh_model.ay[i] - veh.veh_model.oz_rad[i] * veh.veh_model.vx[i]
 
             # get tire forces for the current time step
-            veh = multi_tire_model(veh, i)
+            veh = tire_model(veh, i)
 
             veh.veh_model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.veh_model.Vx), list(veh.veh_model.t), initial=0)     # integrate vx to get distance traveled in x direction
             veh.veh_model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.veh_model.Vy), list(veh.veh_model.t), initial=0)     # integrate vy to get distance traveled in y direction
