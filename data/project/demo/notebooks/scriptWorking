@@ -1,0 +1,30 @@
+# python script to initialize variables in R notebook
+
+import pandas as pd
+import numpy as np
+import pickle
+import os
+
+with open('C:\\Users\\joemc\\OneDrive\\reconstruction\\data\\casedatabase\\CaseData.pkl', 'rb') as handle:
+    CaseData = pickle.load(handle)
+#print(CaseData)
+
+# Get last case  entered
+j = len(CaseData)-1
+case_df1 = pd.DataFrame([CaseData[j]['veh1']]).T.reindex(index = ['year', 'make', 'model', 'weight', 'vin'])
+case_df2 = pd.DataFrame([CaseData[j]['veh2']]).T.reindex(index = ['year', 'make', 'model', 'weight', 'vin'])
+case_df = pd.merge(case_df1, case_df2, left_index=True, right_index=True)
+case_df = case_df.rename_axis('Info').reset_index()
+case_df = case_df.rename(columns = {'0_x':'Vehicle 1', '0_y':'Vehicle 2'})
+#print(case_df)
+
+
+def cipriani(ClosingSpeed):
+    # calculate restitution based on closing speed in mph
+    # based on regression performed by Cipriani
+    A = 0.47477
+    B = -0.26139 * np.log(np.absolute(ClosingSpeed) * 0.44704)
+    C = 0.03382 * np.log(np.absolute(ClosingSpeed) * 0.447704)**2
+    D = -0.11639 * np.log(np.absolute(ClosingSpeed) * 0.44704)**3
+    return A + B + C + D
+#

@@ -1,0 +1,32 @@
+Model year,year,2016,int
+Vehicle make,make,Subaru,str
+Vehicle model,mode,WRX Sti,str
+Vehicle weight (lb),weight,3000,float
+Vehicle Identification Number (VIN),vin,123abc,str
+Percent Braking,brake,0,float
+Steering ratio,steer_ratio,16.5,float
+Initial X position (ft),init_x_pos,0,float
+Initial Y position (ft),init_y_pos,0,float
+Heading angle (deg),head_angle,0,float
+Vehicle width (ft),v_width,6,float
+Vehicle length (ft),v_length,19.3,float
+CG height (ft),hcg,2,float
+CG to front axle (ft),lcgf,4.88,float
+CG to rear axle (ft),lcgr,6.96,float
+Wheelbase (ft),wb,11.84,float
+Track width (ft),track,6.6,float
+Front overhang (ft),f_hang,3.2,float
+Rear overhang (ft),r_hang,4.1,float
+Tire diameter (ft),tire_d,2.716666667,float
+Tire width (ft),tire_w,0.866666667,float
+Izz (slug - ft^2),izz,13615,float
+Front wheel drive (0/1),fwd,0,int
+Rear wheel drive (0/1),rwd,1,int
+All wheel drive (0/1),awd,0,int
+A,A,100,float
+B,B,41,float
+k,k,1000,float
+Damage length L (in),L,0,float
+Crush depth c (in),c,0,float
+Initial forward velocity Vx (mph),vx_initial,5,float
+Initial lateral velocity Vy (mph),vy_initial,0,float
