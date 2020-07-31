@@ -1,30 +1,21 @@
+
 # %% Initilizing
+
 import os
 path_parent = os.path.dirname(os.getcwd())
 data_directory = os.path.join(path_parent, "data")
 os.chdir(path_parent)
 
-# %% Import Modules
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import text
-from data.defaults.config import default_dict
-from src.functions import EnergyDV, SpringSeriesKeff
+import numpy as np
+import pandas as pd
+
 from src.project import Project, project_info, load_project
 from src.vehicle import Vehicle
 from src.kinematics import SingleMotion
-from src.sdof_model import SDOF_Model
-from scipy import signal
-from scipy import integrate
-import pandas as pd
-import numpy as np
-import pickle
-import json
 
-pd.options.display.max_columns = None
-from IPython import get_ipython
-from IPython.display import display
-get_ipython().run_line_magic('matplotlib', 'inline')
 
+%load_ext autoreload
+%autoreload 2
 # %% Create Project
 # projects are used to store basic information about the project
 # - name, type of impact, type of simulation to be run, description, notes
@@ -86,13 +77,17 @@ veh1 = Vehicle('Veh1', vehicle_input_dict)
 #veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
 #veh1.manual_specs()  # user prompted for input
 
+# %% Plot Driver Inputs
+veh1.plot_driver_inputs()
+
 # %% Load File with vehicle motion
-veh1.read_time_inputsCSV('D:\\OneDrive\\pycrash\\data\\input\\vehicle_motion.csv')
 veh1.vx_initial = 20
 
 # %% vehicle motion
 motion = SingleMotion('motion1', veh1)
-motion.plot_motion()
+motion.plot_model()
 motion.CG_motion()
 
 # %%
+from src.kinematics import SingleMotion
+motion.plot_model()

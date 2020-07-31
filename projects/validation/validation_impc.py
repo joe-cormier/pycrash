@@ -10,6 +10,7 @@ from nptdms import TdmsFile
 from pprint import pprint
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from varname import varname, nameof
 # %% list of test folders
 
 test_dir = ['2020FordExplorer_smalloverlapCEN1908',
@@ -21,7 +22,7 @@ valdiation_test_no = 1
 print(f'Running Analysis for {test_dir[valdiation_test_no]}')
 print("")
 
-data_dir = os.path.join(validation_dir, test_dir[valdiation_test_no], 'data')
+data_dir = os.path.join(validation_dir, 'sources', test_dir[valdiation_test_no], 'data')
 
 # get list of data files
 data_files = os.listdir(data_dir)
@@ -29,7 +30,7 @@ print(f'Data Files: {pprint(data_files)}')
 
 # %% Open tdms data file - Vehicle A
 
-iihs_data = data_files[5]
+iihs_data = data_files[7]
 tdms_file = TdmsFile.read(os.path.join(data_dir, iihs_data))
 
 tdms_file.properties
@@ -45,7 +46,7 @@ calcedA = tdms_file['Calculated Channels']
 
 # %% Open tdms data file - Vehicle B
 
-iihs_data = data_files[15]
+iihs_data = data_files[17]
 tdms_file = TdmsFile.read(os.path.join(data_dir, iihs_data))
 
 tdms_file.properties
@@ -79,32 +80,30 @@ def plt_common_x(data_list):
     time = data_list[0]
     data = data_list[1:]
 
-    for trace in data
+    for trace in data:
         fig.add_trace(go.Scatter(x = time, y = trace,
                             mode='lines',
-                            name='vehBax'))
-    fig.add_trace(go.Scatter(x=time, y=vehBay,
-                        mode='lines',
-                        name='vehBay'))
-    fig.add_trace(go.Scatter(x=time, y=vehBaz,
-                        mode='lines',
-                        name='vehBaz'))
+                            name=nameof(trace))
+                     )
+
 
     fig.update_layout(
         autosize=False,
-        width=1000,
-        height=800,
+        width=800,
+        height=450,
         title = 'IIHS Vehicle Data',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
         yaxis = dict(showgrid = False, title = 'Acceleration (g)'),
         font = dict(family = 'Arial', size = 16, color = 'black'),
-        boxmode='group' 
     )
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", tickwidth=1, tickcolor='black', ticklen=10)
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()
+
+# %%
+plt_common_x([time, vehBax, vehBay, vehBaz])
 
 # %% 
 from varname import nameof

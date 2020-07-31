@@ -3,6 +3,8 @@ from tabulate import tabulate
 import os
 import pickle
 
+# TODO: when initializing project, directory for project must be specified
+# this directory will be used to save all files
 
 class Project:
     """

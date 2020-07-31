@@ -3,10 +3,9 @@
 
 # %% modules
 from data.defaults.config import default_dict
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import text
 from tabulate import tabulate
 from itertools import count
+from src.visualization.vehicle import plot_impact_points, plot_impact_edge, plot_driver_inputs
 import pandas as pd
 import numpy as np
 import inspect
@@ -20,11 +19,6 @@ dt_motion = default_dict['dt_motion']            # iteration time step
 print('Current values for defined constants:')
 print(f'maximum available friction (mu_max) = {mu_max}')
 print(f'time step for vehicle motion (dt) = {dt_motion} s')
-
-# TODO: create input for figure size - loads from "defaults" folder?
-figure_size = (16,9)
-
-# %% Create Classes for Project and Vehicles
 
 # vehicle inputs - values used in csv file for input should match these below
 # additional values requires a value for input_query, veh_input, dtype be provided
@@ -150,6 +144,8 @@ class Vehicle:
             self.omega_z = float(input_dict['omega_z'])
             self.driver_input = input_dict['driver_input']    # dataframe (t | brake | steer)
 
+            print(f'Vehicle inputs for {self.name} applied succesfully')
+
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):
                 userEntry = input(input_query[i])
@@ -234,7 +230,8 @@ class Vehicle:
             df['t'] = df.t.round(3) # reset signficant digits
             df = df.reset_index(drop = True)
             self.driver_input = df
-            print('Driver inputs applied as "driver_input"')
+            print(f'Driver inputs applied to {self.name}')
+            plot_driver_inputs(self)
 
     def read_time_inputsCSV(self, filename):
         """
@@ -262,10 +259,17 @@ class Vehicle:
                 df['t'] = df.t.round(3) # reset signficant digits
                 df = df.reset_index(drop = True)
                 self.driver_input = df
-                print(f'Driver inputs applied as {self.name}.driver_input')
+                print(f'Driver inputs applied to {self.name}')
         else:
             print('No Time Input File Provided')
 
+        plot_driver_inputs(self)
+
+    def plot_driver_inputs(self):
+            plot_driver_inputs(self)
+
+
+    # TODO: create ability to change inputs by distance
     def dist_inputs(self, filename):
         """
         Driver inputs | vehicle travel distance (ft) | brake (%) | steer (deg) |
@@ -302,49 +306,10 @@ class Vehicle:
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
         # option 5 = custom location
 
-        # x,y coordinates of vehicle outline:
-        # left front corner
-        self._b_lfc_x = self.lcgf + self.f_hang
-        self._b_lfc_y = -1 * self.v_width / 2
-        # right front corner
-        self._b_rfc_x = self.lcgf + self.f_hang
-        self._b_rfc_y = self.v_width / 2
-        # right rear corner
-        self._b_rrc_x = -1 * self.lcgr - self.r_hang
-        self._b_rrc_y = self.v_width / 2
-        # left rear corner
-        self._b_lrc_x = -1 * self.lcgr - self.r_hang
-        self._b_lrc_y = -1* self.v_width / 2
-
-        bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
-        bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
-
-        # generate plot to show vehicle outline and default points for impact
-        plt.figure(figsize=figure_size)
-        plt.xlim([self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
-
-        # adjust y axis length to keep aspect ratio defined in figure size
-        x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
-        plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
-                0.5 * x_axis_length * figure_size[1] / figure_size[0]])
-
-        plt.plot(bdy_x, bdy_y, 'k')  # body outline
-        plt.scatter(bdy_x, bdy_y, c = 'r', s = 300)  # corner points
-        plt.scatter(0, 0, c = 'g', s = 500)
-
-        plt.text(self._b_lfc_x * 1.2, self._b_lfc_y, "1", horizontalalignment = 'right', size = 22)
-        plt.text(self._b_rfc_x * 1.2, self._b_rfc_y, "2", horizontalalignment = 'right', size = 22)
-        plt.text(self._b_rrc_x * 1.15, self._b_rrc_y, "3", horizontalalignment = 'left', size = 22)
-        plt.text(self._b_lrc_x * 1.15, self._b_lrc_y, "4", horizontalalignment = 'left', size = 22)
-
-        plt.text(1, -1, "CG", horizontalalignment = 'center', size = 22)
-        plt.arrow(0, 0, 5, 0, head_width=.5, head_length=0.5, fc='k', ec='k')     # vehicle axes
-        plt.arrow(0, 0, 0, 5, head_width=.5, head_length=0.5, fc='b', ec='b')     # vehicle axes
-        plt.gca().invert_yaxis()
-        plt.show(block = False)
+        plot_impact_points(self) # plot vehicle points
 
 
-        impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99"))
+        impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99: "))
 
         if impact_option not in [1, 2, 3, 4, 99]:
             print("Invalid impact point option - enter 1, 2, 3, 4 or 5")
@@ -363,8 +328,9 @@ class Vehicle:
                 self.pimpact_x = -1 * self.lcgr - self.r_hang
                 self.pimpact_y = -1* self.v_width / 2
         elif impact_option == 99:
-            self.pimpact_x = float(input("Enter x-coordinate of impact point in vehicle frame (ft):"))
-            self.pimpact_y = float(input("Enter y-coordinate of impact point in vehicle frame (ft):"))
+            self.pimpact_x = float(input("Enter x-coordinate ( + forward) of impact point in vehicle frame (ft):"))
+            self.pimpact_y = float(input("Enter y-coordinate ( + rightward) of impact point in vehicle frame (ft):"))
+            plot_impact_points(self, user_loc = True) # plot vehicle points
 
     def impact_edge(self):
         """
@@ -393,51 +359,9 @@ class Vehicle:
         # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
         # option 5 = custom location
 
-        # x,y coordinates of vehicle outline:
-        # left front corner
-        self._b_lfc_x = self.lcgf + self.f_hang
-        self._b_lfc_y = -1 * self.v_width / 2
-        # right front corner
-        self._b_rfc_x = self.lcgf + self.f_hang
-        self._b_rfc_y = self.v_width / 2
-        # right rear corner
-        self._b_rrc_x = -1 * self.lcgr - self.r_hang
-        self._b_rrc_y = self.v_width / 2
-        # left rear corner
-        self._b_lrc_x = -1 * self.lcgr - self.r_hang
-        self._b_lrc_y = -1* self.v_width / 2
+        plot_impact_edge(self)
 
-        bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
-        bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
-
-        # generate plot to show vehicle outline and default points for impact
-        plt.figure(figsize=figure_size)
-        plt.xlim([self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
-
-        # adjust y axis length to keep aspect ratio defined in figure size
-        x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
-        plt.ylim([-0.5 * x_axis_length * figure_size[1] / figure_size[0],
-                0.5 * x_axis_length * figure_size[1] / figure_size[0]])
-
-        plt.plot(bdy_x[:2], bdy_y[:2], 'k')
-        plt.plot(bdy_x[1:3], bdy_y[1:3], 'b')
-        plt.plot(bdy_x[2:4], bdy_y[2:4], 'g')
-        plt.plot(bdy_x[3:5], bdy_y[3:5], 'orange')
-        plt.scatter(0, 0, c = 'g', s = 500)
-
-        plt.text(self._b_lfc_x * 1.2, 0, "1", horizontalalignment = 'right', size = 22)
-        plt.text(-2, 1.2 * self.v_width / 2, "2", horizontalalignment = 'center', size = 22)
-        plt.text(self._b_rrc_x * 1.2, 0, "3", horizontalalignment = 'left', size = 22)
-        plt.text(-2, -1.2 * self.v_width / 2, "4", horizontalalignment = 'center', size = 22)
-
-        plt.text(1, -1, "CG", horizontalalignment = 'center', size = 22)
-        plt.arrow(0, 0, 5, 0, head_width=.5, head_length=0.5, fc='k', ec='k')     # vehicle axes
-        plt.arrow(0, 0, 0, 5, head_width=.5, head_length=0.5, fc='b', ec='b')     # vehicle axes
-
-        plt.gca().invert_yaxis()
-        plt.show(block=False)
-
-        impact_option = int(input("Choose option for impact edge"))
+        impact_option = int(input("Choose option for impact edge: "))
 
         if impact_option not in [1, 2, 3, 4]:
             raise ValueError("Invalid impact edge option - enter 1, 2, 3, 4")
