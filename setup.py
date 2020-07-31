@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="pycrash-joe-cormier",
-    version="0.0.1",
+    name="pycrash",
+    version="0.0.6",
     author="Joe Cormier",
     author_email="joemcormier@outlook.com",
     description="software tool for simulating vehicle motion and impacts based on \

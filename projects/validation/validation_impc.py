@@ -105,5 +105,5 @@ def plt_common_x(data_list):
 # %%
 plt_common_x([time, vehBax, vehBay, vehBaz])
 
-# %% 
+# %%
 from varname import nameof

@@ -8,11 +8,12 @@ os.chdir(path_parent)
 
 import numpy as np
 import pandas as pd
+pd.options.display.max_columns = None
 
-from src.project import Project, project_info, load_project
-from src.vehicle import Vehicle
-from src.kinematics import SingleMotion
-
+import pycrash
+#from pycrash.project import Project, project_info, load_project
+#from pycrash.vehicle import Vehicle
+#from pycrash.kinematics import SingleMotion
 
 %load_ext autoreload
 %autoreload 2
@@ -22,7 +23,7 @@ from src.kinematics import SingleMotion
 # the project will be used to save all associated aspects, vehicles, simulations etc.
 project_inputs = {'name':'Practice', 'pdesc':'single motion', 'sim_type':'SV', 'impact_type':'none',
                   'note':'single vehicle motion demo'}
-proj = Project(project_inputs)
+proj = pycrash.Project(project_inputs)
 
 # %% Create vehicle
 # Vehicle 1:
@@ -73,7 +74,7 @@ vehicle_input_dict = {"year":2016,
 "omega_z":0,
 "driver_input":driver_input_df}
 
-veh1 = Vehicle('Veh1', vehicle_input_dict)
+veh1 = pycrash.Vehicle('Veh1', vehicle_input_dict)
 #veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
 #veh1.manual_specs()  # user prompted for input
 
@@ -84,10 +85,25 @@ veh1.plot_driver_inputs()
 veh1.vx_initial = 20
 
 # %% vehicle motion
-motion = SingleMotion('motion1', veh1)
+motion = pycrash.SingleMotion('motion1', veh1)
 motion.plot_model()
 motion.CG_motion()
 
 # %%
-from src.kinematics import SingleMotion
-motion.plot_model()
+motion.global_motion(50)
+
+# %%
+motion.veh.p_gx.head()
+
+# %%
+motion.veh.p_gx.head()
+# %%
+motion.veh.model.head()
+
+# %% Change driver inputs
+time = [0, 2.5, 5]
+throttle = [0, 0, 0]
+brake = [0, 1, 1]
+steer = [0, 0, 0]
+
+veh1.time_inputs(time, throttle, brake, steer)
