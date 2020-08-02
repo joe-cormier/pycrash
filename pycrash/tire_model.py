@@ -120,6 +120,7 @@ def tire_forces(veh, i):
         lf_latf = -1 * math.sin(veh.model.lf_alpha[i]) * math.sqrt((mu_max * veh.model.lf_fz[i])**2 - lf_lonf**2)
 
     print(f'lf_latf = {lf_latf} at t = {veh.model.t[i]}')
+    print(f'lf lock status = {veh.model.lf_lock[i]}')
     print(f'lf_vy = {lf_vy}')
     print(f'lf_vx = {lf_vx}')
     print(f'lf delta = {veh.model.delta_rad[i]}')
@@ -160,7 +161,7 @@ def tire_forces(veh, i):
     rr_vy = veh.model.vy[i] - veh.model.oz_rad[i] * veh.lcgr
     veh.model.rr_lock[i] = 0  # locked status - initially set to unlocked
 
-    veh.model.rr_alpha[i] = -1 * np.arctan2(rr_vy, rr_vx)  # tire slip angle (rad)
+    veh.model.rr_alpha[i] = np.arctan2(rr_vy, rr_vx)  # tire slip angle (rad)
 
     if math.fabs(veh.model.rr_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
         rr_latf = -1 * math.sin(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
@@ -188,7 +189,7 @@ def tire_forces(veh, i):
     lr_vx = veh.model.vx[i] + veh.model.oz_rad[i] * (veh.track / 2)
     lr_vy = veh.model.vy[i] - veh.model.oz_rad[i] * veh.lcgr
     veh.model.lr_lock[i] = 0  # locked status - initially set to unlocked
-    veh.model.lr_alpha[i] = -1 * np.arctan2(lr_vy, lr_vx)  # tire slip angle (rad)
+    veh.model.lr_alpha[i] = np.arctan2(lr_vy, lr_vx)  # tire slip angle (rad)
 
     if math.fabs(veh.model.lr_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
         lr_latf = -1 * math.sin(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
