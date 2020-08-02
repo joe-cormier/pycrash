@@ -9,6 +9,7 @@ from .position_data import position_data_motion
 from .visualization.vehicle import plot_driver_inputs
 from .visualization.kinematics import plot_model
 from .visualization.model import plot_motion
+from .visualization.tire_details import tire_details
 import math
 import csv
 import os
@@ -83,6 +84,9 @@ class SingleMotion():
 
     def global_motion(self, i):
             plot_motion(self.veh, i)
+
+    def tire_detail(self):
+            tire_details(self.veh)
 
     def CG_motion(self):
         """

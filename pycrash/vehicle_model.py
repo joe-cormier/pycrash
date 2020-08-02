@@ -143,7 +143,7 @@ def vehicle_model(veh):
         veh.model.ax[i] = veh.model.ax[i] + veh.model.oz_rad[i] * veh.model.vy[i]
         veh.model.ay[i] = veh.model.ay[i] - veh.model.oz_rad[i] * veh.model.vx[i]
 
-            # get tire forces for the current time step
+        # get tire forces for the current time step
         veh = tire_forces(veh, i)
 
     veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)     # integrate vx to get distance traveled in x direction

@@ -125,32 +125,23 @@ def plot_motion(veh, i, tire_path=True):
                                 marker = dict(color = 'rgb(0, 0, 255)', size = 5,
                                 symbol = list(map(setmarker, gx.lf_lock)))))
 
-            """
-            fig.add_trace(go.Scatter(x = veh.p_gx.rfw[i-1:i], y = veh.p_gy.rfw[i-1:i],
+            fig.add_trace(go.Scatter(x = gx.rfw, y = gy.rfw,
                                 mode = 'markers',
                                 name = 'RF',
                                 marker = dict(color = 'rgb(0, 255, 0)', size = 5,
-                                symbol = marker_options[veh.p_gx.rf_lock[i]])))
+                                symbol = list(map(setmarker, gx.rf_lock)))))
 
-            fig.add_trace(go.Scatter(x = veh.p_gx.rrw[:i], y = veh.p_gy.rrw[:i],
+            fig.add_trace(go.Scatter(x = gx.rrw, y = gy.rrw,
                                 mode = 'markers',
                                 name = 'RR',
                                 marker = dict(color = 'rgb(153, 0, 204)', size = 5,
-                                symbol = marker_options[veh.p_gx.rr_lock[i]])))
+                                symbol = list(map(setmarker, gx.rr_lock)))))
 
-        if veh.p_gx.lr_lock[i] == 0:
-            fig.add_trace(go.Scatter(x = veh.p_gx.lrw[:i], y = veh.p_gy.lrw[:i],
+            fig.add_trace(go.Scatter(x = gx.lrw, y = gy.lrw,
                                 mode = 'markers',
                                 name = 'LR',
                                 marker = dict(color = 'rgb(153, 0, 204)', size = 5,
-                                symbol = 'circle')))
-        elif veh.p_gx.lr_lock[i] == 1:
-            fig.add_trace(go.Scatter(x = veh.p_gx.lrw[:i], y = veh.p_gy.lrw[:i],
-                                mode = 'markers',
-                                name = 'LR',
-                                marker = dict(color = 'rgb(153, 0, 204)', size = 5,
-                                symbol = 'square-x')))
-                """
+                                symbol = list(map(setmarker, gx.lr_lock)))))
 
         fig.update_layout(
             showlegend = False,
