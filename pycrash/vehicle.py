@@ -221,13 +221,13 @@ class Vehicle:
             print('No driver input applied to vehicle')
         else:
             inputdf = pd.DataFrame(list(zip(throttle, brake, steer)), columns = ['throttle', 'brake', 'steer'])
-            t = list(np.arange(0, max(time)+dt_motion, dt_motion))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
+            t = list(np.arange(0, max(time) + dt_motion, dt_motion))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
             df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
             df['t'] = t
             inputdf['input_t'] = [round(num, 3) for num in time]
             df.t = df.t.round(3)
             df = pd.merge(df, inputdf, how = 'left', left_on = 't', right_on = 'input_t') # merge input data with time data at specified time step
-            df = df.interpolate(method = 'linear') # interpolate NaN values left after merging
+            df = df.interpolate(method = 'linear', axis = 0) # interpolate NaN values left after merging
             df.drop(columns = ['input_t', 't'], inplace = True)  # drop input time column
             df['t'] = t # reset time column due to interpolating
             df['t'] = df.t.round(3) # reset signficant digits

@@ -256,7 +256,7 @@ def plot_driver_inputs(self):
                             name = 'brake',
                             line = dict(color = 'rgb(255, 0, 0)', width = 2)),
                             secondary_y = False)
-    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.steer * 100,
+    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.steer,
                             mode = 'lines',
                             name = 'steer',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),

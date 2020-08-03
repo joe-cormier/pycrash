@@ -77,7 +77,7 @@ def plot_motion(veh, i, tire_path=True):
 
         # x axis
         fig.add_annotation(x = veh.p_gx.xaxis[i],
-                           y = veh.p_gy.cg[i],
+                           y = veh.p_gy.xaxis[i],
                            ax = veh.p_gx.cg[i],
                            ay = veh.p_gy.cg[i],
                            axref = 'x',
@@ -92,7 +92,7 @@ def plot_motion(veh, i, tire_path=True):
                            arrowcolor = 'rgb(0, 0, 0)')
 
         # y axis
-        fig.add_annotation(x = veh.p_gx.cg[i],
+        fig.add_annotation(x = veh.p_gx.yaxis[i],
                            y = veh.p_gy.yaxis[i],
                            ax = veh.p_gx.cg[i],
                            ay = veh.p_gy.cg[i],
@@ -140,7 +140,7 @@ def plot_motion(veh, i, tire_path=True):
             fig.add_trace(go.Scatter(x = gx.lrw, y = gy.lrw,
                                 mode = 'markers',
                                 name = 'LR',
-                                marker = dict(color = 'rgb(153, 0, 204)', size = 5,
+                                marker = dict(color = 'rgb(255, 102, 0)', size = 5,
                                 symbol = list(map(setmarker, gx.lr_lock)))))
 
         fig.update_layout(

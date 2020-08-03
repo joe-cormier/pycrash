@@ -58,7 +58,58 @@ def plot_model(self):
         autosize=False,
         width = 900,
         height = 500,
-        title = f'{self.name} - Velocity | Acceleration',
+        title = f'{self.name} - Inertial Frame Velocity | Acceleration',
+        template = 'plotly_white',
+        xaxis = dict(showgrid = False, title = 'Time (s)'),
+        yaxis = dict(showgrid = False),
+        font = dict(family = 'Arial', size = 14, color = 'black'))
+
+    fig.update_xaxes(showgrid = False, title_text = 'Time (s)', row = 2, col = 1)
+    fig.update_xaxes(showgrid = False, title_text = '', row = 1, col = 1)
+    fig.update_yaxes(showgrid = False, title_text = 'Velocity (mph)', row = 1, col = 1)
+    fig.update_yaxes(showgrid = False, title_text = 'Acceleration (g)', row = 2, col = 1)
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.show()
+
+    fig = make_subplots(rows = 2, cols = 1,
+                    shared_xaxes = True,
+                    vertical_spacing = 0.05)
+
+    # velocity data in vehicle frame
+    fig.add_trace(go.Scatter(x = self.model.t, y = self.model.vx / 1.46667,
+                            mode = 'lines',
+                            name = 'x',
+                            line = dict(color = 'rgb(0, 255, 0)', width = 2)),
+                            row = 1, col = 1)
+    fig.add_trace(go.Scatter(x = self.model.t, y = self.model.vy / 1.46667,
+                            mode = 'lines',
+                            name = 'y',
+                            line = dict(color = 'rgb(0, 0, 255)', width = 2)),
+                            row = 1, col = 1)
+
+    # acceleration data
+    fig.add_trace(go.Scatter(x = self.model.t, y = self.model.ax / 32.2,
+                            showlegend=False,
+                            mode = 'lines',
+                            name = 'Ax',
+                            line = dict(color = 'rgb(0, 255, 0)', width = 2)),
+                            row = 2, col = 1)
+    fig.add_trace(go.Scatter(x = self.model.t, y = self.model.ay / 32.2,
+                            showlegend=False,
+                            mode = 'lines',
+                            name = 'Ay',
+                            line = dict(color = 'rgb(0, 0, 255)', width = 2)),
+                            row = 2, col = 1)
+
+    fig.update_layout(
+        legend = dict(orientation = "h", yanchor = 'top', y = 1.1, xanchor = 'left', x = 0.01),
+        autosize=False,
+        width = 900,
+        height = 500,
+        title = f'{self.name} - Vehicle Frame Velocity | Acceleration',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
         yaxis = dict(showgrid = False),

@@ -96,8 +96,12 @@ def vehicle_model(veh):
             veh.model.oz_rad[i] = veh.model.oz_rad[i-1] + dt_motion * np.mean([veh.model.alphaz[i-1], (1 / veh.izz) * np.sum([veh.model.lf_fx[i-1] * veh.track / 2, veh.model.lf_fy[i-1] * veh.lcgf, -1 * veh.model.rf_fx[i-1] * veh.track / 2, veh.model.rf_fy[i-1] * veh.lcgf,
                                                 -1 * veh.model.rr_fx[i-1] * veh.track / 2, -1 * veh.model.rr_fy[i-1] * veh.lcgr, veh.model.lr_fx[i-1] * veh.track / 2 , -1 * veh.model.lr_fy[i-1] * veh.lcgr])])
 
+            #veh.model.vx[i] = veh.model.vx[i-1] + dt_motion * np.mean([veh.model.ax[i-1], (1 / (veh.weight / 32.2)) * np.sum([veh.model.lf_fx[i-1], veh.model.rf_fx[i-1], veh.model.rr_fx[i-1], veh.model.lr_fx[i-1]])])   # integrates ax (actual i-1) and the current ax calculated - corrected for rotating reference frame
+            #veh.model.vy[i] = veh.model.vy[i-1] + dt_motion * np.mean([veh.model.ay[i-1], (1 / (veh.weight / 32.2)) * np.sum([veh.model.lf_fy[i-1], veh.model.rf_fy[i-1], veh.model.rr_fy[i-1], veh.model.lr_fy[i-1]])])   # integrates ax (actual i-1) and the current ax calculated
+
             veh.model.vx[i] = veh.model.vx[i-1] + dt_motion * np.mean([veh.model.ax[i-1], (1 / (veh.weight / 32.2)) * np.sum([veh.model.lf_fx[i-1], veh.model.rf_fx[i-1], veh.model.rr_fx[i-1], veh.model.lr_fx[i-1]]) + veh.model.oz_rad[i-1] * veh.model.vy[i-1]])   # integrates ax (actual i-1) and the current ax calculated - corrected for rotating reference frame
             veh.model.vy[i] = veh.model.vy[i-1] + dt_motion * np.mean([veh.model.ay[i-1], (1 / (veh.weight / 32.2)) * np.sum([veh.model.lf_fy[i-1], veh.model.rf_fy[i-1], veh.model.rr_fy[i-1], veh.model.lr_fy[i-1]]) - veh.model.oz_rad[i-1] * veh.model.vx[i-1]])   # integrates ax (actual i-1) and the current ax calculated
+
 
             veh.model.ax[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i-1], veh.model.rf_fx[i-1], veh.model.rr_fx[i-1], veh.model.lr_fx[i-1]])  # inertial components of acceleration
             veh.model.ay[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i-1], veh.model.rf_fy[i-1], veh.model.rr_fy[i-1], veh.model.lr_fy[i-1]])  # inertial components of acceleration

@@ -120,11 +120,16 @@ def tire_forces(veh, i):
         lf_latf = -1 * math.sin(veh.model.lf_alpha[i]) * math.sqrt((mu_max * veh.model.lf_fz[i])**2 - lf_lonf**2)
 
     print(f'lf_latf = {lf_latf} at t = {veh.model.t[i]}')
+    print(f'lf_lonf = {lf_lonf}')
+    print(f'Vehicle vx = {veh.model.vx[i]}')
+    print(f'Vehicle vy = {veh.model.vy[i]}')
     print(f'lf lock status = {veh.model.lf_lock[i]}')
     print(f'lf_vy = {lf_vy}')
     print(f'lf_vx = {lf_vx}')
     print(f'lf delta = {veh.model.delta_rad[i]}')
-    print(f'lf_alpha (deg) = {veh.model.lf_alpha[i] * 180 / 3.14159:.2f}')
+    print(f'arctan2(vy, vx) = {np.arctan2(lf_vy, lf_vx) * 180 / 3.14159:.2f}')
+    print(f'lf_alpha (deg) = {veh.model.lf_alpha[i] * 180 / 3.14159}')
+
 
     # ------------------------ Right Front Tire ----------------------------------- #
     # local velocity
@@ -227,6 +232,9 @@ def tire_forces(veh, i):
     veh.model.lr_fx[i] = lr_lonf
     veh.model.lr_fy[i] = lr_latf
 
+    print(f'lf_fx = {veh.model.lf_fx[i]}')
+    print(f'lf_fy = {veh.model.lf_fy[i]}')
+    
     veh.model.lf_lock[i] = veh.model.lf_lock[i].astype(int)
     veh.model.rf_lock[i] = veh.model.rf_lock[i].astype(int)
     veh.model.rr_lock[i] = veh.model.rr_lock[i].astype(int)

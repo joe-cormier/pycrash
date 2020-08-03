@@ -48,9 +48,9 @@ def position_data_motion(veh, striking=False):
                                   'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
                                   'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
                                   'cg': 0,                                         # CG
-                                  'xaxis': veh.lcgf + veh.f_hang + 1.5,   # line for x-axis
+                                  'xaxis': veh.lcgf + veh.f_hang + 1.5,            # line for x-axis
                                   'yaxis': 0,                                      # line for y-axis
-                                  'vel_v': veh.model.vx[i]}, ignore_index=True)  # line for velocity vector
+                                  'vel_v': veh.model.vx[i]}, ignore_index=True)    # line for velocity vector
 
         veh.p_vy = veh.p_vy.append({'b_lfc': -1 * veh.v_width / 2,     # body outline
                                   'b_rfc': veh.v_width / 2,
@@ -77,9 +77,9 @@ def position_data_motion(veh, striking=False):
                                   'lrw_c': -1 * veh.v_width / 2 + veh.tire_w,
                                   'lrw_d': -1 * veh.v_width / 2,
                                   'cg':    0,                                         # CG
-                                  'xaxis': 0,   # line for x-axis
-                                  'yaxis': veh.tire_w / 2 + 1.5,                                      # line for y-axis
-                                  'vel_v': veh.model.vy[i]}, ignore_index=True)  # line for velocity vector
+                                  'xaxis': 0,                                         # line for x-axis
+                                  'yaxis': veh.v_width / 2 + 1.5,                     # line for y-axis
+                                  'vel_v': veh.model.vy[i]}, ignore_index=True)       # line for velocity vector
 
     cgx = veh.model[['Dx']].copy()                          # CG location in inertial frame
     cgy = veh.model[['Dy']].copy()
