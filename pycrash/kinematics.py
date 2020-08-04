@@ -9,7 +9,7 @@ from .position_data import position_data_motion
 from .visualization.vehicle import plot_driver_inputs
 from .visualization.kinematics import plot_model
 from .visualization.model import plot_motion
-from .visualization.tire_details import tire_details
+from .visualization.tire_details import tire_details, vertical_forces
 import math
 import csv
 import os
@@ -87,6 +87,7 @@ class SingleMotion():
 
     def tire_detail(self):
             tire_details(self.veh)
+            vertical_forces(self.veh)
 
     def CG_motion(self):
         """

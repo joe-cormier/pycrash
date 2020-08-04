@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 
 
 # TODO: create input for figure size - loads from "defaults" folder?
-figure_size = (800,450)
+figure_size = (2400,1300)
 figure_ratio = figure_size[0] / figure_size[1]
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 
@@ -54,10 +54,16 @@ def plot_motion(veh, i, tire_path=True):
                             name = 'LR',
                             line = dict(color = 'rgb(255, 102, 0)', width = 1)))
         # CG
-        fig.add_trace(go.Scatter(x = [veh.p_gx.cg[i], veh.p_gx.cg[i]], y = [veh.p_gy.cg[i], veh.p_gy.cg[i]],
+        cgx = [veh.p_gx.cg[i], veh.p_gx.cg[i]]
+        cgy = [veh.p_gy.cg[i], veh.p_gy.cg[i]]
+        time = [veh.model.t[i], veh.model.t[i]]
+
+        fig.add_trace(go.Scatter(x = cgx, y = cgy,
                             mode = 'markers',
                             name = 'CG',
-                            marker = dict(color = 'rgb(0, 0, 0)', size = 20)))
+                            marker = dict(color = 'rgb(0, 0, 0)', size = 10),
+                            customdata = time,
+                            hovertemplate = '<b>x</b>:%{x:.1f}<br>' + '<b>Y</b>: %{y:.1f}<br>' + '<b>time</b>: %{customdata:.3f}'))
 
         # velocity vector
         fig.add_annotation(x = veh.p_gx.vel_v[i],

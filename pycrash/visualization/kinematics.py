@@ -14,18 +14,19 @@ def plot_model(self):
     """
     takes SingleMotion class variable as input
     """
+
     fig = make_subplots(rows = 2, cols = 1,
                     shared_xaxes = True,
                     vertical_spacing = 0.05)
     # velocity data
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Vx / 1.46667,
                             mode = 'lines',
-                            name = 'x',
+                            name = 'X',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 1, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Vy / 1.46667,
                             mode = 'lines',
-                            name = 'y',
+                            name = 'Y',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 1, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Vr / 1.46667,
@@ -37,19 +38,19 @@ def plot_model(self):
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ax / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'Ax',
+                            name = 'AX',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ay / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'Ay',
+                            name = 'AY',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ar / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'Ar',
+                            name = 'AR',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),
                             row = 2, col = 1)
 
