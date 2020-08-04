@@ -48,10 +48,12 @@ class Project:
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
                          [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
-    def save_project(self, *args):
-        """ save project to filename along with vehicles of Class Vehicle
-        saved in an appended file that contains all prior project data
-        Will append the current project to the prexisting dataset if it exists
+    def save_project(self, root_path, *args):
+        """
+        root_path - directory to store project data
+        save project to filename along with vehicles of Class Vehicle
+        will create a directory and subdirectory for data and reports if
+        they don't exist
         TODO: add functionality for 3+ vehicles and model runs
         """
         nvehicles = 0
@@ -73,50 +75,69 @@ class Project:
             else:
                 print(f"Unknown object type for {a} of type {type(a)}")
 
+        # filename for data is the project Name
+        datafileName = ''.join([self.name, 'pkl'])
+
+        # check if data and report directories exist, if not create them
+        if os.path.isdir(os.path.join(root_path, self.name)) == False:
+            try: os.makedirs(os.path.join(root_path, self.name, "data"))
+
+            except OSError:
+                print (f'Creation of the directory {os.path.join("root_path", self.name)} failed')
+
+        if os.path.isdir(os.path.join(root_path, self.name)):
+                 os.mkdir(os.path.join(root_path, self.name, "reports"))
+                 os.mkdir(os.path.join(root_path, self.name, "visualization"))
 
         # test if ProjectData.pkl exists
-        if os.path.exists(os.path.join(os.getcwd(), "data", "archive", "ProjectDataArchive.pkl")) == True:
-            with open(os.path.join(os.getcwd(), "data", "archive", "ProjectDataArchive.pkl"), 'rb') as handle:
-                ProjectArhive = pickle.load(handle)
+        if os.path.exists(os.path.join(root_path, self.name, "data", datafileName)):
+            with open(os.path.join(root_path, self.name, "data", datafileName), 'rb') as handle:
+                ProjectData = pickle.load(handle)
             # add new project to data file
-            ProjectArhive.update({self.name:project_objects})
-        elif os.path.exists(os.path.join(os.getcwd(), "data" "archive", "ProjectDataArchive.pkl")) == False:
+            ProjectData.update({self.name:project_objects})
+        elif os.path.exists(os.path.join(root_path, self.name, "data", datafileName)) == False:
             # create new file for saving project data
-            ProjectArhive = {}
-            ProjectArhive.update({self.name:project_objects})
+            ProjectData = {}
+            ProjectData.update({self.name:project_objects})
 
-        with open(os.path.join(os.getcwd(), "data", "archive", "ProjectDataArchive.pkl"), 'wb') as handle:
-            pickle.dump(ProjectArhive, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(os.path.join(root_path, self.name, "data", datafileName), 'wb') as handle:
+            pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-# %% get project info
-def project_info(project):
-    """
-    pulls project data to be used when reloading saved data
-    """
-    out_names = []
 
-    print("This saved project contains:")
-    with open(os.path.join(os.getcwd(), "data", "archive", "ProjectDataArchive.pkl"), 'rb') as handle:
-        ProjectArhive = pickle.load(handle)
-        project_data = ProjectArhive[project]
-    for key, value in project_data.items():
-        print(f'Object of type "{value.type}" with name "{value.name}"')
-        out_names.append(value.name)
+    def project_info(project_name, project_path):
+        """
+        pulls project data to be used when reloading saved data
+        """
+        datafileName = ''.join([project_name, 'pkl'])
 
-    print(f"{out_names}")
+        out_names = []
 
-# %%   Load project data
-def load_project(project):
-    """
-    load saved project data using information from "project_info"
-    requires multiple variables for input:
-    project, veh1, veh2 = load_project('ProjectName')
-    """
-    out_data = []
-    with open(os.path.join(os.getcwd(), "data", "archive", "ProjectDataArchive.pkl"), 'rb') as handle:
-        ProjectArhive = pickle.load(handle)
-        project_data = ProjectArhive[project]
-    for key, value in project_data.items():
-        out_data.append(value)
+        print("This saved project contains:")
+        with open(os.path.join("project_path", "project_name", "data", datafileName), 'rb') as handle:
+            ProjectData = pickle.load(handle)
+            project_data = ProjectData[project_name]
+        for key, value in project_data.items():
+            print(f'Object of type "{value.type}" with name "{value.name}"')
+            out_names.append(value.name)
 
-    return out_data
+        print(f'Project objects: {out_names} at path: {os.path.join("project_path", "project_name", "data")}')
+
+
+    # %%   Load project data
+    def load_project(project_name, project_path):
+        """
+        load saved project data using information from "project_info"
+        requires multiple variables for input:
+
+        Example prject with two vehicles:
+        project, veh1, veh2 = load_project('ProjectName')
+        """
+
+        out_data = []
+        with open(os.path.join("project_path", "project_name", "data", datafileName), 'rb') as handle:
+            ProjectData = pickle.load(handle)
+            project_data = ProjectData[project]
+        for key, value in project_data.items():
+            out_data.append(value)
+
+        return out_data
