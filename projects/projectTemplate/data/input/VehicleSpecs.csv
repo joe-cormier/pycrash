@@ -19,7 +19,7 @@ Front overhang (ft),f_hang,3.2,float
 Rear overhang (ft),r_hang,4.1,float
 Tire diameter (ft),tire_d,2.716666667,float
 Tire width (ft),tire_w,0.866666667,float
-Izz (slug - ft^2),izz,13615,float
+Izz (slug - ft^2),izz,3000,float
 Front wheel drive (0/1),fwd,0,int
 Rear wheel drive (0/1),rwd,1,int
 All wheel drive (0/1),awd,0,int

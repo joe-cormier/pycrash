@@ -119,18 +119,18 @@ class SDOF_Model():
         print("")
 
     #  Run SDOF Model
-        self.model_result = SingleDOFmodel(W1 = self.veh1.weight,
-                                        v1_initial = self.veh1.vx_initial,
-                                        v1_brake = self.veh1.brake,
-                                        W2 = self.veh2.weight,
-                                        v2_initial = self.veh2.vx_initial,
-                                        v2_brake = self.veh2.brake,
-                                        k = self.k,
-                                        cor = self.cor,
-                                        tstop = self.tstop,
-                                        ktype = self.__ktype,
-                                        ttype = self.__ttype
-                                        )
+        self.model = SingleDOFmodel(W1 = self.veh1.weight,
+                                    v1_initial = self.veh1.vx_initial,
+                                    v1_brake = self.veh1.brake,
+                                    W2 = self.veh2.weight,
+                                    v2_initial = self.veh2.vx_initial,
+                                    v2_brake = self.veh2.brake,
+                                    k = self.k,
+                                    cor = self.cor,
+                                    tstop = self.tstop,
+                                    ktype = self.__ktype,
+                                    ttype = self.__ttype
+                                    )
 
         # TODO: create attribute for vehicle inputs for saving / plotting run
 
@@ -157,11 +157,11 @@ class SDOF_Model():
         """
         fig = plt.figure(figsize = (14,12))
         plt.title('Mutual Crush and Impact Force', fontsize=20)
-        plt.plot(self.model_result.dx * -12, self.model_result.springF, label = f'V1={self.veh1.vx_initial} mph', color = "k")
+        plt.plot(self.model.dx * -12, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color = "k")
         plt.xticks(fontsize=16)
         plt.yticks(fontsize=16)
-        plt.xlim([0, round(-12 * min(self.model_result.dx) + 1)])
-        plt.ylim([0, round(max(self.model_result.springF)+100)])
+        plt.xlim([0, round(-12 * min(self.model.dx) + 1)])
+        plt.ylim([0, round(max(self.model.springF)+100)])
         ax = plt.gca()
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)

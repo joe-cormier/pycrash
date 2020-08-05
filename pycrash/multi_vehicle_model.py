@@ -55,82 +55,82 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
         for veh in vehicle_list:
             veh.model.t[i] = round(i * dt_motion, 4) # assigning time
 
-                # get tire forces for t = 0
-                veh = tire_forces(veh, i)
+            # get tire forces for t = 0
+            veh = tire_forces(veh, i)
 
-                # local vehicle acceleration
-                veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i], veh.model.rf_fx[i], veh.model.rr_fx[i], veh.model.lr_fx[i]])
-                veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i], veh.model.rf_fy[i], veh.model.rr_fy[i], veh.model.lr_fy[i]])
+            # local vehicle acceleration
+            veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i], veh.model.rf_fx[i], veh.model.rr_fx[i], veh.model.lr_fx[i]])
+            veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i], veh.model.rf_fy[i], veh.model.rr_fy[i], veh.model.lr_fy[i]])
 
 
-                # rotation acceleration - alpha-z
-                veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
-                                                              veh.model.lf_fy[i] * veh.lcgf,
-                                                              -1 * veh.model.rf_fx[i] * veh.track / 2,
-                                                              veh.model.rf_fy[i] * veh.lcgf,
-                                                              -1 * veh.model.rr_fx[i] * veh.track / 2,
-                                                              -1 * veh.model.rr_fy[i] * veh.lcgr,
-                                                              veh.model.lr_fx[i] * veh.track / 2 ,
-                                                              -1 * veh.model.lr_fy[i] * veh.lcgr])
+            # rotation acceleration - alpha-z
+            veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
+                                                          veh.model.lf_fy[i] * veh.lcgf,
+                                                          -1 * veh.model.rf_fx[i] * veh.track / 2,
+                                                          veh.model.rf_fy[i] * veh.lcgf,
+                                                          -1 * veh.model.rr_fx[i] * veh.track / 2,
+                                                          -1 * veh.model.rr_fy[i] * veh.lcgr,
+                                                          veh.model.lr_fx[i] * veh.track / 2 ,
+                                                          -1 * veh.model.lr_fy[i] * veh.lcgr])
 
-                if i == 0:
-                    # vehicle acceleration in inertial frame
-                    veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i] * veh.model.vy[i]
-                    veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i] * veh.model.vx[i]
-                    veh.model.ar[i] = math.sqrt(veh.model.ax[i]**2 + veh.model.ay[i]**2)
+            if i == 0:
+                # vehicle acceleration in inertial frame
+                veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i] * veh.model.vy[i]
+                veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i] * veh.model.vx[i]
+                veh.model.ar[i] = math.sqrt(veh.model.ax[i]**2 + veh.model.ay[i]**2)
 
-                    # inertial frame coorindates - capital letters
-                    veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
-                    veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
+                # inertial frame coorindates - capital letters
+                veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
+                veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
-                if i > 0:
-                    # vehicle acceleration in inertial frame
-                    veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i-1] * veh.model.vy[i-1]
-                    veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i-1] * veh.model.vx[i-1]
-                    veh.model.ar[i] = math.sqrt(veh.model.ax[i]**2 + veh.model.ay[i]**2)
+            if i > 0:
+                # vehicle acceleration in inertial frame
+                veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i-1] * veh.model.vy[i-1]
+                veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i-1] * veh.model.vx[i-1]
+                veh.model.ar[i] = math.sqrt(veh.model.ax[i]**2 + veh.model.ay[i]**2)
 
-                    # vehicle velocities
-                    veh.model.vx[i] = veh.model.vx[i-1] + dt_motion * np.mean([veh.model.ax[i-1], veh.model.ax[i]])
-                    veh.model.vy[i] = veh.model.vy[i-1] + dt_motion * np.mean([veh.model.ay[i-1], veh.model.ay[i]])
+                # vehicle velocities
+                veh.model.vx[i] = veh.model.vx[i-1] + dt_motion * np.mean([veh.model.ax[i-1], veh.model.ax[i]])
+                veh.model.vy[i] = veh.model.vy[i-1] + dt_motion * np.mean([veh.model.ay[i-1], veh.model.ay[i]])
 
-                    # omega
-                    veh.model.oz_rad[i] = veh.model.oz_rad[i-1] + dt_motion * np.mean([veh.model.alphaz[i-1], veh.model.alphaz[i]])
+                # omega
+                veh.model.oz_rad[i] = veh.model.oz_rad[i-1] + dt_motion * np.mean([veh.model.alphaz[i-1], veh.model.alphaz[i]])
 
-                    # heading angle
-                    veh.model.theta_rad[i] = veh.model.theta_rad[i-1] + dt_motion * np.mean([veh.model.oz_rad[i], veh.model.oz_rad[i-1]])
+                # heading angle
+                veh.model.theta_rad[i] = veh.model.theta_rad[i-1] + dt_motion * np.mean([veh.model.oz_rad[i], veh.model.oz_rad[i-1]])
 
-                    # inertial frame coorindates - capital letters
-                    veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
-                    veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
+                # inertial frame coorindates - capital letters
+                veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
+                veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
-                    veh.model.Vx[i] = veh.model.Vx[i-1] + dt_motion * np.mean([veh.model.Ax[i-1], veh.model.Ax[i]])
-                    veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
+                veh.model.Vx[i] = veh.model.Vx[i-1] + dt_motion * np.mean([veh.model.Ax[i-1], veh.model.Ax[i]])
+                veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
 
-                if veh.model.oz_rad[i] != 0:
-                    veh.model.turn_rX[i] = veh.model.Vy[i] / veh.model.oz_rad[i]    # turning radius in x direction
-                    veh.model.turn_rY[i] = veh.model.Vx[i] / veh.model.oz_rad[i]    # turning radius in y direction
-                    veh.model.turn_rR[i] = math.sqrt(veh.model.turn_rX[i]**2 + veh.model.turn_rY[i]**2)
-                else:
-                    veh.model.turn_rX[i] = 0   # should actually be inf or undefined
-                    veh.model.turn_rY[i] = 0   # should actually be inf or undefined
-                    veh.model.turn_rR[i] = 0   # should actually be inf or undefined
+            if veh.model.oz_rad[i] != 0:
+                veh.model.turn_rX[i] = veh.model.Vy[i] / veh.model.oz_rad[i]    # turning radius in x direction
+                veh.model.turn_rY[i] = veh.model.Vx[i] / veh.model.oz_rad[i]    # turning radius in y direction
+                veh.model.turn_rR[i] = math.sqrt(veh.model.turn_rX[i]**2 + veh.model.turn_rY[i]**2)
+            else:
+                veh.model.turn_rX[i] = 0   # should actually be inf or undefined
+                veh.model.turn_rY[i] = 0   # should actually be inf or undefined
+                veh.model.turn_rR[i] = 0   # should actually be inf or undefined
 
-                veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)
-                veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
+            veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)
+            veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
 
-                # velocity vector in inertial frame
-                veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
+            # velocity vector in inertial frame
+            veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
 
-            # vehicle position
-            veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
-            veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
+        # vehicle position
+        veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
+        veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
 
-            # converting to degrees
-            # TODO: remove for speed
-            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
-            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
-            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
-            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
+        # converting to degrees
+        # TODO: remove for speed
+        veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
+        veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
+        veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
+        veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
 
         # detect impact using current vehicle positions after first iterations
         impact_detect = detect(vehicle_list, i)

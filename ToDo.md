@@ -1,8 +1,8 @@
 To Do
 =============================
 
-Integrate with GitHub project  
-Add raise errors  
+Integrate with GitHub project
+Add raise errors
 
 ### Saving Data
 + create new folder for each project (input / reports)

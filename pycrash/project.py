@@ -3,8 +3,15 @@ from tabulate import tabulate
 import os
 import pickle
 
-# TODO: when initializing project, directory for project must be specified
-# this directory will be used to save all files
+# TODO: when loading project, pull saved project data
+
+def yes_or_no(question):
+    while "the answer is invalid":
+        reply = str(input(question+' (y/n): ')).lower().strip()
+        if reply[:1] == 'y':
+            return True
+        if reply[:1] == 'n':
+            return False
 
 class Project:
     """
@@ -20,6 +27,7 @@ class Project:
     def __init__(self, project_input = None):
         if (project_input == None):
             self.name = input("Project Name: ")
+            self.project_path = input("Path for project directory: ")
             self.pdesc = input("Project Description: ")
             self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
             self.type = "project"      # class type
@@ -36,19 +44,63 @@ class Project:
             self.note = input("Note: ")
         else:
             self.name = project_input['name']
+            self.project_path = project_input['path']
             self.pdesc = project_input['pdesc']
             self.sim_type = project_input['sim_type']
             self.impact_type = project_input['impact_type']
             self.note = project_input['note']
+            self.type = "project"  # class type
 
-        print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
-                    [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+        # check if data and report directories exist, if not create them
+        if os.path.isdir(os.path.join(self.project_path, self.name)) == False:
+            try: os.makedirs(os.path.join(self.project_path, self.name, "data"))
+            except OSError:
+                print (f'Creation of the directory {os.path.join(self.project_path, self.name)} failed')
+
+        if os.path.isdir(os.path.join(self.project_path, self.name, "data", "archive")) == False:
+            os.mkdir(os.path.join(self.project_path, self.name, "data", "archive"))
+            os.mkdir(os.path.join(self.project_path, self.name, "data", "input"))
+            os.mkdir(os.path.join(self.project_path, self.name, "data", "results"))
+            os.mkdir(os.path.join(self.project_path, self.name, "notebooks"))
+            os.mkdir(os.path.join(self.project_path, self.name, "reports"))
+            os.mkdir(os.path.join(self.project_path, self.name, "visualization"))
+
+        print(f'Project directories located here: {os.path.join(self.project_path, self.name)}')
+        print(f'Place any input files to be used in {os.path.join(self.project_path, self.name, "data", "input")}')
+        print('')
+
+        # save data into archive for notebook reference
+        datafileName = ''.join([self.name, '.pkl'])
+        project_objects = {}
+        project_objects.update({self.name:self})
+        # test if datafileName.pkl exists
+        if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
+            over_write_file = yes_or_no("Project file already exists here - overwrite?: ")
+            if over_write_file:
+                 os.remove(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) # delete current file
+                 ProjectData = project_objects
+
+            else:
+                new_project_name = str(input("Enter new project name: "))
+                self.name = new_project_name
+                ProjectData = project_objects
+
+        else:
+            # create new file for saving project data
+            ProjectData = project_objects
+
+
+        with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
+            pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+        print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
+                    [self.name, self.project_path, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
     def show(self):
-        print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
-                         [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+        print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
+                         [self.name, self.project_path, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
-    def save_project(self, root_path, *args):
+    def save_project(self, *args):
         """
         root_path - directory to store project data
         save project to filename along with vehicles of Class Vehicle
@@ -84,68 +136,53 @@ class Project:
                 print(f"Unknown object type for {a} of type {type(a)}")
 
         # filename for data is the project Name
-        datafileName = ''.join([self.name, 'pkl'])
-
-        # check if data and report directories exist, if not create them
-        if os.path.isdir(os.path.join(root_path, self.name)) == False:
-            try: os.makedirs(os.path.join(root_path, self.name, "data"))
-
-            except OSError:
-                print (f'Creation of the directory {os.path.join("root_path", self.name)} failed')
-
-        if os.path.isdir(os.path.join(root_path, self.name)):
-                 os.mkdir(os.path.join(root_path, self.name, "reports"))
-                 os.mkdir(os.path.join(root_path, self.name, "visualization"))
+        datafileName = ''.join([self.name, '.pkl'])
 
         # test if ProjectData.pkl exists
-        if os.path.exists(os.path.join(root_path, self.name, "data", datafileName)):
-            with open(os.path.join(root_path, self.name, "data", datafileName), 'rb') as handle:
+        if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
+            with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'rb') as handle:
                 ProjectData = pickle.load(handle)
-            # add new project to data file
-            ProjectData.update({self.name:project_objects})
-        elif os.path.exists(os.path.join(root_path, self.name, "data", datafileName)) == False:
+                # add new project to data file
+                ProjectData = project_objects
+        elif os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) == False:
             # create new file for saving project data
-            ProjectData = {}
-            ProjectData.update({self.name:project_objects})
+            ProjectData = project_objects
 
-        with open(os.path.join(root_path, self.name, "data", datafileName), 'wb') as handle:
+
+        with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-    def project_info(project_name, project_path):
-        """
-        pulls project data to be used when reloading saved data
-        """
-        datafileName = ''.join([project_name, 'pkl'])
+def project_info(project_name, project_path):
+    """
+    pulls project data to be used when reloading saved data
+    """
+    datafileName = ''.join([project_name, '.pkl'])
 
-        out_names = []
+    out_names = []
+    print("This saved project contains:")
+    with open(os.path.join(project_path, project_name, "data", "archive", datafileName), 'rb') as handle:
+        ProjectData = pickle.load(handle)
+    for key, value in ProjectData.items():
+        print(f'Object of type "{value.type}" with name "{value.name}"')
+        out_names.append(value.name)
 
-        print("This saved project contains:")
-        with open(os.path.join("project_path", "project_name", "data", datafileName), 'rb') as handle:
-            ProjectData = pickle.load(handle)
-            project_data = ProjectData[project_name]
-        for key, value in project_data.items():
-            print(f'Object of type "{value.type}" with name "{value.name}"')
-            out_names.append(value.name)
-
-        print(f'Project objects: {out_names} at path: {os.path.join("project_path", "project_name", "data")}')
+    print(f'list objects in this order for loading project: {out_names}')
+    print(f"Example: project_name, veh1, veh2 = load_project('project_name', 'project_path')")
 
 
-    # %%   Load project data
-    def load_project(project_name, project_path):
-        """
-        load saved project data using information from "project_info"
-        requires multiple variables for input:
+# %%   Load project data
+def load_project(project_name, project_path):
+    """
+    load saved project data using information from "project_info"
+    requires multiple variables for input:
 
-        Example prject with two vehicles:
-        project, veh1, veh2 = load_project('ProjectName')
-        """
+    Example prject with two vehicles:
+    project, veh1, veh2 = load_project('ProjectName')
+    """
+    datafileName = ''.join([project_name, '.pkl'])
+    out_data = []
+    with open(os.path.join(project_path, project_name, "data", "archive", datafileName), 'rb') as handle:
+        ProjectData = pickle.load(handle)
 
-        out_data = []
-        with open(os.path.join("project_path", "project_name", "data", datafileName), 'rb') as handle:
-            ProjectData = pickle.load(handle)
-            project_data = ProjectData[project]
-        for key, value in project_data.items():
-            out_data.append(value)
-
-        return out_data
+        return ProjectData.values()
