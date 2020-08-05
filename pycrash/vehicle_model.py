@@ -120,4 +120,5 @@ def vehicle_model(veh):
     veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
     veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
     veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
+
     return veh

@@ -11,6 +11,7 @@ from .data.defaults.config import default_dict
 from copy import deepcopy
 from .multi_vehicle_model import multi_vehicle_model
 from .position_data import position_data_static, position_data_motion
+from .visualization.vehicle import plot_driver_inputs
 import pandas as pd
 import numpy as np
 import math
@@ -46,7 +47,7 @@ class KinematicsTwo():
     """
     def __init__(self, name, veh1, veh2):
         self.name = name
-        self.type = 'twomotion'             # class type for saving files
+        self.type = 'multimotion'             # class type for saving files
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
 
@@ -82,18 +83,7 @@ class KinematicsTwo():
 
     def plot_inputs(self):
         for veh in [self.veh1, self.veh2]:
-            fig, ax1 = plt.subplots(figsize = figure_size)
-            fig.suptitle(f'{veh.name}', fontsize=16)
-            ax1.scatter(self.veh1.driver_input.t, self.veh1.driver_input.throttle * 100, color='g', label = 'throttle')
-            ax1.scatter(self.veh1.driver_input.t, self.veh1.driver_input.brake * 100, color='r', label = 'brake')
-            ax2 = ax1.twinx()
-            ax2.scatter(self.veh1.driver_input.t, self.veh1.driver_input.steer, color='k', label = 'steer')
-            ax1.title(f'Driver Inputs for {self.veh1.name}')
-            ax1.set_ylabel('Throttle | Brake (%)')
-            ax1.set_xlabel('Time (s)')
-            ax2.set_ylabel('Steer Angle (deg)')
-            plt.legend(frameon = False)
-            plt.show()
+            plot_driver_inputs(veh)
 
     def plot_motion(self):
         for veh in [self.veh1, self.veh2]:

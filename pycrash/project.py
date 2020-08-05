@@ -59,6 +59,8 @@ class Project:
         nvehicles = 0
         nsdof_models = 0
         nsideswipe = 0
+        nmultimotion = 0
+        nsinglemotion = 0
         project_objects = {}
         project_objects.update({self.name:self})
 
@@ -68,10 +70,16 @@ class Project:
                 project_objects.update({f'veh{nvehicles}':a})
             elif (a.type == 'sdof'):
                 nsdof_models += 1
-                project_objects.update({f'run{nsdof_models}':a})
+                project_objects.update({f'sdof{nsdof_models}':a})
             elif (a.type == 'sideswipe'):
                 nsideswipe += 1
-                project_objects.update({f'run{nsideswipe}':a})
+                project_objects.update({f'ss{nsideswipe}':a})
+            elif (a.type == 'singlemotion'):
+                nsinglemotion += 1
+                project_objects.update({f'singlemotion{nsinglemotion}':a})
+            elif (a.type == 'multimotion'):
+                nmultimotion += 1
+                project_objects.update({f'multimotion{nmultimotion}':a})
             else:
                 print(f"Unknown object type for {a} of type {type(a)}")
 
