@@ -12,25 +12,25 @@ figure_size = (800,450)
 generating impact point - striking vehicle
 """
 
-def plot_impact_points(self, user_loc = False):
+def plot_impact_points(veh, user_loc = False, iplane = True):
     # x,y coordinates of vehicle outline:
     # left front corner
-    self._b_lfc_x = self.lcgf + self.f_hang
-    self._b_lfc_y = -1 * self.v_width / 2
+    veh._b_lfc_x = veh.lcgf + veh.f_hang
+    veh._b_lfc_y = -1 * veh.width / 2
     # right front corner
-    self._b_rfc_x = self.lcgf + self.f_hang
-    self._b_rfc_y = self.v_width / 2
+    veh._b_rfc_x = veh.lcgf + veh.f_hang
+    veh._b_rfc_y = veh.width / 2
     # right rear corner
-    self._b_rrc_x = -1 * self.lcgr - self.r_hang
-    self._b_rrc_y = self.v_width / 2
+    veh._b_rrc_x = -1 * veh.lcgr - veh.r_hang
+    veh._b_rrc_y = veh.width / 2
     # left rear corner
-    self._b_lrc_x = -1 * self.lcgr - self.r_hang
-    self._b_lrc_y = -1* self.v_width / 2
+    veh._b_lrc_x = -1 * veh.lcgr - veh.r_hang
+    veh._b_lrc_y = -1* veh.width / 2
 
-    bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
-    bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
+    bdy_x = (veh._b_lfc_x, veh._b_rfc_x, veh._b_rrc_x, veh._b_lrc_x, veh._b_lfc_x)
+    bdy_y = (veh._b_lfc_y, veh._b_rfc_y, veh._b_rrc_y, veh._b_lrc_y, veh._b_lfc_y)
 
-    x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
+    x_axis_length = veh._b_lfc_x * 1.5 - veh._b_lrc_x * 1.5
 
     # generate plot to show vehicle outline and default points for impact
     fig = go.Figure()
@@ -45,36 +45,11 @@ def plot_impact_points(self, user_loc = False):
                             mode='markers',
                             marker = dict(color = 'rgb(51, 204, 51)', size = 20)))
 
-    # Adding labels
-    if (user_loc):
-        fig.add_trace(go.Scatter(x = [self.pimpact_x, self.pimpact_x,], y = [self.pimpact_y, self.pimpact_y,],
-                            mode = 'markers+text',
-                            marker = dict(color = 'rgb(255, 0, 0)', size = 8),
-                            text = ['Impact Point', ""],
-                            textposition = 'bottom center'))
-
-    else:
-        fig.add_annotation(x = self._b_lfc_x * 1.1,
-                           y = self._b_lfc_y,
-                           showarrow = False,
-                           text = "1")
-        fig.add_annotation(x = self._b_rfc_x * 1.1,
-                           y = self._b_rfc_y,
-                           showarrow = False,
-                           text = "2")
-        fig.add_annotation(x = self._b_rrc_x * 1.1,
-                           y = self._b_rrc_y,
-                           showarrow = False,
-                           text = "3")
-        fig.add_annotation(x = self._b_lrc_x * 1.1,
-                           y = self._b_lrc_y,
-                           showarrow = False,
-                           text = "4")
-
     fig.add_annotation(x = 1,
                        y = -1,
                        showarrow = False,
                        text = "CG")
+    # vehicle x-axis
     fig.add_annotation(x = 5,
                        y = 0,
                        axref = 'x',
@@ -87,7 +62,7 @@ def plot_impact_points(self, user_loc = False):
                        arrowhead = 1,
                        arrowwidth = 1.5,
                        arrowcolor = 'rgb(0, 0, 0)')
-
+    # vehicle y-axis
     fig.add_annotation(x = 0,
                        y = 5,
                        axref = 'x',
@@ -101,7 +76,58 @@ def plot_impact_points(self, user_loc = False):
                        arrowwidth = 1.5,
                        arrowcolor = 'rgb(0, 0, 255)')
 
+    if (user_loc):
+        fig.add_trace(go.Scatter(x = [veh.pimpact_x, veh.pimpact_x,], y = [veh.pimpact_y, veh.pimpact_y,],
+                            mode = 'markers+text',
+                            marker = dict(color = 'rgb(255, 0, 0)', size = 8),
+                            text = ['Impact Point', ""],
+                            textposition = 'bottom center'))
 
+    else:
+        fig.add_annotation(x = veh._b_lfc_x * 1.1,
+                           y = veh._b_lfc_y,
+                           showarrow = False,
+                           text = "1")
+        fig.add_annotation(x = veh._b_rfc_x * 1.1,
+                           y = veh._b_rfc_y,
+                           showarrow = False,
+                           text = "2")
+        fig.add_annotation(x = veh._b_rrc_x * 1.1,
+                           y = veh._b_rrc_y,
+                           showarrow = False,
+                           text = "3")
+        fig.add_annotation(x = veh._b_lrc_x * 1.1,
+                           y = veh._b_lrc_y,
+                           showarrow = False,
+                           text = "4")
+
+    if (iplane):
+        # normal impact plane
+        fig.add_annotation(x = veh.impact_norm_x,
+                           y = veh.impact_norm_y,
+                           axref = 'x',
+                           ayref = 'y',
+                           text = "",
+                           showarrow = True,
+                           ax = veh.pimpact_x,
+                           ay = veh.pimpact_y,
+                           arrowsize = 2,
+                           arrowhead = 2,
+                           arrowwidth = 1.5,
+                           arrowcolor = 'rgb(153, 0, 51)')
+        # tangential impact plane
+        fig.add_annotation(x = veh.impact_tang_x,
+                           y = veh.impact_tang_y,
+                           axref = 'x',
+                           ayref = 'y',
+                           text = "",
+                           showarrow = True,
+                           ax = veh.pimpact_x,
+                           ay = veh.pimpact_y,
+                           arrowsize = 1,
+                           arrowhead = 1,
+                           arrowwidth = 1,
+                           arrowcolor = 'rgb(153, 0, 51)')
 
     fig.update_layout(
         showlegend=False,
@@ -115,7 +141,7 @@ def plot_impact_points(self, user_loc = False):
         font = dict(family = 'Arial', size = 16, color = 'black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [veh._b_lrc_x * 1.5, veh._b_lfc_x * 1.5])
     fig.update_yaxes(autorange = 'reversed', showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False,
                      range = [-0.5 * x_axis_length * figure_size[1] / figure_size[0],
@@ -127,25 +153,25 @@ def plot_impact_points(self, user_loc = False):
     generating impacting edge - struck vehicle
     """
 
-def plot_impact_edge(self):
+def plot_impact_edge(veh):
     # x,y coordinates of vehicle outline:
     # left front corner
-    self._b_lfc_x = self.lcgf + self.f_hang
-    self._b_lfc_y = -1 * self.v_width / 2
+    veh._b_lfc_x = veh.lcgf + veh.f_hang
+    veh._b_lfc_y = -1 * veh.width / 2
     # right front corner
-    self._b_rfc_x = self.lcgf + self.f_hang
-    self._b_rfc_y = self.v_width / 2
+    veh._b_rfc_x = veh.lcgf + veh.f_hang
+    veh._b_rfc_y = veh.width / 2
     # right rear corner
-    self._b_rrc_x = -1 * self.lcgr - self.r_hang
-    self._b_rrc_y = self.v_width / 2
+    veh._b_rrc_x = -1 * veh.lcgr - veh.r_hang
+    veh._b_rrc_y = veh.width / 2
     # left rear corner
-    self._b_lrc_x = -1 * self.lcgr - self.r_hang
-    self._b_lrc_y = -1* self.v_width / 2
+    veh._b_lrc_x = -1 * veh.lcgr - veh.r_hang
+    veh._b_lrc_y = -1* veh.width / 2
 
-    bdy_x = (self._b_lfc_x, self._b_rfc_x, self._b_rrc_x, self._b_lrc_x, self._b_lfc_x)
-    bdy_y = (self._b_lfc_y, self._b_rfc_y, self._b_rrc_y, self._b_lrc_y, self._b_lfc_y)
+    bdy_x = (veh._b_lfc_x, veh._b_rfc_x, veh._b_rrc_x, veh._b_lrc_x, veh._b_lfc_x)
+    bdy_y = (veh._b_lfc_y, veh._b_rfc_y, veh._b_rrc_y, veh._b_lrc_y, veh._b_lfc_y)
 
-    x_axis_length = self._b_lfc_x * 1.5 - self._b_lrc_x * 1.5
+    x_axis_length = veh._b_lfc_x * 1.5 - veh._b_lrc_x * 1.5
 
     # generate plot to show vehicle outline and default points for impact
     fig = go.Figure()
@@ -170,20 +196,20 @@ def plot_impact_edge(self):
                             marker = dict(color = 'rgb(51, 204, 51)', size = 20)))
 
     # edge labels
-    fig.add_annotation(x = self._b_lfc_x * 1.1,
+    fig.add_annotation(x = veh._b_lfc_x * 1.1,
                        y = 0,
                        showarrow = False,
                        text = "1")
     fig.add_annotation(x = -2,
-                       y = 1.2 * self.v_width / 2,
+                       y = 1.2 * veh.width / 2,
                        showarrow = False,
                        text = "2")
-    fig.add_annotation(x = self._b_rrc_x * 1.1,
+    fig.add_annotation(x = veh._b_rrc_x * 1.1,
                        y = 0,
                        showarrow = False,
                        text = "3")
     fig.add_annotation(x = -2,
-                       y = -1.2 * self.v_width / 2,
+                       y = -1.2 * veh.width / 2,
                        showarrow = False,
                        text = "4")
 
@@ -232,7 +258,7 @@ def plot_impact_edge(self):
         font = dict(family = 'Arial', size = 16, color = 'black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [self._b_lrc_x * 1.5, self._b_lfc_x * 1.5])
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [veh._b_lrc_x * 1.5, veh._b_lfc_x * 1.5])
     fig.update_yaxes(autorange = 'reversed', showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False,
                      range = [-0.5 * x_axis_length * figure_size[1] / figure_size[0],
@@ -246,17 +272,17 @@ plot driver inputs
 def plot_driver_inputs(self):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.throttle * 100,
+    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.throttle * 100,
                             mode = 'lines',
                             name = 'throttle',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             secondary_y = False)
-    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.brake * 100,
+    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.brake * 100,
                             mode = 'lines',
                             name = 'brake',
                             line = dict(color = 'rgb(255, 0, 0)', width = 2)),
                             secondary_y = False)
-    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.steer,
+    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.steer,
                             mode = 'lines',
                             name = 'steer',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),
@@ -267,7 +293,7 @@ def plot_driver_inputs(self):
         autosize=False,
         width=figure_size[0],
         height=figure_size[1],
-        title = f'Driver Inputs for {self.name}',
+        title = f'Driver Inputs for {veh.name}',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
         yaxis = dict(showgrid = False),

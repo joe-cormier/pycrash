@@ -13,6 +13,24 @@ def yes_or_no(question):
         if reply[:1] == 'n':
             return False
 
+def save_project_data(projectself):
+    """
+    save project data in pycrash data directory to share project info with
+    other modulues
+    """
+    if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
+        over_write_file = yes_or_no("Project file already exists here - overwrite?: ")
+        if over_write_file:
+             os.remove(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) # delete current file
+             ProjectData = project_objects
+
+        else:
+            new_project_name = str(input("Enter new project name: "))
+            self.name = new_project_name
+            ProjectData = project_objects
+
+
+
 class Project:
     """
     class object for project variables
@@ -95,6 +113,7 @@ class Project:
 
         print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
                     [self.name, self.project_path, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+
 
     def show(self):
         print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],

@@ -46,17 +46,17 @@ def global_frame_df(vin, vehi):
                                   'yaxis': 0,                                      # line for y-axis
                                   'vel_v':10*math.cos(vin.beta_rad[i])}, ignore_index=True)  # line for velocity vector
 
-        draw_vy = draw_vy.append({'b_lfc': -1*v_dict['v_width']/2,     # body outline
-                                  'b_rfc': v_dict['v_width']/2,
-                                  'b_rrc': v_dict['v_width']/2,
-                                  'b_lrc': -1*v_dict['v_width']/2,
-                                  'lfw':  -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2),                         # left front wheel
-                                  'rfw': (v_dict['v_width']/2 - v_dict['tire_w']/2),                         # Right front wheel
-                                  'rrw': (v_dict['v_width']/2 - v_dict['tire_w']/2),                          # Right rear wheel
-                                  'lrw': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2),                          # Left rear wheel
+        draw_vy = draw_vy.append({'b_lfc': -1*v_dict['width']/2,     # body outline
+                                  'b_rfc': v_dict['width']/2,
+                                  'b_rrc': v_dict['width']/2,
+                                  'b_lrc': -1*v_dict['width']/2,
+                                  'lfw':  -1 * (v_dict['width']/2 - v_dict['tire_w']/2),                         # left front wheel
+                                  'rfw': (v_dict['width']/2 - v_dict['tire_w']/2),                         # Right front wheel
+                                  'rrw': (v_dict['width']/2 - v_dict['tire_w']/2),                          # Right rear wheel
+                                  'lrw': -1 * (v_dict['width']/2 - v_dict['tire_w']/2),                          # Left rear wheel
                                   'cg': 0,                                         # CG
                                   'xaxis':0,   # line for x-axis
-                                  'yaxis': v_dict['v_width']/2+1.5,                                      # line for y-axis
+                                  'yaxis': v_dict['width']/2+1.5,                                      # line for y-axis
                                   'vel_v':8*math.sin(vin.beta_rad[i])}, ignore_index=True)  # line for velocity vector
 
         # translate vehicle coordinates above to global frame

@@ -12,6 +12,7 @@ from copy import deepcopy
 from .multi_vehicle_model import multi_vehicle_model
 from .position_data import position_data_static, position_data_motion
 from .visualization.vehicle import plot_driver_inputs
+from .collision_plane import impact_plane, impact_edge
 import pandas as pd
 import numpy as np
 import math
@@ -45,11 +46,24 @@ class KinematicsTwo():
     Environment slope and bank is optionally defined as a function of X,Y components
     creates independent copy of vehicle at instantiation
     """
-    def __init__(self, name, veh1, veh2):
+    def __init__(self, name, impact_type, veh1, veh2):
         self.name = name
         self.type = 'multimotion'             # class type for saving files
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
+
+
+        if (impact_type not in ["SS", "IMPC"]):
+            print("Not a valid impact type, choose SS, IMPC or SDOF")
+            impact_type = input("Enter an impact type of SS or IMPC: ")
+
+            if (impact_type not in ["SS", "IMPC"]):
+                print("Not a valid impact type - value set to None")
+                self.impact_type == None
+            else:
+                self.impact_type = impact_type
+        else:
+            self.impact_type = impact_type
 
         # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
@@ -80,6 +94,15 @@ class KinematicsTwo():
             driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
+
+
+        print(f"Create impact point for {self.veh1.name} = striking vehicle")
+        print("")
+        self.veh1 = impact_plane(veh1)
+
+        print(f"Create impacting edge for {self.veh2.name} = struck vehicle")
+        print("")
+        self.veh2 = impact_edge(veh2, iplane = False)
 
     def plot_inputs(self):
         for veh in [self.veh1, self.veh2]:

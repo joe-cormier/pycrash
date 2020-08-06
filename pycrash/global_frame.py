@@ -64,33 +64,33 @@ def global_frame_df(vin, vehi):
                                   'yaxis': 0,                                      # line for y-axis
                                   'vel_v':10*math.cos(vin.beta_rad[i])}, ignore_index=True)  # line for velocity vector
 
-        draw_vy = draw_vy.append({'b_lfc': -1*v_dict['v_width']/2,     # body outline
-                                  'b_rfc': v_dict['v_width']/2,
-                                  'b_rrc': v_dict['v_width']/2,
-                                  'b_lrc': -1*v_dict['v_width']/2,
-                                  'lfw':  -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2),                         # left front wheel
-                                  'lfw_a': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'lfw_b': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'lfw_c': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'lfw_d': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'rfw': (v_dict['v_width']/2 - v_dict['tire_w']/2),                         # Right front wheel
-                                  'rfw_a': (v_dict['v_width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'rfw_b':(v_dict['v_width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'rfw_c':(v_dict['v_width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'rfw_d':(v_dict['v_width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
-                                  'rrw': (v_dict['v_width']/2 - v_dict['tire_w']/2),                          # Right rear wheel
-                                  'rrw_a':v_dict['v_width']/2 - v_dict['tire_w'],
-                                  'rrw_b': v_dict['v_width']/2,
-                                  'rrw_c':v_dict['v_width']/2,
-                                  'rrw_d':v_dict['v_width']/2 - v_dict['tire_w'],
-                                  'lrw': -1 * (v_dict['v_width']/2 - v_dict['tire_w']/2),                          # Left rear wheel
-                                  'lrw_a': -1 * v_dict['v_width']/2,
-                                  'lrw_b': -1 * v_dict['v_width']/2 + v_dict['tire_w'],
-                                  'lrw_c': -1 * v_dict['v_width']/2 + v_dict['tire_w'],
-                                  'lrw_d': -1 * v_dict['v_width']/2,
+        draw_vy = draw_vy.append({'b_lfc': -1*v_dict['width']/2,     # body outline
+                                  'b_rfc': v_dict['width']/2,
+                                  'b_rrc': v_dict['width']/2,
+                                  'b_lrc': -1*v_dict['width']/2,
+                                  'lfw':  -1 * (v_dict['width']/2 - v_dict['tire_w']/2),                         # left front wheel
+                                  'lfw_a': -1 * (v_dict['width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'lfw_b': -1 * (v_dict['width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'lfw_c': -1 * (v_dict['width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'lfw_d': -1 * (v_dict['width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'rfw': (v_dict['width']/2 - v_dict['tire_w']/2),                         # Right front wheel
+                                  'rfw_a': (v_dict['width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'rfw_b':(v_dict['width']/2 - v_dict['tire_w']/2) + v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'rfw_c':(v_dict['width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'rfw_d':(v_dict['width']/2 - v_dict['tire_w']/2) + -1*v_dict['tire_d']/2*math.sin(vin.loc[i,'delta_rad']) + -1*v_dict['tire_w']/2*math.cos(vin.loc[i,'delta_rad']),
+                                  'rrw': (v_dict['width']/2 - v_dict['tire_w']/2),                          # Right rear wheel
+                                  'rrw_a':v_dict['width']/2 - v_dict['tire_w'],
+                                  'rrw_b': v_dict['width']/2,
+                                  'rrw_c':v_dict['width']/2,
+                                  'rrw_d':v_dict['width']/2 - v_dict['tire_w'],
+                                  'lrw': -1 * (v_dict['width']/2 - v_dict['tire_w']/2),                          # Left rear wheel
+                                  'lrw_a': -1 * v_dict['width']/2,
+                                  'lrw_b': -1 * v_dict['width']/2 + v_dict['tire_w'],
+                                  'lrw_c': -1 * v_dict['width']/2 + v_dict['tire_w'],
+                                  'lrw_d': -1 * v_dict['width']/2,
                                   'cg': 0,                                         # CG
                                   'xaxis':0,   # line for x-axis
-                                  'yaxis': v_dict['v_width']/2+1.5,                                      # line for y-axis
+                                  'yaxis': v_dict['width']/2+1.5,                                      # line for y-axis
                                   'vel_v':10*math.sin(vin.beta_rad[i])}, ignore_index=True)  # line for velocity vector
 
         # translate vehicle coordinates above to global frame

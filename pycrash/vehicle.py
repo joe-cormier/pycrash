@@ -6,6 +6,7 @@ from .data.defaults.config import default_dict
 from tabulate import tabulate
 from itertools import count
 from .visualization.vehicle import plot_impact_points, plot_impact_edge, plot_driver_inputs
+from .collision_plane import impact_plane
 import pandas as pd
 import numpy as np
 import inspect
@@ -68,8 +69,8 @@ veh_inputs = ["year",
 "init_x_pos",
 "init_y_pos",
 "head_angle",
-"v_width",
-"v_length",
+"width",
+"length",
 "hcg",
 "lcgf",
 "lcgr",
@@ -119,8 +120,8 @@ class Vehicle:
             self.init_x_pos = float(input_dict['init_x_pos'])
             self.init_y_pos = float(input_dict['init_y_pos'])
             self.head_angle = float(input_dict['head_angle'])
-            self.v_width = float(input_dict['v_width'])
-            self.v_length = float(input_dict['v_length'])
+            self.width = float(input_dict['width'])
+            self.length = float(input_dict['length'])
             self.hcg = float(input_dict['hcg'])
             self.lcgf = float(input_dict['lcgf'])
             self.lcgr = float(input_dict['lcgr'])
@@ -184,8 +185,8 @@ class Vehicle:
         "init_x_pos":self ,
         "init_y_pos":self.init_y_pos,
         "head_angle":self.head_angle,
-        "v_width":self.v_width,
-        "v_length":self.v_length,
+        "width":self.width,
+        "length":self.length,
         "hcg":self.hcg,
         "lcgf":self.lcgf,
         "lcgr":self.lcgr,
@@ -278,118 +279,3 @@ class Vehicle:
         Driver inputs | vehicle travel distance (ft) | brake (%) | steer (deg) |
         will override other inputs applied to vehicle
         """
-
-    def impact_point(self):
-        """
-        generates a point in vehicle 1 (striking) reference frame
-        sideswipe collisions - px, py will determine the extent of vehcle engagement with respect
-        to contacting edge in vehicle 2 (struck)
-        impact momentum model - px, py will be used along with the impact plane to determine time
-        of impact and direction of normal and tangential contact planes
-        """
-        # set impact edge to zero
-        self.edgeimpact = 0
-
-        # test for required inputs
-        if not self.lcgf:
-            self.lcgf = float(input("Enter CG to front axle (ft)"))
-
-        if not self.lcgr:
-            self.lcgr = float(input("Enter CG to rear axle (ft)"))
-
-        if not self.f_hang:
-            self.f_hang = float(input("Enter front overhang (ft)"))
-
-        if not self.r_hang:
-            self.r_hang = float(input("Enter rear overhang (ft)"))
-
-        if not self.v_width:
-            self.v_width = float(input("Enter vehicle width (ft)"))
-
-        # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
-        # option 5 = custom location
-
-        plot_impact_points(self) # plot vehicle points
-
-
-        impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99: "))
-
-        if impact_option not in [1, 2, 3, 4, 99]:
-            print("Invalid impact point option - enter 1, 2, 3, 4 or 5")
-            impact_option = int(input("Choose option for impact location"))
-        elif impact_option != 99:
-            if impact_option == 1:
-                self.pimpact_x = self.lcgf + self.f_hang
-                self.pimpact_y = -1 * self.v_width / 2
-            elif impact_option == 2:
-                self.pimpact_x = self.lcgf + self.f_hang
-                self.pimpact_y = self.v_width / 2
-            elif impact_option == 3:
-                self.pimpact_x = -1 * self.lcgr - self.r_hang
-                self.pimpact_y = self.v_width / 2
-            elif impact_option == 4:
-                self.pimpact_x = -1 * self.lcgr - self.r_hang
-                self.pimpact_y = -1* self.v_width / 2
-        elif impact_option == 99:
-            self.pimpact_x = float(input("Enter x-coordinate ( + forward) of impact point in vehicle frame (ft):"))
-            self.pimpact_y = float(input("Enter y-coordinate ( + rightward) of impact point in vehicle frame (ft):"))
-            plot_impact_points(self, user_loc = True) # plot vehicle points
-
-    def impact_edge(self):
-        """
-        generates an edge in vehicle 2 (struck) reference frame
-        sideswipe collisions - edge will determine the extent of vehcle engagement with respect
-        to contacting point in vehicle 1 (striking)
-        impact momentum model - impact edge will be used along with the impact plane to determine time
-        of impact
-        """
-        # test for required inputs
-        if not self.lcgf:
-            self.lcgf = float(input("Enter CG to front axle (ft)"))
-
-        if not self.lcgr:
-            self.lcgr = float(input("Enter CG to rear axle (ft)"))
-
-        if not self.f_hang:
-            self.f_hang = float(input("Enter front overhang (ft)"))
-
-        if not self.r_hang:
-            self.r_hang = float(input("Enter rear overhang (ft)"))
-
-        if not self.v_width:
-            self.v_width = float(input("Enter vehicle width (ft)"))
-
-        # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
-        # option 5 = custom location
-
-        plot_impact_edge(self)
-
-        impact_option = int(input("Choose option for impact edge: "))
-
-        if impact_option not in [1, 2, 3, 4]:
-            raise ValueError("Invalid impact edge option - enter 1, 2, 3, 4")
-        else:
-            if impact_option == 1:
-                self.edgeimpact = 1
-                self.edgeimpact_x1 = self.lcgf + self.f_hang
-                self.edgeimpact_y1 = -1 * self.v_width / 2
-                self.edgeimpact_x2 = self.lcgf + self.f_hang
-                self.edgeimpact_y2 = self.v_width / 2
-            elif impact_option == 2:
-                self.edgeimpact = 2
-                self.edgeimpact_x1 = self.lcgf + self.f_hang
-                self.edgeimpact_y1 = self.v_width / 2
-                self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
-                self.edgeimpact_y2 = self.v_width / 2
-            elif impact_option == 3:
-                self.edgeimpact = 3
-                self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
-                self.edgeimpact_y1 = self.v_width / 2
-                self.edgeimpact_x2 = -1 * self.lcgr - self.r_hang
-                self.edgeimpact_y2 = -1* self.v_width / 2
-            elif impact_option == 4:
-                self.edgeimpact = 4
-                self.edgeimpact_x1 = -1 * self.lcgr - self.r_hang
-                self.edgeimpact_y1 = -1 * self.v_width / 2
-                self.edgeimpact_x2 = self.lcgf + self.f_hang
-                self.edgeimpact_y2 = -1 * self.v_width / 2
