@@ -55,9 +55,9 @@ class Project:
 
                 if (self.impact_type not in ["SS", "IMPC", "SDOF"]):
                     print("Not a valid impact type, choose SS, IMPC or SDOF. Value set to SDOF")
-                    self.impact_type == "SDOF"
+                    self.impact_type == None
             else:
-                self.impact_type = "none"
+                self.impact_type = None
 
             self.note = input("Note: ")
         else:

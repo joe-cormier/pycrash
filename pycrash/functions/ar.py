@@ -33,7 +33,7 @@ def CrushEnergyAB(A, B, L, C):
     """
     crush energy from A and B values
     L - crush length [in]
-    C - crush depth  [in]
+    C - average crush depth  [in]
     """
 
     return L * (A*C + (B * C**2 / 2)  + (A**2 / (2*B)))
@@ -74,7 +74,7 @@ def EnergyDV(w1, w2, Edis, cor):
 
 def formFactor(crush_list_mm):
     """
-    crush_list is a list of 6 crush measurements in mm
+    crush_list is a list of 6 crush measurements [mm]
     """
 
     c = crush_list_mm * 0.0393701
@@ -89,7 +89,7 @@ def formFactor(crush_list_mm):
 
 def formFactorin(crush_list_in):
     """
-    crush_list is a list of 6 crush measurements in mm
+    crush_list is a list of 6 crush measurements [in]
     """
 
     c = crush_list_in
