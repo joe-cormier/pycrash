@@ -1,4 +1,3 @@
 {
     "Project Name": "project_name",
-    "Main file name": "{{cookiecutter.project_name.lower().replace(' ', '_') }}"
 }
