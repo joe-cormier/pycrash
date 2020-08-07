@@ -143,10 +143,6 @@ class Vehicle:
             self.vx_initial = float(input_dict['vx_initial'])
             self.vy_initial = float(input_dict['vy_initial'])
             self.omega_z = float(input_dict['omega_z'])
-            self.driver_input = input_dict['driver_input']    # dataframe (t |throttle | brake | steer)
-
-            # TODO: if driver input is supplied this way, it needs to be checked for correct
-            #       time step
 
             print(f'Vehicle inputs for {self.name} applied succesfully')
 
