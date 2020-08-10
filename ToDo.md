@@ -4,18 +4,9 @@ To Do
 Integrate with GitHub project
 Add raise errors
 
-### Saving Data
-+ create new folder for each project (input / reports)
-
 ### Miscellaneous functions - create class functions
 + load cell barrier data
-
-### Classes
-+ add plot functions - arguments for changing color / size etc.
-  - save plots using project name - "reports directory"
-+ subplots for model results (fdx, v, a) - SDOF model
-+ record delta-v as a vehicle attribute
-+ vehicle - add capability to run multiple simulations
++ create impact pulse - use in impc model or free particle
 
 ## Impact Models
 + SDOF model (effective stiffness) - 90% complete
@@ -54,7 +45,7 @@ Add raise errors
 ## Impact Models
 ### SDOF Model (effective stiffness)
 - is force only applied through CG?
-    - offset value to create moment
+    - offset value to create moment - use impact plane
 - colinear impacts
 - braking effects
 

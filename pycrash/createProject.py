@@ -12,6 +12,6 @@ Directory Structure:
     |--visualization    <- Pycrash plots saved here
 """
 
-def create_project():
-    from cookiecutter.main import cookiecutter
-    cookiecutter('https://github.com/joe-cormier/pycrash-template/')
+
+from cookiecutter.main import cookiecutter
+cookiecutter('https://github.com/joe-cormier/pycrash-template/')

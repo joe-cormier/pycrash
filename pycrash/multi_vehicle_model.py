@@ -140,7 +140,7 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
             impact_detect = 1
             if (impact_type == 'impc'):
-                impc_result = impc(vehicle_list)              # run impc model - create inputs using vehicle class
+                veh1, veh2 = impc(veh1, veh2, theta_c)              # run impc model - create inputs using vehicle class
             elif (impact_type == 'ss'):
                 vehicle_list = ss(vehicle_list, impact_detect, kmutual, i)
             else:

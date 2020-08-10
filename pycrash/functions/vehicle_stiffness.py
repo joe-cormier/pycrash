@@ -7,8 +7,6 @@ import numpy as np
 # generating constant stiffness crash plot
 
 
-
-
 def crash_plot(test_data, veh):
     c_list = test_data['test_crush']
     if max(c_list) == 0:  # create orinate for zero crush
