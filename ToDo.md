@@ -1,9 +1,6 @@
 To Do
 =============================
 
-Integrate with GitHub project
-Add raise errors
-
 ### Miscellaneous functions - create class functions
 + load cell barrier data
 + create impact pulse - use in impc model or free particle

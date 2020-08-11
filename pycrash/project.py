@@ -100,7 +100,7 @@ class Project:
 
             else:
                 new_project_name = str(input("Enter new project name: "))
-                self.name = new_project_name
+                datafileName = ''.join([new_project_name, '.pkl'])
                 ProjectData = project_objects
 
         else:
