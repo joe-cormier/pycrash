@@ -1,4 +1,4 @@
-from .project import Project
+from .project import Project, project_info, load_project
 from .vehicle import Vehicle
 from .kinematics import SingleMotion
 from .kinematicstwo import KinematicsTwo

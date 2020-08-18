@@ -71,9 +71,10 @@ class Project:
 
         # check if data and report directories exist, if not create them
         if os.path.isdir(os.path.join(self.project_path, self.name)) == False:
-            try: os.makedirs(os.path.join(self.project_path, self.name, "data"))
-            except OSError:
-                print (f'Creation of the directory {os.path.join(self.project_path, self.name)} failed')
+            try:
+                os.makedirs(os.path.join(self.project_path, self.name, "data"))
+            except:
+                print(f'Creation of the directory {os.path.join(self.project_path, self.name)} failed')
 
         if os.path.isdir(os.path.join(self.project_path, self.name, "data", "archive")) == False:
             os.mkdir(os.path.join(self.project_path, self.name, "data", "archive"))
@@ -172,15 +173,14 @@ class Project:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def project_info(project_name, project_path):
+def project_info(project_name):
     """
     pulls project data to be used when reloading saved data
     """
     datafileName = ''.join([project_name, '.pkl'])
-
     out_names = []
     print("This saved project contains:")
-    with open(os.path.join(project_path, project_name, "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
     for key, value in ProjectData.items():
         print(f'Object of type "{value.type}" with name "{value.name}"')
@@ -191,7 +191,7 @@ def project_info(project_name, project_path):
 
 
 # %%   Load project data
-def load_project(project_name, project_path):
+def load_project(project_name):
     """
     load saved project data using information from "project_info"
     requires multiple variables for input:
@@ -201,7 +201,7 @@ def load_project(project_name, project_path):
     """
     datafileName = ''.join([project_name, '.pkl'])
     out_data = []
-    with open(os.path.join(project_path, project_name, "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
 
         return ProjectData.values()

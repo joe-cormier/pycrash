@@ -11,12 +11,19 @@ Directory Structure:
     |--reports          <- used to consolidate output files, user generated reports
     |--visualization    <- Pycrash plots saved here
 """
+import sys
+sys.path.append("/home/joemcormier/github/pycrash")
 
-from pycrash import Project
 
+import os
+path_parent = os.path.dirname(os.getcwd())
+os.chdir(os.path.join(path_parent, 'pycrash'))
+print(os.path.join(path_parent, 'pycrash'))
+
+from pycrash.project import Project
 
 project_inputs = {'name':'Demo',
-                  'path':'/home/jmc/Documents/projects',
+                  'path':os.path.join(path_parent, 'projects'),
                   'pdesc':'low speed frontal',
                   'sim_type':'MV',
                   'impact_type':'IMPC',

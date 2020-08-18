@@ -38,6 +38,7 @@ Pycrash is a 2D mathematical model for simulating vehicle motion and vehicular i
 
 
 ### Recommendations
-- If you are new to python, I recommend looking into [Anaconda](https://www.anaconda.com/) it is an easy way to get python working on your machine.
-- Pycrash is built around [Pandas](https://pandas.pydata.org/) so you can manipulate the output of Pycrash functions directly with Pandas.
+- Download Python [here](https://www.python.org/) and install required packages with pip from [PyPi](https://pypi.org/) 
+- [Anaconda](https://www.anaconda.com/) is an easy way to get python working on your machine and is worth considering if you are new to Python
+- Pycrash is built around [Pandas](https://pandas.pydata.org/) so you can manipulate the output of Pycrash functions directly with Pandas
 - See [Github](https://github.com/joe-cormier/pycrash) repo for tutorials, Jupyter Notebooks and validation data

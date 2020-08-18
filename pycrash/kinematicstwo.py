@@ -12,7 +12,7 @@ from copy import deepcopy
 from .multi_vehicle_model import multi_vehicle_model
 from .position_data import position_data_static, position_data_motion
 from .visualization.vehicle import plot_driver_inputs
-from .collision_plane import impact_plane, impact_edge
+from .collision_plane import define_impact_plane, define_impact_edge
 import pandas as pd
 import numpy as np
 import math
@@ -98,11 +98,11 @@ class KinematicsTwo():
 
         print(f"Create impact point for {self.veh1.name} = striking vehicle")
         print("")
-        self.veh1 = impact_plane(veh1)
+        self.veh1 = define_impact_plane(veh1)
 
         print(f"Create impacting edge for {self.veh2.name} = struck vehicle")
         print("")
-        self.veh2 = impact_edge(veh2, iplane = False)
+        self.veh2 = define_impact_edge(veh2, iplane = False)
 
     def plot_inputs(self):
         for veh in [self.veh1, self.veh2]:

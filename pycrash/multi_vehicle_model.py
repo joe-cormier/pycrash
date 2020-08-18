@@ -20,8 +20,9 @@ impact_occurred = False                     # indicates if an impact has been de
 
 
 # column list for vehicle model
-column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg',
-           'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax','ay', 'Ax', 'Ay', 'Ar',
+column_list = ['t', 'vx','vy',
+'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg',
+           'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax','ay', 'ar', 'Ax', 'Ay', 'Ar',
            'alphaz', 'alphaz_deg', 'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
            'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
@@ -48,6 +49,16 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
 
     for veh in vehicle_list:
         veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns = column_list)
+
+        veh.model.au[0] = 0         # no initial vehicle pitch
+        veh.model.av[0] = 0         # no initial vehicle roll
+        veh.model.vx[0] = veh.vx_initial * 1.46667  # convert input in mph to fps
+        veh.model.vy[0] = veh.vy_initial * 1.46667  # convert input in mph to fps
+        veh.model.theta_rad[0] = veh.head_angle * math.pi / 180   # initial heading angle
+        veh.model.oz_rad[0] = veh.omega_z * (math.pi/180)  # initial angular rate (deg/s) - input
+        veh.model.Vx[0] = veh.model.vx[0] * math.cos(veh.model.theta_rad[0]) - veh.model.vy[0] * math.sin(veh.model.theta_rad[0])
+        veh.model.Vy[0] = veh.model.vx[0] * math.sin(veh.model.theta_rad[0]) + veh.model.vy[0] * math.cos(veh.model.theta_rad[0])
+
 
     for i in (range(len(vehicle_list[0].driver_input.t))):
 
@@ -121,16 +132,16 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             # velocity vector in inertial frame
             veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
 
-        # vehicle position
-        veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
-        veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
+            # vehicle position
+            veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
+            veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
 
-        # converting to degrees
-        # TODO: remove for speed
-        veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
-        veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
-        veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
-        veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
+            # converting to degrees
+            # TODO: remove for speed
+            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
+            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
+            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
+            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
 
         # detect impact using current vehicle positions after first iterations
         impact_detect = detect(vehicle_list, i)

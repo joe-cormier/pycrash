@@ -6,7 +6,7 @@ from .data.defaults.config import default_dict
 from tabulate import tabulate
 from itertools import count
 from .visualization.vehicle import plot_impact_points, plot_impact_edge, plot_driver_inputs
-from .collision_plane import impact_plane
+from .collision_plane import define_impact_plane, define_impact_edge
 import pandas as pd
 import numpy as np
 import inspect
@@ -104,6 +104,8 @@ class Vehicle:
     can be useful to create mutiple iterations of the same vehicles
     Veh1_Weight1, Veh1_Weight2, etc.
     """
+
+    # TODO: create a loop through the input dictionary and assign to class
 
     def __init__(self, name, input_dict=None):
         self.name = str(name)
@@ -267,7 +269,6 @@ class Vehicle:
 
     def plot_driver_inputs(self):
             plot_driver_inputs(self)
-
 
     # TODO: create ability to change inputs by distance
     def dist_inputs(self, filename):

@@ -5,7 +5,7 @@ this will indicate the contact point and direction of the nornmal and tangential
 from .visualization.vehicle import plot_impact_points, plot_impact_edge
 import math
 
-def impact_plane(veh, iplane = True):
+def define_impact_plane(veh, iplane = True):
     """
     generates a point in vehicle 1 (striking) reference frame
     sideswipe collisions - px, py will determine the extent of vehcle engagement with respect
@@ -76,7 +76,7 @@ def impact_plane(veh, iplane = True):
 
     return veh
 
-def impact_edge(veh, iplane = False):
+def define_impact_edge(veh, iplane = False):
     """
     generates an edge in vehicle 2 (struck) reference frame
     sideswipe collisions - edge will determine the extent of vehcle engagement with respect

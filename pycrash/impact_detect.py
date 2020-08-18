@@ -1,24 +1,26 @@
 """
 functions for detecting impact using point (Veh1) and edge (Veh2)
 """
+import pandas as pd
+import numpy as np
 import math
 
 def detect(vehicle_list, i):
     print('-- looking for impact --')
-    print(f'Vehicle 1 time = {vehicle_list[0].veh_model.t[i]}')
+    print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
     # TODO: assuming that vehicle_list = [veh1, veh2] - can fix by checking for impact point definition
     # current location of impact point - vehicle 1
-    cgx1 = vehicle_list[0].veh_model.Dx[i]  # take last value in Dx
-    cgy1 = vehicle_list[0].veh_model.Dy[i]  # take last value in Dy
-    theta_rad1 = vehicle_list[0].veh_model.theta_rad[i]
+    cgx1 = vehicle_list[0].model.Dx[i]  # take last value in Dx
+    cgy1 = vehicle_list[0].model.Dy[i]  # take last value in Dy
+    theta_rad1 = vehicle_list[0].model.theta_rad[i]
 
     impactp_gx = cgx1 + vehicle_list[0].pimpact_x * math.cos(theta_rad1) - vehicle_list[0].pimpact_y * math.sin(theta_rad1)
     impactp_gy = cgy1 + vehicle_list[0].pimpact_x * math.sin(theta_rad1) + vehicle_list[0].pimpact_y * math.cos(theta_rad1)
 
     # impact plane - vehicle 2
-    cgx2 = vehicle_list[1].veh_model.Dx[i]
-    cgy2 = vehicle_list[1].veh_model.Dy[i]
-    theta_rad2 = vehicle_list[1].veh_model.theta_rad[i]
+    cgx2 = vehicle_list[1].model.Dx[i]
+    cgy2 = vehicle_list[1].model.Dy[i]
+    theta_rad2 = vehicle_list[1].model.theta_rad[i]
 
     # impact point in veh2 reference frame
     impactp_veh2x = ((impactp_gx-cgx2) * math.cos(theta_rad2) + (impactp_gy-cgy2) * math.sin(theta_rad2))

@@ -272,17 +272,17 @@ plot driver inputs
 def plot_driver_inputs(self):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.throttle * 100,
+    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.throttle * 100,
                             mode = 'lines',
                             name = 'throttle',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             secondary_y = False)
-    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.brake * 100,
+    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.brake * 100,
                             mode = 'lines',
                             name = 'brake',
                             line = dict(color = 'rgb(255, 0, 0)', width = 2)),
                             secondary_y = False)
-    fig.add_trace(go.Scatter(x = veh.driver_input.t, y = veh.driver_input.steer,
+    fig.add_trace(go.Scatter(x = self.driver_input.t, y = self.driver_input.steer,
                             mode = 'lines',
                             name = 'steer',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),
@@ -293,7 +293,7 @@ def plot_driver_inputs(self):
         autosize=False,
         width=figure_size[0],
         height=figure_size[1],
-        title = f'Driver Inputs for {veh.name}',
+        title = f'Driver Inputs for {self.name}',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
         yaxis = dict(showgrid = False),
