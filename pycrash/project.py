@@ -1,7 +1,9 @@
 
 from tabulate import tabulate
+from cookiecutter.main import cookiecutter
 import os
 import pickle
+os.chdir(os.path.dirname(os.getcwd()))
 
 # TODO: when loading project, pull saved project data
 
@@ -29,8 +31,6 @@ def save_project_data(projectself):
             self.name = new_project_name
             ProjectData = project_objects
 
-
-
 class Project:
     """
     class object for project variables
@@ -45,7 +45,7 @@ class Project:
     def __init__(self, project_input = None):
         if (project_input == None):
             self.name = input("Project Name: ")
-            self.project_path = input("Path for project directory: ")
+            self.project_path = os.path.join(os.getcwd(), self.name),
             self.pdesc = input("Project Description: ")
             self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
             self.type = "project"      # class type
@@ -62,27 +62,22 @@ class Project:
             self.note = input("Note: ")
         else:
             self.name = project_input['name']
-            self.project_path = project_input['path']
+            self.project_path = os.path.join(os.getcwd(), self.name)
             self.pdesc = project_input['pdesc']
             self.sim_type = project_input['sim_type']
             self.impact_type = project_input['impact_type']
             self.note = project_input['note']
             self.type = "project"  # class type
 
-        # check if data and report directories exist, if not create them
+        # check if project directory exists
+        # if it does, then a new project data file can be created at project/data/archive
         if os.path.isdir(os.path.join(self.project_path, self.name)) == False:
-            try:
-                os.makedirs(os.path.join(self.project_path, self.name, "data"))
-            except:
-                print(f'Creation of the directory {os.path.join(self.project_path, self.name)} failed')
-
-        if os.path.isdir(os.path.join(self.project_path, self.name, "data", "archive")) == False:
-            os.mkdir(os.path.join(self.project_path, self.name, "data", "archive"))
-            os.mkdir(os.path.join(self.project_path, self.name, "data", "input"))
-            os.mkdir(os.path.join(self.project_path, self.name, "data", "results"))
-            os.mkdir(os.path.join(self.project_path, self.name, "notebooks"))
-            os.mkdir(os.path.join(self.project_path, self.name, "reports"))
-            os.mkdir(os.path.join(self.project_path, self.name, "visualization"))
+            github_password = str(input("Enter Github password: "))
+            cookiecutter(f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git',
+                        no_input=True,
+                        extra_context={'project_name': self.name})
+        else:
+            print(f'Project directory {os.path.join(self.project_path, self.name)} already exists')
 
         print(f'Project directories located here: {os.path.join(self.project_path, self.name)}')
         print(f'Place any input files to be used in {os.path.join(self.project_path, self.name, "data", "input")}')
@@ -102,14 +97,14 @@ class Project:
             else:
                 new_project_name = str(input("Enter new project name: "))
                 datafileName = ''.join([new_project_name, '.pkl'])
+                self.name = new_project_name
                 ProjectData = project_objects
 
         else:
             # create new file for saving project data
             ProjectData = project_objects
 
-
-        with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
+        with open(os.path.join(self.project_path, "data", "archive", datafileName), 'wb') as handle:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
@@ -176,6 +171,7 @@ class Project:
 def project_info(project_name):
     """
     pulls project data to be used when reloading saved data
+    TODO: may need to go up one directory to get to project/data/archive
     """
     datafileName = ''.join([project_name, '.pkl'])
     out_names = []
@@ -187,10 +183,8 @@ def project_info(project_name):
         out_names.append(value.name)
 
     print(f'list objects in this order for loading project: {out_names}')
-    print(f"Example: project_name, veh1, veh2 = load_project('project_name', 'project_path')")
+    print(f"Example: project_name, veh1, veh2 = load_project('project_name')")
 
-
-# %%   Load project data
 def load_project(project_name):
     """
     load saved project data using information from "project_info"
@@ -198,10 +192,20 @@ def load_project(project_name):
 
     Example prject with two vehicles:
     project, veh1, veh2 = load_project('ProjectName')
+
+    TODO: may need to go up one directory to get to project/data/archive
     """
     datafileName = ''.join([project_name, '.pkl'])
+
     out_data = []
     with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
+        value_iterator = iter(ProjectData.values())
+        first_value = next(value_iterator)
 
-        return ProjectData.values()
+    if len(ProjectData) == 1:
+        return first_value
+    else:
+        for value in value_iterator:
+            out_data.append(value)
+        return out_data

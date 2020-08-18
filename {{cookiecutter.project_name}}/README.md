@@ -1,5 +1,5 @@
-Pycrash Template
+Pycrash Project Directory
 =========================
 
--  Creates template directory structure and provides default files for functionality
+-  This directory structure and default files provides default data to pycrash for functionality
 -  Notebooks and scripts will be updated to reflect changes to Pycrash functionality
