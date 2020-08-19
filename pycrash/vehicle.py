@@ -276,3 +276,11 @@ class Vehicle:
         Driver inputs | vehicle travel distance (ft) | brake (%) | steer (deg) |
         will override other inputs applied to vehicle
         """
+
+    def __repr__(self):
+        for attr, value in self.__dict__.items():
+                if isinstance(value, pd.DataFrame):
+                    print(f"{attr}:")
+                    print(value.head())
+                else:
+                    return str(attr) "=" str(value)
