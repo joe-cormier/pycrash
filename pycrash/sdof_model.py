@@ -21,16 +21,17 @@ class SDOF_Model():
     for force at a given displacement
     """
 
-    def __init__(self, veh1, veh2, model_inputs=None):
+    def __init__(self, veh1, veh2, AB_offset = 0, model_inputs=None):
         self.type = "sdof"        # class type
         # create independent copy of vehicle class instances
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
+        self.AB_offset = AB_offset     # <- [inches] adjust model crush to account for force required to initiate crush (offset = -A/B)
         # manually create inputs if not provided
         if (model_inputs == None):
             self.name = input('Enter name of SDOF model run:')
             self.cor = float(input('Provide a coefficient of restitution:'))
-            self.k = input('Provide a single value or dataframe for mutual stiffness [lb/in]:')
+            self.k = input('Provide a single value or dataframe for mutual stiffness [lb/ft]:')
             self.tstop = float(input('Enter cut-off time (tstop (s)) to stop simulation or "None" to run simulation up to seperation:'))
         else:
             self.name = model_inputs['name']
@@ -38,26 +39,46 @@ class SDOF_Model():
             self.k = model_inputs['k']
             self.tstop = model_inputs['tstop']
 
+
         print("")
         print("------------ Model Inputs ---------------")
         print(f"Model Run = {self.name}")
         print(f"Coefficient of Restitution = {self.cor}")
         if (isinstance(self.k, int)) or (isinstance(self.k, float)):
             print(f"Constant Mutual Stiffness = {self.k} lb/ft ")
-            self.__ktype = 'constantK'               # define stiffness type for model
+            self.ktype = 'constantK'               # define stiffness type for model
+            if hasattr(self.veh1, 'k'):
+                self.k1known = True   # if k1 is known, then veh1 crush can be calculated
+            else:
+                self.k1known = False
+
+            if hasattr(self.veh2, 'k'):
+                self.k2known = True
+            else:
+                self.k2known = False # if k2 is known, then veh2 crush can be calculated
+
         elif isinstance(self.k, pd.DataFrame):
             print(f"Stiffness Function Dataframe [disp (ft) | force (lb)] of shape = {self.k.shape}")
             self.__ktype = 'tableK'                   # define stiffness type for model
+            if hasattr(self.veh1, 'k'):
+                self.k1known = True   # if k1 is known, then veh1 crush can be calculated
+            else:
+                self.k1known = False
+
+            if hasattr(self.veh2, 'k'):
+                self.k2known = True
+            else:
+                self.k2known = False # if k2 is known, then veh2 crush can be calculated
 
         if (isinstance(self.tstop, int)) or (isinstance(self.tstop, float)):
             print(f"Model will run until t = {self.tstop} seconds")
-            self.__ttype = 1                           # define t stop criteria
+            self.ttype = 1                           # define t stop criteria
         elif (self.tstop == None):
             print("No stop time provided - model will run until vehicle seperation")
-            self.__ttype = 0                           # define t stop criteria
+            self.ttype = 0                           # define t stop criteria
         else:
             print('Something other than a number or "None" used for stop time - model will run until vehicle seperation')
-            self.__ttype = 0                           # define t stop criteria
+            self.ttype = 0                           # define t stop criteria
 
         # collect vehicle specific inputs
 
@@ -128,9 +149,22 @@ class SDOF_Model():
                                     k = self.k,
                                     cor = self.cor,
                                     tstop = self.tstop,
-                                    ktype = self.__ktype,
-                                    ttype = self.__ttype
+                                    ktype = self.ktype,
+                                    ttype = self.ttype
                                     )
+        if (self.AB_offset != 0):
+            print(f"Model Diplacement 'Dx' will be reduced by {self.AB_offset} inches")
+            self.model.dx = [row + self.AB_offset / 12 for row in self.model.dx]
+
+        if self.k1known:
+            print("Vehicle 1 crush determined using provided stiffness")
+            if self.ktype == "constantK":
+                self.model['veh1_dx'] = [row * self.k / self.veh1.k for row in self.model.dx]
+
+        if self.k2known:
+            print("Vehicle 2 crush determined using provided stiffness")
+            if self.ktype == "constantK":
+                self.model['veh2_dx'] = [row * self.k / self.veh2.k for row in self.model.dx]
 
         # TODO: create attribute for vehicle inputs for saving / plotting run
 

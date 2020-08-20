@@ -31,7 +31,7 @@ def ABfrombob1(W, bo, b1, L):
 
 def CrushEnergyAB(A, B, L, C):
     """
-    crush energy from A and B values
+    crush energy [in-lb] from A and B values
     L - crush length [in]
     C - average crush depth  [in]
     """

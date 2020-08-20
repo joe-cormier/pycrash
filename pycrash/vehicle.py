@@ -277,10 +277,10 @@ class Vehicle:
         will override other inputs applied to vehicle
         """
 
-    def __repr__(self):
-        for attr, value in self.__dict__.items():
-                if isinstance(value, pd.DataFrame):
-                    print(f"{attr}:")
-                    print(value.head())
-                else:
-                    return str(attr) "=" str(value)
+    def show(self):
+        for key in self.__dict__.keys():
+            if isinstance(self.__dict__[key], pd.DataFrame):
+                print(f"First five rows of {key}:")
+                print(self.__dict__[key].head())
+            else:
+                print(f"{key} -> {self.__dict__[key]}")
