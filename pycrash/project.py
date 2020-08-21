@@ -45,7 +45,7 @@ class Project:
     def __init__(self, project_input = None):
         if (project_input == None):
             self.name = input("Project Name: ")
-            self.project_path = os.path.join(os.getcwd(), self.name),
+            self.project_path = os.getcwd(),
             self.pdesc = input("Project Description: ")
             self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
             self.type = "project"      # class type
@@ -62,7 +62,7 @@ class Project:
             self.note = input("Note: ")
         else:
             self.name = project_input['name']
-            self.project_path = os.path.join(os.getcwd(), self.name)
+            self.project_path = project_input['project_path']
             self.pdesc = project_input['pdesc']
             self.sim_type = project_input['sim_type']
             self.impact_type = project_input['impact_type']
@@ -72,10 +72,9 @@ class Project:
         # check if project directory exists
         # if it does, then a new project data file can be created at project/data/archive
         if os.path.isdir(os.path.join(self.project_path, self.name)) == False:
+            os.chdir(self.project_path)
             github_password = str(input("Enter Github password: "))
-            cookiecutter(f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git',
-                        no_input=True,
-                        extra_context={'project_name': self.name})
+            cookiecutter(f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git', no_input = True, extra_context={'project_name': self.name})
         else:
             print(f'Project directory {os.path.join(self.project_path, self.name)} already exists')
 
@@ -104,16 +103,16 @@ class Project:
             # create new file for saving project data
             ProjectData = project_objects
 
-        with open(os.path.join(self.project_path, "data", "archive", datafileName), 'wb') as handle:
+        with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
-                    [self.name, self.project_path, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+        print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
+                    [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
 
     def show(self):
-        print(tabulate([["Project", "Path", "Description", "Impact Type", "Simulation Type", "Note"],
-                         [self.name, self.project_path, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+        print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
+                         [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
     def save_project(self, *args):
         """
@@ -173,10 +172,11 @@ def project_info(project_name):
     pulls project data to be used when reloading saved data
     TODO: may need to go up one directory to get to project/data/archive
     """
+    path_parent = os.path.dirname(os.getcwd())
     datafileName = ''.join([project_name, '.pkl'])
     out_names = []
     print("This saved project contains:")
-    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(path_parent, project_name, "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
     for key, value in ProjectData.items():
         print(f'Object of type "{value.type}" with name "{value.name}"')
@@ -195,10 +195,11 @@ def load_project(project_name):
 
     TODO: may need to go up one directory to get to project/data/archive
     """
+    path_parent = os.path.dirname(os.getcwd())
     datafileName = ''.join([project_name, '.pkl'])
 
     out_data = []
-    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(path_parent, project_name, "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
         value_iterator = iter(ProjectData.values())
         first_value = next(value_iterator)
