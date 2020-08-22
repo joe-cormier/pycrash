@@ -87,7 +87,7 @@ def position_data_motion(veh, striking=False):
     veh.p_gx = veh.p_vx.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
     veh.p_gy = veh.p_vy.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
 
-    if (striking == True and veh.edgeimpact == 0):  # impact point (veh1 - striking vehicle)
+    if (striking):  # impact point (veh1 - striking vehicle)
         # create impact point dataframes with same length as vehicle position data
         impactp_vx = pd.DataFrame({'pimpact_x': [veh.pimpact_x] * len(veh.model.t)})
         impactp_vy = pd.DataFrame({'pimpact_y': [veh.pimpact_y] * len(veh.model.t)})
@@ -101,7 +101,7 @@ def position_data_motion(veh, striking=False):
               veh.p_gx.iloc[i, j] = cgx.Dx[i] + veh.p_vx.iloc[i,j] * math.cos(veh.model.loc[i,'theta_rad']) - veh.p_vy.iloc[i,j] * math.sin(veh.model.loc[i,'theta_rad'])
               veh.p_gy.iloc[i, j] = cgy.Dy[i] + veh.p_vx.iloc[i,j] * math.sin(veh.model.loc[i,'theta_rad']) + veh.p_vy.iloc[i,j] * math.cos(veh.model.loc[i,'theta_rad'])
 
-              if (striking == True and veh.edgeimpact == 0):
+              if (striking):
                 # impact point (veh1 - striking vehicle)
                 impactp_gx.pimpact_x[i] = cgx.Dx[i] + veh.pimpact_x * math.cos(veh.model.loc[i,'theta_rad']) - veh.pimpact_y * math.sin(veh.model.loc[i,'theta_rad'])
                 impactp_gy.pimpact_y[i] = cgy.Dy[i] + veh.pimpact_x * math.sin(veh.model.loc[i,'theta_rad']) + veh.pimpact_y * math.cos(veh.model.loc[i,'theta_rad']) # time variant vehicle geometry for plotting in vehicle frame
@@ -112,7 +112,7 @@ def position_data_motion(veh, striking=False):
     veh.p_gx['rr_lock'] = veh.model.rr_lock.copy()
     veh.p_gx['lr_lock'] = veh.model.lr_lock.copy()
 
-    if (striking == True and veh.edgeimpact == 0):
+    if (striking):
         # join impact points with vehicle position data
         veh.p_vx = pd.concat([veh.p_vx, impactp_vx], axis = 1)
         veh.p_vy = pd.concat([veh.p_vy, impactp_vy], axis = 1)

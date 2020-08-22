@@ -144,16 +144,19 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
 
         # detect impact using current vehicle positions after first iterations
-        impact_detect = detect(vehicle_list, i)
-        print(impact_detect)
+        if i == 0:
+            crush_data = None
 
-        if (impact_detect['impact']):
+        crush_data = detect(vehicle_list, i, crush_data)
+        #print(crush_data)
+
+        if (crush_data.impact[i]):
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
-            impact_detect = 1
             if (impact_type == 'impc'):
                 veh1, veh2 = impc(veh1, veh2, theta_c)              # run impc model - create inputs using vehicle class
-            elif (impact_type == 'ss'):
-                vehicle_list = ss(vehicle_list, impact_detect, kmutual, i)
+            elif (impact_type == 'SS'):
+                kmutual = 1000
+                vehicle_list = ss(vehicle_list, crush_data, kmutual, i)
             else:
                 print(f'impact_type {impact_type} is not defined - no impacts forces generated')
         else:

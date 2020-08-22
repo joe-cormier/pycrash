@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import math
 
-def detect(vehicle_list, i):
+def detect(vehicle_list, i, crush_data = None):
     print('-- looking for impact --')
     print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
     # TODO: assuming that vehicle_list = [veh1, veh2] - can fix by checking for impact point definition
@@ -32,10 +32,6 @@ def detect(vehicle_list, i):
     print(f'Veh1 CG location: x = {cgx1}, y = {cgy1}')
     print(f'Veh2 CG location: x = {cgx2}, y = {cgy2}')
 
-    impact = False
-    crushdx = 0
-    crushdy = 0
-    mutual_crush = 0
 
     """
     calculate relative position of impact point and impact edge
@@ -44,33 +40,30 @@ def detect(vehicle_list, i):
     moving clockwise
     """
     if i == 0:
-        crush_data = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)),
+        crush_data = pd.DataFrame(np.nan, index=np.arange(len(vehicle_list[0].driver_input.t)),
                                 columns = ['impact', 'edge_loc', 'normal_crush', 'impactp_veh2x', 'impactp_veh2y'])
 
+    crush_data.impact[i] = False
     if vehicle_list[1].edgeimpact == 1:
-        crushdx = impactp_veh2x - vehicle_list[1].edgeimpact_x1
-        if (crushdx <= 0) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y2):
+        crush_data.normal_crush[i] = impactp_veh2x - vehicle_list[1].edgeimpact_x1
+        crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
+        if (crush_data.normal_crush[i] <= 0) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y2):
             crush_data.impact[i] = True
-            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
-            crush_data.normal_crush[i] = crushdx # extent of crush used to calculate force (sideswipe)
     elif vehicle_list[1].edgeimpact == 2:
-        crushdy = impactp_veh2y - vehicle_list[1].edgeimpact_y1
-        if (crushdy <= 0) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x2):
+        crush_data.normal_crush[i] = impactp_veh2y - vehicle_list[1].edgeimpact_y1
+        crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
+        if (crush_data.normal_crush[i] <= 0) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x2):
             crush_data.impact[i] = True
-            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
-            crush_data.normal_crush[i] = crushdy
     elif vehicle_list[1].edgeimpact == 3:
-        crushdx = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
-        if (crushdx <= 0) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y2):
+        crush_data.normal_crush = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
+        crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
+        if (crush_data.normal_crush <= 0) & (impactp_veh2y <= vehicle_list[1].edgeimpact_y1) & (impactp_veh2y >= vehicle_list[1].edgeimpact_y2):
             crush_data.impact[i] = True
-            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
-            crush_data.normal_crush = crushdx
     elif vehicle_list[1].edgeimpact == 4:
-        crushdy = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
-        if (crushdy < 0) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x2):
-            crush_data.impact[i] = True
-            crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
-            crush_data.normal_crush[i] = crushdy
+        crush_data.normal_crush[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
+        crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
+        if (crush_data.normal_crush[i] < 0) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x2):
+            crush_data.impact[i] = True 
 
     crush_data.impactp_veh2x[i] = impactp_veh2x
     crush_data.impactp_veh2y[i] = impactp_veh2y

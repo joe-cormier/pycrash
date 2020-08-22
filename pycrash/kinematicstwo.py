@@ -226,15 +226,14 @@ class KinematicsTwo():
         plt.show()
 
     # run vehicle models iteratively to evaluate for impact
-    def simulate(self, impact_type, ignore_driver):
+    def simulate(self, ignore_driver=False):
         # run multi vehicle simulation model
-        self.veh1, self.veh2 = multi_vehicle_model([self.veh1, self.veh2], impact_type, ignore_driver = False)
-
-    def draw_simulation(self, i, tire_path=True):
-        # create point data in vehicle and global frame
+        self.veh1, self.veh2 = multi_vehicle_model([self.veh1, self.veh2], self.impact_type, ignore_driver)
         self.veh1 = position_data_motion(self.veh1, striking = True)
         self.veh2 = position_data_motion(self.veh2)
 
+    def draw_simulation(self, i, tire_path=True):
+        # create point data in vehicle and global frame
         """
         Plot Vehicle in Global reference frame
         """
@@ -267,7 +266,7 @@ class KinematicsTwo():
             plt.plot(lrw_x, lrw_y, 'orange')
             plt.scatter(veh.p_gx.cg[i], veh.p_gy.cg[i], s=100, c='k')   # vehicle CG
 
-            if (veh.edgeimpact == 0):  # striking vehicle
+            if (veh.striking):  # striking vehicle
                 plt.scatter(veh.p_gx.pimpact_x[i], veh.p_gy.pimpact_y[i], s = 100, c = 'r') # impact point
             # velocity vector
             plt.arrow(veh.p_gx.cg[i], veh.p_gy.cg[i], veh.p_gx.vel_v[i] - veh.p_gx.cg[i], veh.p_gy.vel_v[i] - veh.p_gy.cg[i], head_width=1, head_length=1, fc='r', ec='r')

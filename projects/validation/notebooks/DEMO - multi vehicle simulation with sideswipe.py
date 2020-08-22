@@ -1,9 +1,14 @@
 # %% Initilizing
 import os
 path_parent = os.path.dirname(os.getcwd())
-data_directory = os.path.join(path_parent, "data")
 os.chdir(path_parent)
-
+validation_dir = os.path.dirname(os.getcwd())
+os.chdir(validation_dir)
+projects_dir = os.path.dirname(os.getcwd())
+os.chdir(projects_dir)
+#pycrash_dir = os.path.dirname(os.getcwd())
+#os.chdir(pycrash_dir)
+os.getcwd()
 # TODO:
 # %% allow reloading of modules
 %load_ext autoreload
@@ -21,6 +26,15 @@ import pandas as pd
 import numpy as np
 import pickle
 import json
+
+# %% import pycrash
+
+import pandas as pd
+import numpy as np
+
+import pycrash
+from pycrash.vehicle import Vehicle
+from pycrash.kinematicstwo import KinematicsTwo
 
 pd.options.display.max_columns = None
 from IPython import get_ipython
@@ -63,8 +77,8 @@ vehicle_input_dict = {"year":2016,
 "init_x_pos":0,
 "init_y_pos":0,
 "head_angle":0,
-"v_width":6,
-"v_length":19.3,
+"width":6,
+"length":19.3,
 "hcg":2,
 "lcgf":4.88,
 "lcgr":6.96,
@@ -85,46 +99,51 @@ vehicle_input_dict = {"year":2016,
 "c":0,
 "vx_initial":10,
 "vy_initial":0,
-"omega_z":0,
-"driver_input":driver_input_df}
+"omega_z":0}
 
 veh1 = Vehicle('Veh1', vehicle_input_dict)
+veh1.driver_input = driver_input_df
 #veh1.load_specs('subaru.csv')  # vehicle spectifications loaded from .csv file located in data/input
 #veh1.manual_specs()  # user prompted for input
 
-# %% Assign impact point for Vehicle 1
-# user will be prompted for a choice using a helper graphic
-veh1.impact_point()
-
 
 # %% Create Vehicle 2
-# vehicle data can also be created by importing a CSV file in the data/input directory
-# TODO: change this directory to the "Project" directory - seperate input folder etc.
-
-veh2 = Vehicle('Veh2')
-veh2.load_specs('fordGT.csv')
-
-# %% driver input can be added at anytime
-end_time = 5  # 5 second simulation
-t = list(np.arange(0, end_time+0.1, 0.1))  # create time array from 0 to end time from user
-throttle = [0] * len(t)                                # no throttle
-brake = [0] * len(t)                                   # no braking
-steer = [0] * len(t)                                   # no steering
-driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
-driver_input_df = pd.DataFrame.from_dict(driver_input_dict)
-print('Vehicle 2 Driver Inputs:')
-
+vehicle_input_dict = {"year":2016,
+"make":"Subaru",
+"model":"WRX Sti",
+"weight":3200,
+"vin":"123abc",
+"brake":0,
+"steer_ratio":16.5,
+"init_x_pos":10,
+"init_y_pos":-10,
+"head_angle":270,
+"width":6,
+"length":19.3,
+"hcg":2,
+"lcgf":4.88,
+"lcgr":6.96,
+"wb":11.84,
+"track":6.6,
+"f_hang":3.2,
+"r_hang":4.1,
+"tire_d":2.716666667,
+"tire_w":0.866666667,
+"izz":2500,
+"fwd":0,
+"rwd":1,
+"awd":0,
+"A":100,
+"B":41,
+"k":1000,
+"L":0,
+"c":0,
+"vx_initial":10,
+"vy_initial":0,
+"omega_z":0}
+veh2 = Vehicle('Veh2', vehicle_input_dict)
 veh2.driver_input = driver_input_df
 veh2.driver_input.head() # first 5 rows of driver input data
-
-# %% Assing impact edge for Vehicle 2
-# user will be prompted for a choice
-
-veh2.impact_edge()
-# %% Save Project with vehicle
-proj.save_project(veh1, veh2)
-
-
 
 # %% Generate an instance of multi vehicle model
 # this function takes a list of vehicles - always set in order of [striking, struck]
@@ -133,14 +152,15 @@ proj.save_project(veh1, veh2)
 # 2. impact_type = {'ss' (sideswipe), 'impc' (impulse momentum)}
 # optional - ignore_driver = False (default) - simulation will ignore driver inputs after impact and use entry at impact
 
-ss1 = KinematicsTwo('intersection', veh1, veh2)
+ss1 = KinematicsTwo('run1', 'SS', veh1, veh2)
 
-# %% set-up vehicle initial location
-# use an motion data to show paths
-
-
+# %% plot inition positions
+ss1.veh2.init_x_pos = 15
+ss1.veh2.init_y_pos = 15
+ss1.initial_position()
 
 # %% run simulation
-ss1.simulate(impact_type = 'ss', ignore_driver = False)
+ss1.simulate(ignore_driver = False)
 
-# %%
+# %% draw vehicles by index
+ss1.draw_simulation(4)
