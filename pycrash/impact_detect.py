@@ -63,7 +63,7 @@ def detect(vehicle_list, i, crush_data = None):
         crush_data.normal_crush[i] = vehicle_list[1].edgeimpact_y1 - impactp_veh2y
         crush_data.edge_loc[i] = vehicle_list[1].edgeimpact_x1 - impactp_veh2x
         if (crush_data.normal_crush[i] < 0) & (impactp_veh2x >= vehicle_list[1].edgeimpact_x1) & (impactp_veh2x <= vehicle_list[1].edgeimpact_x2):
-            crush_data.impact[i] = True 
+            crush_data.impact[i] = True
 
     crush_data.impactp_veh2x[i] = impactp_veh2x
     crush_data.impactp_veh2y[i] = impactp_veh2y

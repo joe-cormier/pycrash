@@ -13,6 +13,9 @@ import inspect
 import os
 import csv
 
+project_dir = os.chdir(os.path.dirname(os.getcwd()))
+input_dir = os.path.join(project_dir, 'data', 'input')
+
 # load defaults
 mu_max = default_dict['mu_max']    # maximum available friction
 dt_motion = default_dict['dt_motion']            # iteration time step
@@ -241,10 +244,11 @@ class Vehicle:
         time step can be user defined, inputs will be interpolated to match dt for simulation
         reads data from csv file
         will override other inputs applied to vehicle
+        filename should include .csv - "example_file_name.csv"
         """
         header_list = ["time", "throttle", "brake", "steer"]
-        if os.path.isfile(filename):
-            time_inputs = pd.read_csv(filename, skiprows=1, header=None, names = header_list)
+        if os.path.isfile(os.path.join(input_dir, filename)):
+            time_inputs = pd.read_csv(os.path.join(input_dir, filename), skiprows=1, header=None, names = header_list)
             time_inputs = time_inputs.astype(float)
             if len(time_inputs) == 0:
                 print('Time input file appears blank')

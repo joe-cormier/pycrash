@@ -7,6 +7,8 @@ To Do
 ### Miscellaneous functions - create class functions
 + load cell barrier data
 + create impact pulse - use in impc model or free particle
+- generic function for requesting input in loop (when missing needed values)
+- dictionary of variables
 
 ## Impact Models
 + SDOF model (effective stiffness) - 90% complete
@@ -36,12 +38,6 @@ To Do
 - Vehicle motion
 - Impact model
 
-## Impact Simulation
-- create categorical values for impact simulation types (SV, SDOF, SDOF_Width, Sideswipe, IMPC)
-- use impact plane for all types - defines point of impact and force vector?
-- create function to vary impact plane location / angle
-- import current terrain descriptors
-
 ## Impact Models
 ### SDOF Model (effective stiffness)
 - is force only applied through CG?
@@ -53,6 +49,17 @@ To Do
 - considers the extent that the two vehicles are engaged
 - effective stiffness based on width of contact
 - oblique / angular impacts
+
+### impc - impulse momentum
+- validate
+- get outputs - delta-V, energy, slide / no slide
+- impact pulse - haversine etc.  
+
+### terrain
+- how to position vehicle(s) with scene / image
+- use black / grey background with plotted white grid?
+- terrain is mapped to slope / bank
+
 
 ## Validation
 - narrow offset tests

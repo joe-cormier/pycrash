@@ -46,12 +46,11 @@ class KinematicsTwo():
     Environment slope and bank is optionally defined as a function of X,Y components
     creates independent copy of vehicle at instantiation
     """
-    def __init__(self, name, impact_type, veh1, veh2):
+    def __init__(self, name, impact_type, veh1, veh2, mutual_stiffness = None, vehicle_friction = None):
         self.name = name
         self.type = 'multimotion'             # class type for saving files
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
-
 
         if (impact_type not in ["SS", "IMPC"]):
             print("Not a valid impact type, choose SS, IMPC or SDOF")
@@ -64,6 +63,18 @@ class KinematicsTwo():
                 self.impact_type = impact_type
         else:
             self.impact_type = impact_type
+            if vehicle_friction:
+                self.veh_mu = vehicle_friction
+            else:
+                print(f"Vehicle friection for {self.name} is empty")
+                self.veh_mu = float(input("Enter value for intervehicular friction: "))
+
+        if impact_type == 'SS':
+            if mutual_stiffness:
+                self.kmutual = mutual_stiffness
+            else:
+                print(f"Mutual Stiffness for {self.name} is empty")
+
 
         # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
@@ -228,7 +239,7 @@ class KinematicsTwo():
     # run vehicle models iteratively to evaluate for impact
     def simulate(self, ignore_driver=False):
         # run multi vehicle simulation model
-        self.veh1, self.veh2 = multi_vehicle_model([self.veh1, self.veh2], self.impact_type, ignore_driver)
+        self.veh1, self.veh2, self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.kmutual, self.vehicle_mu, ignore_driver)
         self.veh1 = position_data_motion(self.veh1, striking = True)
         self.veh2 = position_data_motion(self.veh2)
 

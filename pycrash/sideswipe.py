@@ -3,14 +3,12 @@ from .data.defaults.config import default_dict
 import numpy as np
 import os
 
-vehicle_mu = default_dict['vehicle_mu']
-
 """
 calculates intervehicular forces using a sideswipe model (mutual crush + frictional forces)
 validated using Funk () see validation directory for simulations and reports
 """
 
-def ss(vehicle_list, crush_data, kmutual, i):
+def ss(vehicle_list, crush_data, kmutual, vehicle_mu, i):
     """
     normal force is applied normal to the struck vehicle (vehicle 2)
     frictional force is applied along the impacting plane opposite to striking vehicle (vehicle 1) velocity
@@ -50,7 +48,7 @@ def ss(vehicle_list, crush_data, kmutual, i):
 
    # vehicle 1 forces are equal and opposite to vehicle 2
    # use heading angle to translate forces to vehicle 1 frame
-
+   # can subtract two heading angles? 
     vehicle_list[0].model.Fx = 0
     vehicle_list[0].model.Fy = 0
     vehicle_list[0].model.Mz = 0

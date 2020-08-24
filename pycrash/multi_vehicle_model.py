@@ -16,12 +16,9 @@ import os
 # load defaults
 mu_max = default_dict['mu_max']             # maximum available friction
 dt_motion = default_dict['dt_motion']       # iteration time step
-impact_occurred = False                     # indicates if an impact has been detected
-
 
 # column list for vehicle model
-column_list = ['t', 'vx','vy',
-'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg',
+column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
            'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax','ay', 'ar', 'Ax', 'Ay', 'Ar',
            'alphaz', 'alphaz_deg', 'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
            'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
@@ -31,7 +28,7 @@ column_list = ['t', 'vx','vy',
 # TODO: ignore driver inputs after impact
 # TODO: disable tire after impact
 
-def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver = False):
+def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False):
 
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
@@ -129,8 +126,11 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)
             veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
 
-            # velocity vector in inertial frame
+            # vehicle slip angle
             veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
+
+            # vehicle slip angle
+            veh.model.vehicleslip_rad[i] = veh.model.beta_rad[i] - veh.model.theta_rad[i]
 
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
@@ -140,8 +140,9 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
             # TODO: remove for speed
             veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
             veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
-            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
+            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad] # heading angle
             veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
+            veh.model.vehicleslip_deg = [row * 180 / math.pi for row in veh.model.vehicleslip_rad]
 
         # detect impact using current vehicle positions after first iterations
         if i == 0:
@@ -152,16 +153,16 @@ def multi_vehicle_model(vehicle_list, impact_type, kmutual = None, ignore_driver
 
         if (crush_data.impact[i]):
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
-            if (impact_type == 'impc'):
+            if (kinematicstwo_instance.impact_type == 'impc'):
                 veh1, veh2 = impc(veh1, veh2, theta_c)              # run impc model - create inputs using vehicle class
-            elif (impact_type == 'SS'):
-                kmutual = 1000
-                vehicle_list = ss(vehicle_list, crush_data, kmutual, i)
+            elif (kinematicstwo_instance.impact_type == 'SS'):
+                vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
             else:
                 print(f'impact_type {impact_type} is not defined - no impacts forces generated')
         else:
-            veh.model.Fx[i] = 0
-            veh.model.Fy[i] = 0
-            veh.model.Mz[i] = 0
+            if kinematicstwo_instance.impact_type == 'SS':
+                veh.model.iloc[i, 'Fx'] = 0
+                veh.model.iloc[i, 'Fy'] = 0
+                veh.model.iloc[i, 'Mz'] = 0
 
-    return vehicle_list
+    return vehicle_list, crush_data
