@@ -13,7 +13,7 @@ import inspect
 import os
 import csv
 
-project_dir = os.chdir(os.path.dirname(os.getcwd()))
+project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')
 
 # load defaults
@@ -115,39 +115,14 @@ class Vehicle:
         self.type = "vehicle"   # class type for reference
 
         if input_dict != None:
-            self.year = int(input_dict['year'])
-            self.make = str(input_dict['make'])
-            self.model = str(input_dict['model'])
-            self.weight = float(input_dict['weight'])
-            self.vin = str(input_dict['vin'])
-            self.brake = float(input_dict['brake'])
-            self.steer_ratio = float(input_dict['steer_ratio'])
-            self.init_x_pos = float(input_dict['init_x_pos'])
-            self.init_y_pos = float(input_dict['init_y_pos'])
-            self.head_angle = float(input_dict['head_angle'])
-            self.width = float(input_dict['width'])
-            self.length = float(input_dict['length'])
-            self.hcg = float(input_dict['hcg'])
-            self.lcgf = float(input_dict['lcgf'])
-            self.lcgr = float(input_dict['lcgr'])
-            self.wb = float(input_dict['wb'])   # can calculate
-            self.track = float(input_dict['track'])
-            self.f_hang = float(input_dict['f_hang'])
-            self.r_hang = float(input_dict['r_hang'])
-            self.tire_d = float(input_dict['tire_d'])
-            self.tire_w = float(input_dict['tire_w'])
-            self.izz = float(input_dict['izz'])
-            self.fwd = int(input_dict['fwd'])   # consolidate
-            self.rwd = int(input_dict['rwd'])   # consolidate
-            self.awd = int(input_dict['awd'])   # consolidate
-            self.A = float(input_dict['A'])     # unused
-            self.B = float(input_dict['B'])     # unused
-            self.k = float(input_dict['k'])
-            self.L = float(input_dict['L'])     # unused
-            self.c = float(input_dict['c'])     # unused
-            self.vx_initial = float(input_dict['vx_initial'])
-            self.vy_initial = float(input_dict['vy_initial'])
-            self.omega_z = float(input_dict['omega_z'])
+            for key, value in input_dict.items():
+                if key in veh_inputs:
+                    if key in ['make', 'model', 'vin']:
+                        setattr(self, key, str(value))
+                    else:
+                        setattr(self, key, float(value))
+                else:
+                    print(f"Input entry {key} unknown")
 
             print(f'Vehicle inputs for {self.name} applied succesfully')
 
@@ -284,6 +259,7 @@ class Vehicle:
     def show(self):
         for key in self.__dict__.keys():
             if isinstance(self.__dict__[key], pd.DataFrame):
+                print("")
                 print(f"First five rows of {key}:")
                 print(self.__dict__[key].head())
             else:
