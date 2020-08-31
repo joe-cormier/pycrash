@@ -14,18 +14,14 @@ Directory Structure:
 """
 
 import os
-import sys, os
-sys.path.append('/home/jmc/Documents/pycrash/')
-os.chdir('/home/jmc/Documents/pycrash/')
-print(os.getcwd())
 from pycrash.project import Project
 project_name = 'validation - single vehicle motion'
 
 project_inputs = {'name':project_name,
-                  'pdesc':'single vehicle motion',
+                  'pdesc':'planar motion simulation',
                   'sim_type':'SV',
                   'impact_type':None,
-                  'note':'PC crash comparison'}
+                  'note':'pc crash comparisons'}
 
 proj = Project(project_inputs)
 

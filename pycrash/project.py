@@ -1,19 +1,21 @@
-
 from tabulate import tabulate
 from cookiecutter.main import cookiecutter
 import os
 import pickle
+
 os.chdir(os.path.dirname(os.getcwd()))
+
 
 # TODO: when loading project, pull saved project data
 
 def yes_or_no(question):
     while "the answer is invalid":
-        reply = str(input(question+' (y/n): ')).lower().strip()
+        reply = str(input(question + ' (y/n): ')).lower().strip()
         if reply[:1] == 'y':
             return True
         if reply[:1] == 'n':
             return False
+
 
 def save_project_data(projectself):
     """
@@ -23,13 +25,15 @@ def save_project_data(projectself):
     if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
         over_write_file = yes_or_no("Project file already exists here - overwrite?: ")
         if over_write_file:
-             os.remove(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) # delete current file
-             ProjectData = project_objects
+            os.remove(
+                os.path.join(self.project_path, self.name, "data", "archive", datafileName))  # delete current file
+            ProjectData = project_objects
 
         else:
             new_project_name = str(input("Enter new project name: "))
             self.name = new_project_name
             ProjectData = project_objects
+
 
 class Project:
     """
@@ -42,18 +46,18 @@ class Project:
     note - user note
     """
 
-    def __init__(self, project_input = None):
+    def __init__(self, project_input=None):
         if (project_input == None):
             self.name = input("Project Name: ")
             self.project_path = os.getcwd(),
             self.pdesc = input("Project Description: ")
             self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
-            self.type = "project"      # class type
+            self.type = "project"  # class type
 
             if self.sim_type == "MV":
                 self.impact_type = input("Impact Type (SDOF, SS, IMPC): ")
 
-                if (self.impact_type not in ["SS", "IMPC", "SDOF"]):
+                if self.impact_type not in ["SS", "IMPC", "SDOF"]:
                     print("Not a valid impact type, choose SS, IMPC or SDOF. Value set to SDOF")
                     self.impact_type == None
             else:
@@ -62,19 +66,20 @@ class Project:
             self.note = input("Note: ")
         else:
             self.name = project_input['name']
-            self.project_path = project_input['project_path']
+            self.project_path = os.getcwd()
             self.pdesc = project_input['pdesc']
             self.sim_type = project_input['sim_type']
             self.impact_type = project_input['impact_type']
             self.note = project_input['note']
-            self.type = "project"  # class type
+            self.type = 'project'  # class type
 
         # check if project directory exists
         # if it does, then a new project data file can be created at project/data/archive
-        if os.path.isdir(os.path.join(self.project_path, self.name)) == False:
+        if not os.path.isdir(os.path.join(self.project_path, self.name)):
             os.chdir(self.project_path)
             github_password = str(input("Enter Github password: "))
-            cookiecutter(f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git', no_input = True, extra_context={'project_name': self.name})
+            cookie_cutter_repo = f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git'
+            cookiecutter(cookie_cutter_repo, no_input=True, extra_context={'project_name': self.name})
         else:
             print(f'Project directory {os.path.join(self.project_path, self.name)} already exists')
 
@@ -85,13 +90,14 @@ class Project:
         # save data into archive for notebook reference
         datafileName = ''.join([self.name, '.pkl'])
         project_objects = {}
-        project_objects.update({self.name:self})
+        project_objects.update({self.name: self})
         # test if datafileName.pkl exists
         if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
             over_write_file = yes_or_no("Project file already exists here - overwrite?: ")
             if over_write_file:
-                 os.remove(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) # delete current file
-                 ProjectData = project_objects
+                os.remove(
+                    os.path.join(self.project_path, self.name, "data", "archive", datafileName))  # delete current file
+                ProjectData = project_objects
 
             else:
                 new_project_name = str(input("Enter new project name: "))
@@ -107,12 +113,11 @@ class Project:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
-                    [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
-
+                        [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
     def show(self):
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
-                         [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+                        [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
 
     def save_project(self, *args):
         """
@@ -128,24 +133,24 @@ class Project:
         nmultimotion = 0
         nsinglemotion = 0
         project_objects = {}
-        project_objects.update({self.name:self})
+        project_objects.update({self.name: self})
 
         for a in args:
             if (a.type == 'vehicle'):
                 nvehicles += 1
-                project_objects.update({f'veh{nvehicles}':a})
+                project_objects.update({f'veh{nvehicles}': a})
             elif (a.type == 'sdof'):
                 nsdof_models += 1
-                project_objects.update({f'sdof{nsdof_models}':a})
+                project_objects.update({f'sdof{nsdof_models}': a})
             elif (a.type == 'sideswipe'):
                 nsideswipe += 1
-                project_objects.update({f'ss{nsideswipe}':a})
+                project_objects.update({f'ss{nsideswipe}': a})
             elif (a.type == 'singlemotion'):
                 nsinglemotion += 1
-                project_objects.update({f'singlemotion{nsinglemotion}':a})
+                project_objects.update({f'singlemotion{nsinglemotion}': a})
             elif (a.type == 'multimotion'):
                 nmultimotion += 1
-                project_objects.update({f'multimotion{nmultimotion}':a})
+                project_objects.update({f'multimotion{nmultimotion}': a})
             else:
                 print(f"Unknown object type for {a} of type {type(a)}")
 
@@ -161,7 +166,6 @@ class Project:
         elif os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) == False:
             # create new file for saving project data
             ProjectData = project_objects
-
 
         with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -184,6 +188,7 @@ def project_info(project_name):
 
     print(f'list objects in this order for loading project: {out_names}')
     print(f"Example: project_name, veh1, veh2 = load_project('project_name')")
+
 
 def load_project(project_name):
     """
