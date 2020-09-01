@@ -14,10 +14,13 @@ Directory Structure:
 """
 
 import os
+import sys
+sys.path.append('/home/jmc/Documents/pycrash/')
 from pycrash.project import Project
 project_name = 'validation - single vehicle motion'
 
 project_inputs = {'name':project_name,
+	    	  'project_path':'/home/jmc/Documents/pycrash/projects/',
                   'pdesc':'planar motion simulation',
                   'sim_type':'SV',
                   'impact_type':None,

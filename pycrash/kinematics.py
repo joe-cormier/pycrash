@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import matplotlib.pyplot as plt
-from .data.defaults.config import default_dict
 from copy import deepcopy
 from .vehicle_model import vehicle_model
 from .position_data import position_data_motion
@@ -15,11 +14,7 @@ import csv
 import os
 
 # TODO: create inputs for plots
-figure_size = (16,9)
-
-# load defaults
-mu_max = default_dict['mu_max']    # maximum available friction
-dt_motion = default_dict['dt_motion']            # iteration time step
+figure_size = (16, 9)
 
 # look for Environment data, load if present
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
@@ -33,14 +28,35 @@ else:
     print('No Environment File Provided')
 
 
-class SingleMotion():
+class SingleMotion:
     """
     Generates vehicle motion based on inputs defined within Vehicle class
     No external forces
     Environment slope and bank is optionally defined as a function of X,Y components
     creates independent copy of vehicle at instantiation
     """
-    def __init__(self, name, veh):
+
+    def __init__(self, name, veh, user_sim_defaults=None):
+        """
+        default values necessary for single motion simulation are loaded when a vehicle is instantiated
+        """
+        # load defaults
+        if user_sim_defaults:
+            # TODO: create check for user sim_defaults_input
+            sim_defaults = user_sim_defaults
+        else:
+            sim_defaults = {'dt_motion': 0.01,
+                            'mu_max': 0.76,
+                            'alpha_max': 0.174533}
+
+        self.mu_max = sim_defaults['mu_max']  # maximum available friction
+        self.dt_motion = sim_defaults['dt_motion']  # iteration time step
+        self.alpha_max = sim_defaults['alpha_max']  # maximum tire slip angle (rad)
+
+        print(f"Maximum allowable friction: {self.mu_max}")
+        print(f"Time step for vehicle motion: {self.dt_motion}")
+        print(f"Maximum tire slip angle: {self.alpha_max}")
+
         self.name = name
         self.type = 'singlemotion'  # class type for saving files
         self.veh = deepcopy(veh)
@@ -51,11 +67,11 @@ class SingleMotion():
             print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
             print(f'Current driver input of type: {type(self.veh.driver_input)}')
             end_time = int(input('Enter duration for simulation (seconds):'))
-            t = list(np.arange(0, end_time+dt_motion, dt_motion))  # create time array from 0 to end time from user
+            t = list(np.arange(0, end_time + dt_motion, dt_motion))  # create time array from 0 to end time from user
             throttle = [0] * len(t)
             brake = [0] * len(t)
             steer = [0] * len(t)
-            driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
+            driver_input_dict = {'t': t, 'throttle': throttle, 'brake': brake, 'steer': steer}
             self.veh.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh.name} set to zero for {end_time} seconds')
 
@@ -69,8 +85,7 @@ class SingleMotion():
         self.veh = position_data_motion(self.veh)
 
     def plot_inputs(self):
-            plot_driver_inputs(self.veh)
-
+        plot_driver_inputs(self.veh)
 
     def vehicle_info(self):
         """
@@ -78,16 +93,15 @@ class SingleMotion():
         """
         print(f'Vehicle name is {self.veh.name}')
 
-
     def plot_model(self):
-            plot_model(self.veh)
+        plot_model(self.veh)
 
     def global_motion(self, i):
-            plot_motion(self.veh, i)
+        plot_motion(self.veh, i)
 
     def tire_detail(self):
-            tire_details(self.veh)
-            vertical_forces(self.veh)
+        tire_details(self.veh)
+        vertical_forces(self.veh)
 
     def CG_motion(self):
         """
@@ -104,7 +118,7 @@ class SingleMotion():
 
         ax.set_xticks(np.arange(min_x_axis, max_x_axis, 20))
         ax.set_yticks(np.arange(min_y_axis, max_y_axis, 20))
-        plt.scatter(self.veh.model.Dx, self.veh.model.Dy, label = f'{self.veh.name}')
+        plt.scatter(self.veh.model.Dx, self.veh.model.Dy, label=f'{self.veh.name}')
 
         plt.xlim([min_x_axis, max_x_axis])
         plt.ylim([min_y_axis, max_y_axis])
@@ -135,29 +149,32 @@ class SingleMotion():
         lrw_y = (self.p_vy.lrw_a[i], self.p_vy.lrw_b[i], self.p_vy.lrw_c[i], self.p_vy.lrw_d[i], self.p_vy.lrw_a[i])
 
         # Plot Vehicle in Vehicle reference frame
-        plt.figure(figsize = figure_size)
+        plt.figure(figsize=figure_size)
         plt.xlim([-20, 20])
         plt.ylim([-10, 10])
 
         plt.plot(bdy_x, bdy_y, 'k')
-        plt.scatter(self.p_vx.lfw[i], self.p_vy.lfw[i], c = 'b')         # left front wheel center
+        plt.scatter(self.p_vx.lfw[i], self.p_vy.lfw[i], c='b')  # left front wheel center
         plt.plot(lfw_x, lfw_y, 'b')
-        plt.scatter(self.p_vx.rfw[i], self.p_vy.rfw[i], c = 'g')         # right front wheel center
+        plt.scatter(self.p_vx.rfw[i], self.p_vy.rfw[i], c='g')  # right front wheel center
         plt.plot(rfw_x, rfw_y, 'g')
-        plt.scatter(self.p_vx.rrw[i], self.p_vy.rrw[i], c = 'm')         # right rear wheel center
+        plt.scatter(self.p_vx.rrw[i], self.p_vy.rrw[i], c='m')  # right rear wheel center
         plt.plot(rrw_x, rrw_y, 'm')
-        plt.scatter(self.p_vx.lrw[i], self.p_vy.lrw[i], c = 'orange')     # left rear wheel center
+        plt.scatter(self.p_vx.lrw[i], self.p_vy.lrw[i], c='orange')  # left rear wheel center
         plt.plot(lrw_x, lrw_y, 'orange')
 
         # vehicle CG
-        plt.scatter(self.p_vx.cg[i], self.p_vy.cg[i],s = 500, c = 'k')
+        plt.scatter(self.p_vx.cg[i], self.p_vy.cg[i], s=500, c='k')
 
         # velocity vector
-        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.vel_v[i] - self.p_vx.cg[i], self.p_vy.vel_v[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='r', ec='r')
+        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.vel_v[i] - self.p_vx.cg[i],
+                  self.p_vy.vel_v[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='r', ec='r')
 
         # vehicle axes
-        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.xaxis[i] - self.p_vx.cg[i], self.p_vy.xaxis[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')
-        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.yaxis[i] - self.p_vx.cg[i], self.p_vy.yaxis[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='b', ec='b')
+        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.xaxis[i] - self.p_vx.cg[i],
+                  self.p_vy.xaxis[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')
+        plt.arrow(self.p_vx.cg[i], self.p_vy.cg[i], self.p_vx.yaxis[i] - self.p_vx.cg[i],
+                  self.p_vy.yaxis[i] - self.p_vy.cg[i], head_width=.5, head_length=0.5, fc='b', ec='b')
         plt.gca().invert_yaxis()
         plt.show()
 
@@ -181,49 +198,51 @@ class SingleMotion():
         lrw_x = (self.p_gx.lrw_a[i], self.p_gx.lrw_b[i], self.p_gx.lrw_c[i], self.p_gx.lrw_d[i], self.p_gx.lrw_a[i])
         lrw_y = (self.p_gy.lrw_a[i], self.p_gy.lrw_b[i], self.p_gy.lrw_c[i], self.p_gy.lrw_d[i], self.p_gy.lrw_a[i])
 
-
-        fig = plt.figure(figsize = figure_size)
-        #plt.xlim([-300, 50])
-        #plt.ylim([-100, 100])
+        fig = plt.figure(figsize=figure_size)
+        # plt.xlim([-300, 50])
+        # plt.ylim([-100, 100])
 
         plt.plot(bdy_x, bdy_y, 'k')
-        plt.scatter(self.p_gx.lfw[i], self.p_gy.lfw[i], c='b')       # left front wheel center
+        plt.scatter(self.p_gx.lfw[i], self.p_gy.lfw[i], c='b')  # left front wheel center
         plt.plot(lfw_x, lfw_y, 'b')
-        plt.scatter(self.p_gx.rfw[i], self.p_gy.rfw[i], c='g')       # right front wheel center
+        plt.scatter(self.p_gx.rfw[i], self.p_gy.rfw[i], c='g')  # right front wheel center
         plt.plot(rfw_x, rfw_y, 'g')
-        plt.scatter(self.p_gx.rrw[i], self.p_gy.rrw[i], c='m')       # right rear wheel center
-        plt.plot(rrw_x, rrw_y,'m')
+        plt.scatter(self.p_gx.rrw[i], self.p_gy.rrw[i], c='m')  # right rear wheel center
+        plt.plot(rrw_x, rrw_y, 'm')
         plt.scatter(self.p_gx.lrw[i], self.p_gy.lrw[i], c='orange')  # left rear wheel center
         plt.plot(lrw_x, lrw_y, 'orange')
-        plt.scatter(self.p_gx.cg[i], self.p_gy.cg[i], s=100, c='k')   # vehicle CG
+        plt.scatter(self.p_gx.cg[i], self.p_gy.cg[i], s=100, c='k')  # vehicle CG
         # velocity vector
-        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.vel_v[i] * 0.2, self.p_gy.vel_v[i] * 0.2, head_width=.5, head_length=0.5, fc='r', ec='r')
+        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.vel_v[i] * 0.2, self.p_gy.vel_v[i] * 0.2, head_width=.5,
+                  head_length=0.5, fc='r', ec='r')
         # vehicle axes
-        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.xaxis[i] - self.p_gx.cg[i], self.p_gy.xaxis[i] - self.p_gy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')
-        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.yaxis[i] - self.p_gx.cg[i], self.p_gy.yaxis[i] - self.p_gy.cg[i], head_width=.5, head_length=0.5, fc='b', ec='b')
+        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.xaxis[i] - self.p_gx.cg[i],
+                  self.p_gy.xaxis[i] - self.p_gy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')
+        plt.arrow(self.p_gx.cg[i], self.p_gy.cg[i], self.p_gx.yaxis[i] - self.p_gx.cg[i],
+                  self.p_gy.yaxis[i] - self.p_gy.cg[i], head_width=.5, head_length=0.5, fc='b', ec='b')
 
         # for loop up to i
         if (tire_path):
             for i in range(0, i):
                 if self.p_gx.loc[i, 'lf_lock'] == 0:
-                    plt.scatter(self.p_gx.loc[i, 'lfw'], self.p_gy.loc[i, 'lfw'], c = 'b', s = 1, marker = '.')
+                    plt.scatter(self.p_gx.loc[i, 'lfw'], self.p_gy.loc[i, 'lfw'], c='b', s=1, marker='.')
                 elif self.p_gx.loc[i, 'lf_lock'] == 1:
-                    plt.scatter(self.p_gx.loc[i, 'lfw'], self.p_gy.loc[i, 'lfw'], c = 'b', s = 4, marker = 's')
+                    plt.scatter(self.p_gx.loc[i, 'lfw'], self.p_gy.loc[i, 'lfw'], c='b', s=4, marker='s')
 
                 if self.p_gx.loc[i, 'rf_lock'] == 0:
-                    plt.scatter(self.p_gx.loc[i, 'rfw'], self.p_gy.loc[i, 'rfw'], c = 'g', s = 1, marker = '.')
+                    plt.scatter(self.p_gx.loc[i, 'rfw'], self.p_gy.loc[i, 'rfw'], c='g', s=1, marker='.')
                 elif self.p_gx.loc[i, 'rf_lock'] == 1:
-                    plt.scatter(self.p_gx.loc[i, 'rfw'], self.p_gy.loc[i, 'rfw'], c = 'g', s = 4, marker = 's')
+                    plt.scatter(self.p_gx.loc[i, 'rfw'], self.p_gy.loc[i, 'rfw'], c='g', s=4, marker='s')
 
                 if self.p_gx.loc[i, 'rr_lock'] == 0:
-                    plt.scatter(self.p_gx.loc[i, 'rrw'], self.p_gy.loc[i, 'rrw'], c = 'm', s = 1, marker = '.')
+                    plt.scatter(self.p_gx.loc[i, 'rrw'], self.p_gy.loc[i, 'rrw'], c='m', s=1, marker='.')
                 elif self.p_gx.loc[i, 'rr_lock'] == 1:
-                    plt.scatter(self.p_gx.loc[i, 'rrw'], self.p_gy.loc[i, 'rrw'], c = 'm', s = 4, marker = 's')
+                    plt.scatter(self.p_gx.loc[i, 'rrw'], self.p_gy.loc[i, 'rrw'], c='m', s=4, marker='s')
 
                 if self.p_gx.loc[i, 'lr_lock'] == 0:
-                    plt.scatter(self.p_gx.loc[i, 'lrw'], self.p_gy.loc[i, 'lrw'], c = 'orange', s = 1, marker = '.')
+                    plt.scatter(self.p_gx.loc[i, 'lrw'], self.p_gy.loc[i, 'lrw'], c='orange', s=1, marker='.')
                 elif self.p_gx.loc[i, 'lr_lock'] == 1:
-                    plt.scatter(self.p_gx.loc[i, 'lrw'], self.p_gy.loc[i, 'lrw'], c = 'orange', s = 4, marker = 's')
+                    plt.scatter(self.p_gx.loc[i, 'lrw'], self.p_gy.loc[i, 'lrw'], c='orange', s=4, marker='s')
 
         plt.gca().invert_yaxis()
         plt.show()

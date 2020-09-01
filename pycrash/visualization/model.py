@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 
 
 # TODO: create input for figure size - loads from "defaults" folder?
-figure_size = (2400,1300)
+figure_size = (1200,700)
 figure_ratio = figure_size[0] / figure_size[1]
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 

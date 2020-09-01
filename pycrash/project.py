@@ -19,19 +19,18 @@ def yes_or_no(question):
 
 def save_project_data(projectself):
     """
-    save project data in pycrash data directory to share project info with
-    other modulues
+    save project data in pycrash data directory to share project info with other modules
     """
-    if os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)):
+    if os.path.exists(os.path.join(projectself.project_path, projectself.name, "data", "archive", datafileName)):
         over_write_file = yes_or_no("Project file already exists here - overwrite?: ")
         if over_write_file:
             os.remove(
-                os.path.join(self.project_path, self.name, "data", "archive", datafileName))  # delete current file
+                os.path.join(projectself.project_path, projectself.name, "data", "archive", datafileName))  # delete current file
             ProjectData = project_objects
 
         else:
             new_project_name = str(input("Enter new project name: "))
-            self.name = new_project_name
+            projectself.name = new_project_name
             ProjectData = project_objects
 
 
@@ -49,7 +48,7 @@ class Project:
     def __init__(self, project_input=None):
         if (project_input == None):
             self.name = input("Project Name: ")
-            self.project_path = os.getcwd(),
+            self.project_path = str(input("Enter path to project directory: ")),
             self.pdesc = input("Project Description: ")
             self.sim_type = input("Simulation Type [Single Vehicle = SV | Multi-Vehicle = MV]: ")
             self.type = "project"  # class type
@@ -66,7 +65,7 @@ class Project:
             self.note = input("Note: ")
         else:
             self.name = project_input['name']
-            self.project_path = os.getcwd()
+            self.project_path = project_input['project_path']
             self.pdesc = project_input['pdesc']
             self.sim_type = project_input['sim_type']
             self.impact_type = project_input['impact_type']
@@ -118,6 +117,7 @@ class Project:
     def show(self):
         print(tabulate([["Project", "Description", "Impact Type", "Simulation Type", "Note"],
                         [self.name, self.pdesc, self.impact_type, self.sim_type, self.note]]))
+
 
     def save_project(self, *args):
         """

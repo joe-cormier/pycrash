@@ -59,7 +59,7 @@ def vehicle_model(veh):
                                                       veh.model.rf_fy[i] * veh.lcgf,
                                                       -1 * veh.model.rr_fx[i] * veh.track / 2,
                                                       -1 * veh.model.rr_fy[i] * veh.lcgr,
-                                                      veh.model.lr_fx[i] * veh.track / 2 ,
+                                                      veh.model.lr_fx[i] * veh.track / 2,
                                                       -1 * veh.model.lr_fy[i] * veh.lcgr])
 
         if i == 0:
@@ -68,7 +68,7 @@ def vehicle_model(veh):
             veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i] * veh.model.vx[i]
             veh.model.ar[i] = math.sqrt(veh.model.ax[i]**2 + veh.model.ay[i]**2)
 
-            # inertial frame coorindates - capital letters
+            # inertial frame coordinates - capital letters
             veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
             veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
@@ -88,7 +88,7 @@ def vehicle_model(veh):
             # heading angle
             veh.model.theta_rad[i] = veh.model.theta_rad[i-1] + dt_motion * np.mean([veh.model.oz_rad[i], veh.model.oz_rad[i-1]])
 
-            # inertial frame coorindates - capital letters
+            # inertial frame coordinates - capital letters
             veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
             veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
