@@ -52,8 +52,8 @@ class SingleMotion:
         self.alpha_max = sim_defaults['alpha_max']  # maximum tire slip angle (rad)
 
         print(f"Maximum allowable friction: {self.mu_max}")
-        print(f"Time step for vehicle motion: {self.dt_motion}")
-        print(f"Maximum tire slip angle: {self.alpha_max}")
+        print(f"Time step for vehicle motion (s) : {self.dt_motion}")
+        print(f"Maximum tire slip angle (deg): {self.alpha_max * 180 / 3.14159:0.2f}")
 
         self.name = name
         self.type = 'singlemotion'  # class type for saving files
