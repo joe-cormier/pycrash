@@ -7,15 +7,7 @@ Dependencies - v, vx, vy, au, av, omega, constants
 from .data.defaults.config import default_dict
 import math
 import numpy as np
-import pandas as pd
-import csv
-import os
-
-# load defaults
-mu_max = default_dict['mu_max']                  # maximum available friction
-dt_motion = default_dict['dt_motion']            # iteration time step
-alpha_max = default_dict['alpha_max']             # maximum tire slip angle (rad)
-
+import math
 
 """
 TODO: detailed suspension properties
@@ -24,17 +16,20 @@ rc_cg = 18/12    # passenger car - roll center to cg height (h1)  (ft)
 roll_h = 6/12    # roll center height
 """
 
-def tire_forces(veh, i):
+def tire_forces(veh, i, sim_defaults):
     """
     calculate tire forces for the given time step
     """
+    # load defaults
+    mu_max = sim_defaults['mu_max']  # maximum available friction
+    alpha_max = sim_defaults['alpha_max']  # maximum tire slip angle (rad)
+
     # TODO: incorporate grade / bank
 
     if i == 0:
         j = i
     else:
-        j = i - 1 # tire forces based on prior time step motion
-
+        j = i - 1  # tire forces based on prior time step motion
 
     # current steer angle
     veh.model.delta_deg[i] = veh.driver_input.steer[i] / veh.steer_ratio   # steer angle (delta) will always be derived from driver input
@@ -93,13 +88,13 @@ def tire_forces(veh, i):
     if veh.fwd == 1:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency
     elif veh.rwd == 1:
-        lf_app =  -1 * veh.model.lf_fz[i] * (mu_max * veh.driver_input.brake[i])  # rear wheel drive, front wheel will not apply accelerative force
+        lf_app = -1 * veh.model.lf_fz[i] * (mu_max * veh.driver_input.brake[i])  # rear wheel drive, front wheel will not apply accelerative force
     elif veh.awd == 1:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]))
 
     if (math.sqrt(lf_app ** 2 + lf_latf ** 2) >= (mu_max * veh.model.lf_fz[i])):  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
-        lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lf_lonf = -1 * np.sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
         lf_latf = math.sin(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) < mu_max * veh.model.lf_fz[i]:
         veh.model.lf_lock[i] = 0
@@ -128,7 +123,7 @@ def tire_forces(veh, i):
 
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) >= mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 1
-        rf_lonf = -1 * sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
+        rf_lonf = -1 * np.sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
         rf_latf = math.sin(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
     elif math.sqrt(rf_app ** 2 + rf_latf ** 2) < mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 0
@@ -158,7 +153,7 @@ def tire_forces(veh, i):
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) >= mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 1
-        rr_lonf = -1 * sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
+        rr_lonf = -1 * np.sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
         rr_latf = math.sin(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) < mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 0
@@ -186,7 +181,7 @@ def tire_forces(veh, i):
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) >= mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        lr_lonf = -1 * sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
+        lr_lonf = -1 * np.sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
         lr_latf = math.sin(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) < mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 0

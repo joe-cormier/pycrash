@@ -12,9 +12,7 @@ import math
 import csv
 import os
 
-# load defaults
-mu_max = default_dict['mu_max']             # maximum available friction
-dt_motion = default_dict['dt_motion']       # iteration time step
+
 
 # column list for vehicle model
 column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -25,10 +23,13 @@ column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg'
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
            'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
 
-def vehicle_model(veh):
+def vehicle_model(veh, sim_defaults):
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
     """
+    # load defaults
+    dt_motion = sim_defaults['dt_motion']  # iteration time step
+
     print(f"Vehicle motion will be simulated for {max(veh.driver_input.t)} seconds")
     veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns = column_list)
 
@@ -42,10 +43,10 @@ def vehicle_model(veh):
     veh.model.Vy[0] = veh.model.vx[0] * math.sin(veh.model.theta_rad[0]) + veh.model.vy[0] * math.cos(veh.model.theta_rad[0])
 
     for i in range(len(veh.driver_input.t)):
-        veh.model.t[i] = round(i * dt_motion, 4) # assigning time
+        veh.model.t[i] = round(i * dt_motion, 4)  # assigning time
 
         # get tire forces for t = 0
-        veh = tire_forces(veh, i)
+        veh = tire_forces(veh, i, sim_defaults)
 
         # local vehicle acceleration
         veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i], veh.model.rf_fx[i], veh.model.rr_fx[i], veh.model.lr_fx[i]])

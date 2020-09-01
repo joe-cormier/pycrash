@@ -9,8 +9,6 @@ from .visualization.vehicle import plot_driver_inputs
 from .visualization.kinematics import plot_model
 from .visualization.model import plot_motion
 from .visualization.tire_details import tire_details, vertical_forces
-import math
-import csv
 import os
 
 # TODO: create inputs for plots
@@ -45,7 +43,7 @@ class SingleMotion:
             # TODO: create check for user sim_defaults_input
             sim_defaults = user_sim_defaults
         else:
-            sim_defaults = {'dt_motion': 0.01,
+            sim_defaults = {'dt_motion': 0.1,
                             'mu_max': 0.76,
                             'alpha_max': 0.174533}
 
@@ -79,7 +77,7 @@ class SingleMotion:
         # TODO: check for init_x_pos, init_y_pos
 
         # run planar vehicle motion simulation
-        self.veh = vehicle_model(self.veh)
+        self.veh = vehicle_model(self.veh, sim_defaults)
 
         # create point data in vehicle and global frame
         self.veh = position_data_motion(self.veh)
