@@ -175,7 +175,7 @@ def compare_kinematics(model1, model2, name1, name2):
                             row = 4, col = 1)
 
     fig.update_layout(
-        legend = dict(orientation = "h", yanchor = 'top', y = 1.1, xanchor = 'left', x = 0.01),
+        legend = dict(orientation = "v", yanchor = 'top', y = 1.1, xanchor = 'left', x = 1.01),
         autosize=False,
         width = 900,
         height = 900,
@@ -186,7 +186,7 @@ def compare_kinematics(model1, model2, name1, name2):
         font = dict(family = 'Arial', size = 14, color = 'black'))
 
     fig.update_xaxes(showgrid = False, title_text = 'Time (s)', row = 4, col = 1,
-                    showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_xaxes(showgrid = False, title_text = '', row = 1, col = 1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
