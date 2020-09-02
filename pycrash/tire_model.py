@@ -180,7 +180,6 @@ def tire_forces(veh, i, sim_defaults):
     else:
         lr_latf = veh.model.lr_alpha[i] / alpha_max * mu_max * veh.model.lr_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
-    # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
         lr_app = -1 * veh.model.lr_fz[i] * (mu_max * veh.driver_input.brake[i])  # front wheel drive, rear wheel will not apply accelerative force
     elif veh.rwd == 1:
