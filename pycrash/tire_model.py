@@ -31,8 +31,9 @@ def tire_forces(veh, i, sim_defaults):
     """
     # load defaults
     mu_max = sim_defaults['mu_max']  # maximum available friction
+    tire_mu = 1
     alpha_max = sim_defaults['alpha_max']  # maximum tire slip angle (rad)
-
+    alpha_max = alpha_max * mu_max
     # TODO: incorporate grade / bank
 
     if i == 0:
