@@ -44,46 +44,18 @@ def tire_forces(veh, i, sim_defaults):
     veh.model.delta_deg[i] = veh.driver_input.steer[i] / veh.steer_ratio   # steer angle (delta) will always be derived from driver input
     veh.model.delta_rad[i] = veh.model.delta_deg[i] * (math.pi/180)
 
-    ffs = veh.weight * veh.lcgr / veh.wb  # Force Static Front
-    frs = veh.weight * veh.lcgf / veh.wb  # Force Static Rear
-
     # Forward / Rearward weight shift due to braking or acceleration
-    if veh.model.au[j] == 0:
-        ffaxl = ffs
-        fraxl = frs
-    elif veh.model.au[j] != 0:
-        ffaxl = ffs - veh.weight * (veh.model.au[j] / 32.2) * veh.hcg / veh.wb
-        fraxl = frs + veh.weight * (veh.model.au[j] / 32.2) * veh.hcg / veh.wb
-
-
-    df_roll = math.fabs((ffs * veh.hcg * veh.model.av[j] / 32.2) / veh.track)  # change in vertical force from roll moment - front
-    dr_roll = math.fabs((frs * veh.hcg * veh.model.av[j] / 32.2) / veh.track)  # rear
-
-    # calculate vertical force at each tire accounting for pitch and roll
-    # account for inside / outside of turn - in a positive turn (right) av will be positive
-    if veh.model.av[j] == 0:
-        veh.model.lf_fz[i] = ffaxl / 2  # no acceleration - no shift in weight
-        veh.model.rf_fz[i] = ffaxl / 2
-        veh.model.rr_fz[i] = fraxl / 2
-        veh.model.lr_fz[i] = fraxl / 2
-    elif veh.model.av[j] > 0:
-        veh.model.lf_fz[i] = ffaxl / 2 + df_roll  # outside tire
-        veh.model.rf_fz[i] = ffaxl / 2 - df_roll  # inside tire
-        veh.model.rr_fz[i] = fraxl / 2 - dr_roll  # inside tire
-        veh.model.lr_fz[i] = fraxl / 2 + dr_roll  # outside tire
-    elif veh.model.av[j] < 0:
-        veh.model.lf_fz[i] = ffaxl / 2 - df_roll  # inside tire
-        veh.model.rf_fz[i] = ffaxl / 2 + df_roll  # outside tire
-        veh.model.rr_fz[i] = fraxl / 2 + dr_roll  # outside tire
-        veh.model.lr_fz[i] = fraxl / 2 - dr_roll  # inside tire
-    else:
-        print(f'Vehicle av value of {veh.model.av[j]} Not Defined at i = {i}, time = {veh.model.t[j]}')
+    veh_m = veh.weight / 32.2
+    veh.model.lf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb + veh_m * veh.model.av[j] * veh.hcg / veh.track)
+    veh.model.rf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb - veh_m * veh.model.av[j] * veh.hcg / veh.track)
+    veh.model.rr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb - veh_m * veh.model.av[j] * veh.hcg / veh.track)
+    veh.model.lr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb + veh_m * veh.model.av[j] * veh.hcg / veh.track)
 
     # ------------------------ Left Front Tire ----------------------------------- #
     # local velocity
     lf_vx = veh.model.vx[j] + veh.model.oz_rad[j] * (veh.track / 2)
     lf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
-    print(f"At index = {i}: lf_vx = {lf_vx}, lf_vy = {lf_vy}")
+
     veh.model.lf_lock[i] = 0  # locked status of Left Front Wheel - initially set to unlocked
     veh.model.lf_alpha[i] = -1 * np.arctan2(lf_vy, lf_vx) + veh.model.delta_rad[i]   # tire slip angle (rad)
 
@@ -92,8 +64,6 @@ def tire_forces(veh, i, sim_defaults):
     else:
         lf_latf = (veh.model.lf_alpha[i] / alpha_max) * mu_max * veh.model.lf_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
-    #print(f'Left Front lf_latf = {lf_latf} at t = {veh.model.t[i]}')
-    # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency
     elif veh.rwd == 1:
@@ -114,7 +84,7 @@ def tire_forces(veh, i, sim_defaults):
     # local velocity
     rf_vx = veh.model.vx[j] - veh.model.oz_rad[j] * (veh.track / 2)
     rf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
-    print(f"At index = {i}: rf_vx = {rf_vx}, rf_vy = {rf_vy}")
+
     veh.model.rf_lock[i] = 0  # locked status - initially set to unlocked
     veh.model.rf_alpha[i] = -1 * np.arctan2(rf_vy, rf_vx) + veh.model.delta_rad[i]  # tire slip angle (rad)
 
@@ -144,8 +114,8 @@ def tire_forces(veh, i, sim_defaults):
     # local velocity
     rr_vx = veh.model.vx[j] - veh.model.oz_rad[j] * (veh.track / 2)
     rr_vy = veh.model.vy[j] - veh.model.oz_rad[j] * veh.lcgr
-    veh.model.rr_lock[i] = 0  # locked status - initially set to unlocked
 
+    veh.model.rr_lock[i] = 0  # locked status - initially set to unlocked
     veh.model.rr_alpha[i] = -1 * np.arctan2(rr_vy, rr_vx)  # tire slip angle (rad)
 
     if math.fabs(veh.model.rr_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886

@@ -2,7 +2,6 @@
 # TODO: option to save inputs and outputs to csv
 
 # %% modules
-from .data.defaults.config import default_dict
 from tabulate import tabulate
 from itertools import count
 from .visualization.vehicle import plot_impact_points, plot_impact_edge, plot_driver_inputs
@@ -17,8 +16,12 @@ project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')
 
 # load defaults
-mu_max = default_dict['mu_max']    # maximum available friction
-dt_motion = default_dict['dt_motion']            # iteration time step
+sim_defaults = {'dt_motion': 0.01,
+                'mu_max': 0.76,
+                'alpha_max': 0.174533}
+
+mu_max = sim_defaults['mu_max']    # maximum available friction
+dt_motion = sim_defaults['dt_motion']            # iteration time step
 
 print('Current values for defined constants:')
 print(f'maximum available friction (mu_max) = {mu_max}')

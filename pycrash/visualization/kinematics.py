@@ -38,19 +38,19 @@ def plot_model(self):
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ax / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'AX',
+                            name = 'Ax',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ay / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'AY',
+                            name = 'Ay',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.Ar / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'AR',
+                            name = 'Ar',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),
                             row = 2, col = 1)
 
@@ -95,13 +95,13 @@ def plot_model(self):
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.ax / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'Ax',
+                            name = 'ax',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = self.model.t, y = self.model.ay / 32.2,
                             showlegend=False,
                             mode = 'lines',
-                            name = 'Ay',
+                            name = 'ay',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 2, col = 1)
 
