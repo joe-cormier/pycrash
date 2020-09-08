@@ -6,16 +6,13 @@ from .sideswipe import ss
 from .tire_model import tire_forces
 from .impact_detect import detect
 from .vehicle_model import vehicle_model
+from .carpenter_momentum import impc
 import pandas as pd
 import numpy as np
 from scipy import integrate
 import math
 import csv
 import os
-
-# load defaults
-mu_max = default_dict['mu_max']             # maximum available friction
-dt_motion = default_dict['dt_motion']       # iteration time step
 
 # column list for vehicle model
 column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -28,7 +25,7 @@ column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip
 # TODO: ignore driver inputs after impact
 # TODO: disable tire after impact
 
-def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False):
+def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, kmutual=None, vehicle_mu=None, ignore_driver = False):
 
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
@@ -40,8 +37,12 @@ def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False
     last input for remainder of simulation
     kmutual must be defined by sideswipe simulations
     """
+    # load defaults
+    mu_max = sim_defaults['mu_max']             # maximum available friction
+    dt_motion = sim_defaults['dt_motion']       # iteration time step
+
     j = 0
-    vehicle_model = vehicle_list.copy()
+
     print(f"Two vehicle simulation will run for {max(vehicle_list[0].driver_input.t)} s")
 
     for veh in vehicle_list:
@@ -56,7 +57,6 @@ def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False
         veh.model.Vx[0] = veh.model.vx[0] * math.cos(veh.model.theta_rad[0]) - veh.model.vy[0] * math.sin(veh.model.theta_rad[0])
         veh.model.Vy[0] = veh.model.vx[0] * math.sin(veh.model.theta_rad[0]) + veh.model.vy[0] * math.cos(veh.model.theta_rad[0])
 
-
     for i in (range(len(vehicle_list[0].driver_input.t))):
 
         # step through each vehicle
@@ -64,12 +64,18 @@ def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False
             veh.model.t[i] = round(i * dt_motion, 4) # assigning time
 
             # get tire forces for t = 0
-            veh = tire_forces(veh, i)
+            veh = tire_forces(veh, i, sim_defaults)
 
             # local vehicle acceleration
-            veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i], veh.model.rf_fx[i], veh.model.rr_fx[i], veh.model.lr_fx[i]])
-            veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i], veh.model.rf_fy[i], veh.model.rr_fy[i], veh.model.lr_fy[i]])
+            veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
+                                                      veh.model.rf_fx[i],
+                                                      veh.model.rr_fx[i],
+                                                      veh.model.lr_fx[i]])
 
+            veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i],
+                                                      veh.model.rf_fy[i],
+                                                      veh.model.rr_fy[i],
+                                                      veh.model.lr_fy[i]])
 
             # rotation acceleration - alpha-z
             veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
@@ -114,35 +120,9 @@ def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False
                 veh.model.Vx[i] = veh.model.Vx[i-1] + dt_motion * np.mean([veh.model.Ax[i-1], veh.model.Ax[i]])
                 veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
 
-            if veh.model.oz_rad[i] != 0:
-                veh.model.turn_rX[i] = veh.model.Vy[i] / veh.model.oz_rad[i]    # turning radius in x direction
-                veh.model.turn_rY[i] = veh.model.Vx[i] / veh.model.oz_rad[i]    # turning radius in y direction
-                veh.model.turn_rR[i] = math.sqrt(veh.model.turn_rX[i]**2 + veh.model.turn_rY[i]**2)
-            else:
-                veh.model.turn_rX[i] = 0   # should actually be inf or undefined
-                veh.model.turn_rY[i] = 0   # should actually be inf or undefined
-                veh.model.turn_rR[i] = 0   # should actually be inf or undefined
-
-            veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)
-            veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
-
-            # vehicle slip angle
-            veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
-
-            # vehicle slip angle
-            veh.model.vehicleslip_rad[i] = veh.model.beta_rad[i] - veh.model.theta_rad[i]
-
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
             veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
-
-            # converting to degrees
-            # TODO: remove for speed
-            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
-            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
-            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad] # heading angle
-            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
-            veh.model.vehicleslip_deg = [row * 180 / math.pi for row in veh.model.vehicleslip_rad]
 
         # detect impact using current vehicle positions after first iterations
         if i == 0:
@@ -153,14 +133,17 @@ def multi_vehicle_model(vehicle_list, kmutual, vehicle_mu, ignore_driver = False
 
         if (crush_data.impact[i]):
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
-            if (kinematicstwo_instance.impact_type == 'impc'):
-                veh1, veh2 = impc(veh1, veh2, theta_c)              # run impc model - create inputs using vehicle class
-            elif (kinematicstwo_instance.impact_type == 'SS'):
+            if (impact_type == 'IMPC'):
+                vehicle_list = impc(self.veh1, self.veh1, sim_defaults)              # run impc model - create inputs using vehicle class
+            elif (impact_type == 'SS'):
                 vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
             else:
-                print(f'impact_type {impact_type} is not defined - no impacts forces generated')
+                print(f'impact_type {impact_type} is not defined - no impact forces generated')
+                veh.model.iloc[i, 'Fx'] = 0
+                veh.model.iloc[i, 'Fy'] = 0
+                veh.model.iloc[i, 'Mz'] = 0
         else:
-            if kinematicstwo_instance.impact_type == 'SS':
+            if impact_type == 'SS':
                 veh.model.iloc[i, 'Fx'] = 0
                 veh.model.iloc[i, 'Fy'] = 0
                 veh.model.iloc[i, 'Mz'] = 0

@@ -15,15 +15,19 @@ def cg_motion(model1, model2, name1, name2):
     dy = dy_max - dy_min
 
     if dx > dy:
-        adj_y = aspect_ratio * dy / dx
-        adj_x = 1
+        adj_x = aspect_ratio * dy / dx
+        adj_y = 1
         print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
+        dx_min = round(dx_min * adj_x)
+        dx_max = round(dx_max * adj_x)
         print(f"dx_min = {dx_min}, dx_max = {dx_max}")
         print(f"dy_min = {dy_min}, dy_max = {dy_max}")
     else:
-        adj_y = 1
-        adj_x = (1 / aspect_ratio) * dx / dy
+        adj_x = 1
+        adj_y = (1 / aspect_ratio) * dx / dy
         print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
+        dy_min = round(dy_min * adj_y)
+        dy_max = round(dy_max * adj_y)
         print(f"dx_min = {dx_min}, dx_max = {dx_max}")
         print(f"dy_min = {dy_min}, dy_max = {dy_max}")
 
@@ -50,12 +54,12 @@ def cg_motion(model1, model2, name1, name2):
         height=width / aspect_ratio,
         title='Vehicle Motion in Global Reference Frame',
         template='plotly_white',
-        xaxis=dict(showgrid=False, title='x-axis - Forward (ft)'),
-        yaxis=dict(showgrid=False, title='y-axis - Rightward (ft)'),
+        xaxis=dict(showgrid=False, title='x-axis - Forward (ft)', range = [dx_min, dx_max]),
+        yaxis=dict(showgrid=False, title='y-axis - Rightward (ft)', range = [dy_max, dy_min]),
         font=dict(family='Arial', size=16, color='black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [dx_min * adj_x, dx_max * adj_x])
-    fig.update_yaxes(autorange='reversed', showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, range = [-67, dy_max * adj_y])
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()

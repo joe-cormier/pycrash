@@ -11,6 +11,7 @@ beta_rad (velocity vector)
 Dx, Dy, vehicle displacement in global frame
 
 """
+
 import pandas as pd
 import math
 import os
@@ -19,7 +20,10 @@ import os
 cof = 0.6
 cor = 0.1
 
-def impc(veh1, veh2, theta_c):
+def impc(veh1, veh2, sim_defaults):
+    cor = sim_defaults['cor']
+    cof = sim_defaults['vehicle_mu']
+
     # vehicle impact conditions, collision plane angle (radians)
 
     theta1 = veh1['theta_rad']   # vehicle 1 heading angle
@@ -43,8 +47,8 @@ def impc(veh1, veh2, theta_c):
     vy2 = veh2['vy']
     oz_rad2 = veh2['oz_rad']
 
-    # heading angle of impact plane in global frame
-    theta_c = veh1.model.theta_rad[i] veh1.impact_norm_rad
+    # heading angle of normal impact direction in global frame
+    theta_c = veh1.model.theta_rad[i] + veh1.veh.impact_norm_rad
     # carpenter + welcher model
 
     # get cosine / sine results for coordinate transformation to the normal - tangent axis
@@ -55,10 +59,10 @@ def impc(veh1, veh2, theta_c):
     s2 = math.sin(veh2.model.theta_rad[i] - theta_c)
 
     # translate distances to n-t frame
-    dt1 = c1*veh1.model.DX[i] - s1*veh1.model.DY[i]
-    dn1 = s1*veh1.model.DX[i] + c1*veh1.model.DY[i]
-    dt2 = c2*veh2.model.DX[i] - s2*veh2.model.DY[i]
-    dn2 = s2*veh2.model.DX[i] + c2*veh2.model.DY[i]
+    dt1 = c1*veh1.model.Dx[i] - s1*veh1.model.Dy[i]
+    dn1 = s1*veh1.model.Dx[i] + c1*veh1.model.Dy[i]
+    dt2 = c2*veh2.model.Dx[i] - s2*veh2.model.Dy[i]
+    dn2 = s2*veh2.model.Dx[i] + c2*veh2.model.Dy[i]
 
     # translate velocities to n-t frame
     vt1 = c1*veh1.model.Vx[i] - s1*veh1.model.Vy[i]
@@ -180,8 +184,8 @@ def impc(veh1, veh2, theta_c):
     #veh2_imp = {'vx': vx2_* 1.46667, 'vy': vy2_* 1.46667, 'oz_rad': oz_rad2_, 'dvx':dvx2* 1.46667, 'dvy': dvy2* 1.46667, 'dv':dveh2* 1.46667}
 
     # speeds in mph -
-    veh1_imp = {'vx': vx1_, 'vy': vy1_, 'oz_rad': oz_rad1_, 'dvx':dvx1, 'dvy': dvy1, 'dv':dveh1}
-    veh2_imp = {'vx': vx2_, 'vy': vy2_, 'oz_rad': oz_rad2_, 'dvx':dvx2, 'dvy': dvy2, 'dv':dveh2}
-    energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
+    veh1.impc_result = {'vx_post': vx1_, 'vy_post': vy1_, 'oz_rad_post': oz_rad1_, 'dvx':dvx1, 'dvy': dvy1, 'dv':dveh1}
+    veh2.impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx':dvx2, 'dvy': dvy2, 'dv':dveh2}
+    impc_energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
 
-    return veh1, veh2, impc_result
+    return veh1, veh2, impc_energy

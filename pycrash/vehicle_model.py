@@ -21,7 +21,7 @@ column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg'
            'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
            'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
-           'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
+           'theta_rad', 'theta_deg']
 
 def vehicle_model(veh, sim_defaults):
     """
@@ -49,8 +49,15 @@ def vehicle_model(veh, sim_defaults):
         veh = tire_forces(veh, i, sim_defaults)
 
         # local vehicle acceleration
-        veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i], veh.model.rf_fx[i], veh.model.rr_fx[i], veh.model.lr_fx[i]])
-        veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i], veh.model.rf_fy[i], veh.model.rr_fy[i], veh.model.lr_fy[i]])
+        veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
+                                                      veh.model.rf_fx[i],
+                                                      veh.model.rr_fx[i],
+                                                      veh.model.lr_fx[i]])
+
+        veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i],
+                                                      veh.model.rf_fy[i],
+                                                      veh.model.rr_fy[i],
+                                                      veh.model.lr_fy[i]])
 
         # rotation acceleration - alpha-z
         veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
@@ -95,6 +102,9 @@ def vehicle_model(veh, sim_defaults):
             veh.model.Vx[i] = veh.model.Vx[i-1] + dt_motion * np.mean([veh.model.Ax[i-1], veh.model.Ax[i]])
             veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
 
+        """
+        # move to seperate calc
+        """
         if veh.model.oz_rad[i] != 0:
             veh.model.turn_rX[i] = veh.model.Vy[i] / veh.model.oz_rad[i]    # turning radius in x direction
             veh.model.turn_rY[i] = veh.model.Vx[i] / veh.model.oz_rad[i]    # turning radius in y direction
@@ -104,11 +114,11 @@ def vehicle_model(veh, sim_defaults):
             veh.model.turn_rY[i] = 0   # should actually be inf or undefined
             veh.model.turn_rR[i] = 0   # should actually be inf or undefined
 
-        veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)
+        veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)    # move to seperate calc
         veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
 
         # velocity vector in inertial frame
-        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])
+        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to seperate calc
 
     # vehicle position
     veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
@@ -116,9 +126,10 @@ def vehicle_model(veh, sim_defaults):
 
     # converting to degrees
     # TODO: remove for speed
-    veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]
-    veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]
-    veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]
-    veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]
+    veh.model["alphaz_deg", "oz_deg", "theta_deg", "beta_deg"] = (180 / math.pi) * veh.model["alphaz_deg", "oz_deg", "theta_deg", "beta_deg"]
+    #veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to seperate calc
+    #veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to seperate calc
+    #veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
+    #veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to seperate calc
 
     return veh

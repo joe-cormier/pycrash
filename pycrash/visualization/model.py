@@ -6,8 +6,9 @@ from plotly.subplots import make_subplots
 
 
 # TODO: create input for figure size - loads from "defaults" folder?
-figure_size = (1200,700)
-figure_ratio = figure_size[0] / figure_size[1]
+width = 1000
+aspect_ratio = 16 / 9
+figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 
 
@@ -57,6 +58,32 @@ def plot_motion(veh, i, tire_path=True):
         cgx = [veh.p_gx.cg[i], veh.p_gx.cg[i]]
         cgy = [veh.p_gy.cg[i], veh.p_gy.cg[i]]
         time = [veh.model.t[i], veh.model.t[i]]
+
+        # adjust axes to keep aspect aspect ratio
+        dx_max = veh.p_gx.cg.max() + 15
+        dx_min = veh.p_gx.cg.min() - 15
+        dy_max = veh.p_gy.cg.max() + 15
+        dy_min = veh.p_gy.cg.min() - 15
+
+        dx = dx_max - dx_min
+        dy = dy_max - dy_min
+
+        if dx > dy:
+            adj_x = aspect_ratio * dy / dx
+            adj_y = 1
+            print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
+            dx_min = round(dx_min * adj_x)
+            dx_max = round(dx_max * adj_x)
+            print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+            print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+        else:
+            adj_x = 1
+            adj_y = (1 / aspect_ratio) * dx / dy
+            print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
+            dy_min = round(dy_min * adj_y)
+            dy_max = round(dy_max * adj_y)
+            print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+            print(f"dy_min = {dy_min}, dy_max = {dy_max}")
 
         fig.add_trace(go.Scatter(x = cgx, y = cgy,
                             mode = 'markers',
@@ -128,40 +155,40 @@ def plot_motion(veh, i, tire_path=True):
             fig.add_trace(go.Scatter(x = gx.lfw, y = gy.lfw,
                                 mode = 'markers',
                                 name = 'LF',
-                                marker = dict(color = 'rgb(0, 0, 255)', size = 5,
+                                marker = dict(color = 'rgb(0, 0, 255)', size = 2,
                                 symbol = list(map(setmarker, gx.lf_lock)))))
 
             fig.add_trace(go.Scatter(x = gx.rfw, y = gy.rfw,
                                 mode = 'markers',
                                 name = 'RF',
-                                marker = dict(color = 'rgb(0, 255, 0)', size = 5,
+                                marker = dict(color = 'rgb(0, 255, 0)', size = 2,
                                 symbol = list(map(setmarker, gx.rf_lock)))))
 
             fig.add_trace(go.Scatter(x = gx.rrw, y = gy.rrw,
                                 mode = 'markers',
                                 name = 'RR',
-                                marker = dict(color = 'rgb(153, 0, 204)', size = 5,
+                                marker = dict(color = 'rgb(153, 0, 204)', size = 2,
                                 symbol = list(map(setmarker, gx.rr_lock)))))
 
             fig.add_trace(go.Scatter(x = gx.lrw, y = gy.lrw,
                                 mode = 'markers',
                                 name = 'LR',
-                                marker = dict(color = 'rgb(255, 102, 0)', size = 5,
+                                marker = dict(color = 'rgb(255, 102, 0)', size = 2,
                                 symbol = list(map(setmarker, gx.lr_lock)))))
 
         fig.update_layout(
             showlegend = False,
             autosize = False,
-            width = figure_size[0],
-            height = figure_size[1],
+            width = width,
+            height = width / aspect_ratio,
             title = 'Vehicle Motion in Global Reference Frame',
             template = 'plotly_white',
-            xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)'),
-            yaxis = dict(scaleanchor = 'x', scaleratio = figure_ratio, showgrid = False, title = 'y-axis - Rightward (ft)'),
+            xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [dx_min, dx_max]),
+            yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', range = [dy_max, dy_min]),
             font = dict(family = 'Arial', size = 16, color = 'black'))
 
         fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                          tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-        fig.update_yaxes(autorange = 'reversed', showline=True, linewidth=1, linecolor='black', ticks="outside",
+        fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                          tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
         fig.show()

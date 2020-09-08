@@ -46,7 +46,7 @@ class KinematicsTwo():
     Environment slope and bank is optionally defined as a function of X,Y components
     creates independent copy of vehicle at instantiation
     """
-    def __init__(self, name, impact_type, veh1, veh2, mutual_stiffness = None, vehicle_friction = None):
+    def __init__(self, name, impact_type, veh1, veh2, mutual_stiffness = None, vehicle_friction = None, user_sim_defaults = None):
         self.name = name
         self.type = 'multimotion'             # class type for saving files
         self.veh1 = deepcopy(veh1)
@@ -75,6 +75,16 @@ class KinematicsTwo():
             else:
                 print(f"Mutual Stiffness for {self.name} is empty")
 
+        # load defaults
+        if user_sim_defaults:
+            # TODO: create check for user sim_defaults_input
+            self.sim_defaults = user_sim_defaults
+        else:
+            self.sim_defaults = {'dt_motion': 0.01,
+                            'mu_max': 0.76,
+                            'alpha_max': 0.174533,
+                            'vehicle_mu':0.3,
+                            'cor':0.2}
 
         # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
@@ -124,41 +134,41 @@ class KinematicsTwo():
             fig, axs = plt.subplots(3, 2, figsize=figure_size, sharex='col')
             fig.suptitle(f'{veh.name}', fontsize=16)
             axs[0,0].set_ylabel('Velocity (mph)', color='k')
-            axs[0,0].plot(self.veh_motion.t, self.veh_motion.Vx / 1.46667, color='k', label = 'Vx')
-            axs[0,0].plot(self.veh_motion.t, self.veh_motion.Vy / 1.46667, color='b', label = 'Vy')
-            axs[0,0].plot(self.veh_motion.t, self.veh_motion.Vr / 1.46667, color = 'g', linestyle='dashed', label = 'V')
+            axs[0,0].plot(self.model.t, self.model.Vx / 1.46667, color='k', label = 'Vx')
+            axs[0,0].plot(self.model.t, self.model.Vy / 1.46667, color='b', label = 'Vy')
+            axs[0,0].plot(self.model.t, self.model.Vr / 1.46667, color = 'g', linestyle='dashed', label = 'V')
             axs[0,0].tick_params(axis='y', labelcolor='k')
             axs[0,0].legend(frameon = False)
 
             axs[0,1].set_ylabel('Acceleration (g)', color='k')
             axs[0,1].tick_params(axis='y', labelcolor='k')
-            axs[0,1].plot(self.veh_motion.t, self.veh_motion.Ax/32.2, color='k', label = 'Ax')
-            axs[0,1].plot(self.veh_motion.t, self.veh_motion.Ay/32.2, color='b', label = 'Ay')
-            axs[0,1].plot(self.veh_motion.t, self.veh_motion.ax/32.2, color='k', linestyle='dashed', label = 'ax')
-            axs[0,1].plot(self.veh_motion.t, self.veh_motion.ay/32.2, color='b', linestyle='dashed', label = 'ay')
+            axs[0,1].plot(self.model.t, self.model.Ax/32.2, color='k', label = 'Ax')
+            axs[0,1].plot(self.model.t, self.model.Ay/32.2, color='b', label = 'Ay')
+            axs[0,1].plot(self.model.t, self.model.ax/32.2, color='k', linestyle='dashed', label = 'ax')
+            axs[0,1].plot(self.model.t, self.model.ay/32.2, color='b', linestyle='dashed', label = 'ay')
             axs[0,1].legend(frameon = False)
 
             axs[1,0].set_ylabel('Forward Tire Forces (lb)', color='k')
             axs[1,0].tick_params(axis='y', labelcolor='k')
-            axs[1,0].plot(self.veh_motion.t, self.veh_motion.lf_fx, color='b', label = 'LF')
-            axs[1,0].plot(self.veh_motion.t, self.veh_motion.rf_fx, color='g', label = 'RF')
-            axs[1,0].plot(self.veh_motion.t, self.veh_motion.rr_fx, color='m', label = 'RR')
-            axs[1,0].plot(self.veh_motion.t, self.veh_motion.lr_fx, color='orange', label = 'LR')
+            axs[1,0].plot(self.model.t, self.model.lf_fx, color='b', label = 'LF')
+            axs[1,0].plot(self.model.t, self.model.rf_fx, color='g', label = 'RF')
+            axs[1,0].plot(self.model.t, self.model.rr_fx, color='m', label = 'RR')
+            axs[1,0].plot(self.model.t, self.model.lr_fx, color='orange', label = 'LR')
             axs[1,0].legend(frameon = False)
 
             axs[1,1].set_ylabel('Rightward Tire Forces (lb)', color='k')
             axs[1,1].tick_params(axis='y', labelcolor='k')
-            axs[1,1].plot(self.veh_motion.t, self.veh_motion.lf_fy, color='b', label = 'LF')
-            axs[1,1].plot(self.veh_motion.t, self.veh_motion.rf_fy, color='g', label = 'RF')
-            axs[1,1].plot(self.veh_motion.t, self.veh_motion.rr_fy, color='m', label = 'RR')
-            axs[1,1].plot(self.veh_motion.t, self.veh_motion.lr_fy, color='orange', label = 'LR')
+            axs[1,1].plot(self.model.t, self.model.lf_fy, color='b', label = 'LF')
+            axs[1,1].plot(self.model.t, self.model.rf_fy, color='g', label = 'RF')
+            axs[1,1].plot(self.model.t, self.model.rr_fy, color='m', label = 'RR')
+            axs[1,1].plot(self.model.t, self.model.lr_fy, color='orange', label = 'LR')
             axs[1,1].legend(frameon = False)
 
             axs[2,0].set_xlabel('Time (s)')
             axs[2,0].set_ylabel('Omega (deg/s), Alpha (deg/s/s)', color='k')
             axs[2,0].tick_params(axis='y', labelcolor='k')
-            axs[2,0].plot(self.veh_motion.t, self.veh_motion.oz_deg, color='k', label = 'Omega')
-            axs[2,0].plot(self.veh_motion.t, self.veh_motion.alphaz_deg, color='r', label = 'Alpha')
+            axs[2,0].plot(self.model.t, self.model.oz_deg, color='k', label = 'Omega')
+            axs[2,0].plot(self.model.t, self.model.alphaz_deg, color='r', label = 'Alpha')
             axs[2,0].legend(frameon = False)
 
             axs[2,1].set_xlabel('Time (s)')
@@ -219,17 +229,6 @@ class KinematicsTwo():
         min_y_axis = min([self.veh1.init_y_pos, self.veh2.init_y_pos]) - 20
         max_y_axis = max([self.veh1.init_y_pos, self.veh2.init_y_pos]) + 20
 
-        """
-        dx = max_x_axis - min_x_axis
-        dy = max_y_axis - min_y_axis
-
-        if (dx >= dy):
-            plt.xlim([min_x_axis, max_x_axis])
-            plt.ylim([min_y_axis * xy_ratio, max_y_axis * xy_ratio])
-        else:
-            plt.xlim([min_x_axis / xy_ratio, max_x_axis / xy_ratio])
-            plt.ylim([min_y_axis, max_y_axis])
-        """
         plt.xlim([min_x_axis, max_x_axis])
         plt.ylim([min_y_axis, max_y_axis])
         plt.grid()
@@ -239,7 +238,11 @@ class KinematicsTwo():
     # run vehicle models iteratively to evaluate for impact
     def simulate(self, ignore_driver=False):
         # run multi vehicle simulation model
-        self.veh1, self.veh2, self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.kmutual, self.vehicle_mu, ignore_driver)
+        if self.impact_type == 'SS':
+            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.impact_type, self.kmutual, self.vehicle_mu, ignore_driver, self.sim_defaults)
+        else:
+            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.sim_defaults, self.impact_type, ignore_driver)
+
         self.veh1 = position_data_motion(self.veh1, striking = True)
         self.veh2 = position_data_motion(self.veh2)
 

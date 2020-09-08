@@ -11,7 +11,7 @@ validated using Funk () see validation directory for simulations and reports
 def ss(vehicle_list, crush_data, kmutual, vehicle_mu, i):
     """
     normal force is applied normal to the struck vehicle (vehicle 2)
-    frictional force is applied along the impacting plane opposite to striking vehicle (vehicle 1) velocity
+    frictional force is applied along the impacting plane opposite to relative velocity
     """
     print(f'Sideswipe Model Accessed at t = {vehicle_list[0].model.t[i]} seconds')
     # get velocity of impact point on V1 and V2 to relative velocity along impact edge
@@ -48,7 +48,7 @@ def ss(vehicle_list, crush_data, kmutual, vehicle_mu, i):
 
    # vehicle 1 forces are equal and opposite to vehicle 2
    # use heading angle to translate forces to vehicle 1 frame
-   # can subtract two heading angles? 
+   # can subtract two heading angles - yes
     vehicle_list[0].model.Fx = 0
     vehicle_list[0].model.Fy = 0
     vehicle_list[0].model.Mz = 0

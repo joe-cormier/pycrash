@@ -14,19 +14,29 @@ Directory Structure:
 """
 
 import os
-import sys
-sys.path.append('/home/jmc/Documents/pycrash/')
-from pycrash.project import Project
-project_name = 'validation - single vehicle motion'
+#current_dir = os.getcwd()
 
+import sys
+#sys.path.append("/home/jmc/Documents/pycrash")
+sys.path.append("/home/joemcormier/pycrash/")
+
+#os.chdir("/home/joemcormier/pycrash/")
+print(os.getcwd())
+from pycrash.project import Project
+
+#os.chdir(current_dir)
+print(os.getcwd())
+
+project_name = 'validation sideswipe'
 project_inputs = {'name':project_name,
-	    	  'project_path':'/home/jmc/Documents/pycrash/projects/',
-                  'pdesc':'planar motion simulation',
-                  'sim_type':'SV',
-                  'impact_type':None,
-                  'note':'pc crash comparisons'}
+                  'pdesc':'validate sideswipe models',
+				  'project_path':"/home/joemcormier/pycrash/projects/",
+                  'sim_type':'MV',
+                  'impact_type':'SS',
+                  'note':'validate sideswipe against published data'}
 
 proj = Project(project_inputs)
+
 
 
 # TODO: create script to ask for user inputs

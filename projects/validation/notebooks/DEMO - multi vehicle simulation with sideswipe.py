@@ -65,7 +65,7 @@ driver_input_df.head() # first 5 rows of driver input data
 
 # %% Create Vehicle 1:
 # "Vehicle" stores information about a single vehicle - all possible inputs do not need to be entered
-# creating a Vehicle requries a "name" which is used to identify the vehicle in outputs / plots etc. 
+# creating a Vehicle requries a "name" which is used to identify the vehicle in outputs / plots etc.
 
 vehicle_input_dict = {"year":2016,
 "make":"Subaru",
