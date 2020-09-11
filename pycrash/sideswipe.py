@@ -12,7 +12,9 @@ def ss(vehicle_list, crush_data, kmutual, vehicle_mu, i):
     """
     normal force is applied normal to the struck vehicle (vehicle 2)
     frictional force is applied along the impacting plane opposite to relative velocity
+    kmutual = [lb/ft]
     """
+
     print(f'Sideswipe Model Accessed at t = {vehicle_list[0].model.t[i]} seconds')
     # get velocity of impact point on V1 and V2 to relative velocity along impact edge
     # translate to global frame for comparison

@@ -39,7 +39,7 @@ def tire_forces(veh, i, sim_defaults):
     if i == 0:
         j = i
     else:
-        j = i - 1  # tire forces based on prior time step motion
+        j = i - 1  # tire forces based on prior time step
 
     # current steer angle
     veh.model.delta_deg[i] = veh.driver_input.steer[i] / veh.steer_ratio   # steer angle (delta) will always be derived from driver input

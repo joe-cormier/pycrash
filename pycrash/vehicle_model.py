@@ -126,10 +126,9 @@ def vehicle_model(veh, sim_defaults):
 
     # converting to degrees
     # TODO: remove for speed
-    veh.model["alphaz_deg", "oz_deg", "theta_deg", "beta_deg"] = (180 / math.pi) * veh.model["alphaz_deg", "oz_deg", "theta_deg", "beta_deg"]
-    #veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to seperate calc
-    #veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to seperate calc
-    #veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
-    #veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to seperate calc
+    veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to seperate calc
+    veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to seperate calc
+    veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
+    veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to seperate calc
 
     return veh

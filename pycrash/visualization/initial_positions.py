@@ -1,67 +1,66 @@
 import plotly.graph_objects as go
-from .position_data import position_data_static
 import math
 
+width = 1000
+aspect_ratio = 16 / 9
+figure_size = (width, width / aspect_ratio)
+wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 # plot initial positions and any motion data to show vehicle paths
-def initial_position(veh1, veh2):
+def initial_position(veh1, veh2, i):
     # plot initial positions
-    # grid grid based on initial positoin of vehicle
+    # grid grid based on initial position of vehicle
     # scale x,y axes accordingly
-    # get static geometry
-    self.veh1, self.veh2 = position_data_static([self.veh1, self.veh2])
-    #
+    # static geometry from model_calcs.position_data
 
     """
     combine two vehicles into a single df, to allow for max / min check
     """
-    fig = plt.figure(figsize=figure_size)
-    ax = fig.gca()
-
-    for veh in [self.veh1, self.veh2]:
+    fig = go.Figure()
+    for veh in [veh1, veh2]:
         # Body and tire outlines
-        bdy_x = (veh.Px.b_lfc, veh.Px.b_rfc, veh.Px.b_rrc, veh.Px.b_lrc, veh.Px.b_lfc)
-        bdy_y = (veh.Py.b_lfc, veh.Py.b_rfc, veh.Py.b_rrc, veh.Py.b_lrc, veh.Py.b_lfc)
+        bdy_x = (veh.Px.b_lfc[i], veh.Px.b_rfc[i], veh.Px.b_rrc[i], veh.Px.b_lrc[i], veh.Px.b_lfc[i])
+        bdy_y = (veh.Py.b_lfc[i], veh.Py.b_rfc[i], veh.Py.b_rrc[i], veh.Py.b_lrc[i], veh.Py.b_lfc[i])
 
-        lfw_x = (veh.Px.lfw_a, veh.Px.lfw_b, veh.Px.lfw_c, veh.Px.lfw_d, veh.Px.lfw_a)
-        lfw_y = (veh.Py.lfw_a, veh.Py.lfw_b, veh.Py.lfw_c, veh.Py.lfw_d, veh.Py.lfw_a)
+        lfw_x = (veh.Px.lfw_a[i], veh.Px.lfw_b[i], veh.Px.lfw_c[i], veh.Px.lfw_d[i], veh.Px.lfw_a[i])
+        lfw_y = (veh.Py.lfw_a[i], veh.Py.lfw_b[i], veh.Py.lfw_c[i], veh.Py.lfw_d[i], veh.Py.lfw_a[i])
 
-        rfw_x = (veh.Px.rfw_a, veh.Px.rfw_b, veh.Px.rfw_c, veh.Px.rfw_d, veh.Px.rfw_a)
-        rfw_y = (veh.Py.rfw_a, veh.Py.rfw_b, veh.Py.rfw_c, veh.Py.rfw_d, veh.Py.rfw_a)
+        rfw_x = (veh.Px.rfw_a[i], veh.Px.rfw_b[i], veh.Px.rfw_c[i], veh.Px.rfw_d[i], veh.Px.rfw_a[i])
+        rfw_y = (veh.Py.rfw_a[i], veh.Py.rfw_b[i], veh.Py.rfw_c[i], veh.Py.rfw_d[i], veh.Py.rfw_a[i])
 
-        rrw_x = (veh.Px.rrw_a, veh.Px.rrw_b, veh.Px.rrw_c, veh.Px.rrw_d, veh.Px.rrw_a)
-        rrw_y = (veh.Py.rrw_a, veh.Py.rrw_b, veh.Py.rrw_c, veh.Py.rrw_d, veh.Py.rrw_a)
+        rrw_x = (veh.Px.rrw_a[i], veh.Px.rrw_b[i], veh.Px.rrw_c[i], veh.Px.rrw_d[i], veh.Px.rrw_a[i])
+        rrw_y = (veh.Py.rrw_a[i], veh.Py.rrw_b[i], veh.Py.rrw_c[i], veh.Py.rrw_d[i], veh.Py.rrw_a[i])
 
-        lrw_x = (veh.Px.lrw_a, veh.Px.lrw_b, veh.Px.lrw_c, veh.Px.lrw_d, veh.Px.lrw_a)
-        lrw_y = (veh.Py.lrw_a, veh.Py.lrw_b, veh.Py.lrw_c, veh.Py.lrw_d, veh.Py.lrw_a)
+        lrw_x = (veh.Px.lrw_a[i], veh.Px.lrw_b[i], veh.Px.lrw_c[i], veh.Px.lrw_d[i], veh.Px.lrw_a[i])
+        lrw_y = (veh.Py.lrw_a[i], veh.Py.lrw_b[i], veh.Py.lrw_c[i], veh.Py.lrw_d[i], veh.Py.lrw_a[i])
 
-        fig = go.Figure()
 
         # body outline
         fig.add_trace(go.Scatter(x = bdy_x, y = bdy_y,
-                            mode = 'lines',
-                            name = 'body',
-                            line = dict(color = 'rgb(0, 0, 0)', width = 2)))
+                                    mode = 'lines',
+                                    name = f'{veh.name} - body',
+                                    line = dict(color = 'rgb(0, 0, 0)', width = 2)))
+
         # wheel outline
         fig.add_trace(go.Scatter(x = lfw_x, y = lfw_y,
                             mode = 'lines',
                             name = 'LF',
-                            line = dict(color = 'rgb(0, 0, 255)', width = 1)))
+                            line = dict(color = wheel_colors[0], width = 1)))
         fig.add_trace(go.Scatter(x = rfw_x, y = rfw_y,
                             mode = 'lines',
                             name = 'RF',
-                            line = dict(color = 'rgb(0, 255, 0)', width = 1)))
+                            line = dict(color = wheel_colors[1], width = 1)))
         fig.add_trace(go.Scatter(x = rrw_x, y = rrw_y,
                             mode = 'lines',
                             name = 'RR',
-                            line = dict(color = 'rgb(153, 0, 204)', width = 1)))
+                            line = dict(color = wheel_colors[2], width = 1)))
         fig.add_trace(go.Scatter(x = lrw_x, y = lrw_y,
                             mode = 'lines',
                             name = 'LR',
-                            line = dict(color = 'rgb(255, 102, 0)', width = 1)))
+                            line = dict(color = wheel_colors[3], width = 1)))
 
         # CG
-        cgx = [veh.Px.cg, veh.Px.cg]
-        cgy = [veh.Py.cg, veh.Py.cg]
+        cgx = [veh.Px.cg[i], veh.Px.cg[i]]
+        cgy = [veh.Py.cg[i], veh.Py.cg[i]]
 
         # adjust axes to keep aspect aspect ratio
         """
@@ -97,16 +96,17 @@ def initial_position(veh1, veh2):
                             marker = dict(color = 'rgb(0, 0, 0)', size = 10),
                             ))
 
+
         # velocity vector
-        fig.add_annotation(x = veh.Px.vel_v,
-                           y = veh.Px.vel_v,
-                           ax = veh.Px.cg,
-                           ay = veh.Px.cg,
+        fig.add_annotation(x = veh.Px.vel_v[i],
+                           y = veh.Py.vel_v[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
                            yref = 'y',
-                           text = f"{veh.name}-Initial Velocity",
+                           text = "",
                            showarrow = True,
                            arrowsize = 2.5,
                            arrowhead = 1,
@@ -114,10 +114,10 @@ def initial_position(veh1, veh2):
                            arrowcolor = 'rgb(255, 0, 0)')
 
         # x axis
-        fig.add_annotation(x = veh.Px.xaxis,
-                           y = veh.Px.xaxis,
-                           ax = veh.Px.cg,
-                           ay = veh.Px.cg,
+        fig.add_annotation(x = veh.Px.xaxis[i],
+                           y = veh.Py.xaxis[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
@@ -130,10 +130,10 @@ def initial_position(veh1, veh2):
                            arrowcolor = 'rgb(0, 0, 0)')
 
         # y axis
-        fig.add_annotation(x = veh.Px.yaxis,
-                           y = veh.Px.yaxis,
-                           ax = veh.Px.cg,
-                           ay = veh.Px.cg,
+        fig.add_annotation(x = veh.Px.yaxis[i],
+                           y = veh.Py.yaxis[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
@@ -152,29 +152,36 @@ def initial_position(veh1, veh2):
         height = width / aspect_ratio,
         title = 'Initial Vehicle Positions',
         template = 'plotly_white',
-        xaxis = dict(showgrid = False, title = 'Forward (ft)'),
-        yaxis = dict(showgrid = False, title = 'Rightward (ft)'),
+        xaxis = dict(showgrid = True, title = 'Forward (ft)'),
+        yaxis = dict(showgrid = True, title = 'Rightward (ft)'),
         font = dict(family = 'Arial', size = 16, color = 'black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+    fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+
     fig.show()
 
     # Table of initial conditions
+
     fig = go.Figure(data=[go.Table(
-    header=dict(values=['Initial Input', f'{veh.name}', f'{veh.name}'],
+    header=dict(values=['Vehicle', 'Vx (mph)', 'Vy (mph)', 'V (mph)', 'Omega (deg/s)', 'X Position (ft)', 'Y Position (ft)'],
                 line_color='darkslategray',
                 fill_color='lightskyblue',
                 align='left'),
-    cells=dict(values=[['Vx (mph)', 'Vy (mph)', 'V (mph)', 'Omega (deg/s)', 'X Position (ft)', 'Y Position (ft)'],
-                       [veh1.vx_initial, veh1.vy_initial, math.sqrt(veh1.vx_initial**2 + veh1.vy_initial**2), veh1.omega_z, veh1.init_x_pos, veh1.init_y_pos],
-                       [veh2.vx_initial, veh2.vy_initial, math.sqrt(veh2.vx_initial**2 + veh2.vy_initial**2), veh2.omega_z, veh2.init_x_pos, veh2.init_y_pos]],
+    cells=dict(values=[[f'{veh1.name}', f'{veh2.name}'],
+                       [veh1.vx_initial, veh2.vx_initial],
+                       [veh1.vy_initial, veh2.vy_initial],
+                       [math.sqrt(veh1.vx_initial**2 + veh1.vy_initial**2), math.sqrt(veh2.vx_initial**2 + veh2.vy_initial**2)],
+                       [veh1.omega_z, veh2.omega_z],
+                       [veh1.init_x_pos, veh2.init_x_pos],
+                       [veh1.init_y_pos, veh2.init_y_pos]],
                line_color='darkslategray',
                fill_color='lightcyan',
                align='left'))
                ])
-
+    
     fig.update_layout(width=500, height=300)
     fig.show()
+

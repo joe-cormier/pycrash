@@ -5,18 +5,16 @@ Inputs - pulled from Vehicle class - initial speed (static), variable - braking 
 Interpolates braking steering with time / distance
 """
 
-from scipy import integrate
 import matplotlib.pyplot as plt
 from .data.defaults.config import default_dict
 from copy import deepcopy
 from .multi_vehicle_model import multi_vehicle_model
-from .position_data import position_data_static, position_data_motion
+from pycrash.model_calcs.position_data import position_data_motion, position_data_static
 from .visualization.vehicle import plot_driver_inputs
+from .visualization.initial_positions import initial_position
 from .collision_plane import define_impact_plane, define_impact_edge
 import pandas as pd
 import numpy as np
-import math
-import csv
 import os
 
 # load defaults
@@ -65,8 +63,8 @@ class KinematicsTwo():
             self.impact_type = impact_type
             if vehicle_friction:
                 self.veh_mu = vehicle_friction
-            else:
-                print(f"Vehicle friection for {self.name} is empty")
+            elif self.impact_type == 'SS':
+                print(f"Vehicle friction for {self.name} is empty")
                 self.veh_mu = float(input("Enter value for intervehicular friction: "))
 
         if impact_type == 'SS':
@@ -74,6 +72,7 @@ class KinematicsTwo():
                 self.kmutual = mutual_stiffness
             else:
                 print(f"Mutual Stiffness for {self.name} is empty")
+                self.kmutual = float(input("Enter value for mutual stiffness friction (lb/ft): "))
 
         # load defaults
         if user_sim_defaults:
@@ -82,7 +81,7 @@ class KinematicsTwo():
         else:
             self.sim_defaults = {'dt_motion': 0.01,
                             'mu_max': 0.76,
-                            'alpha_max': 0.174533,
+                            'alpha_max': 0.174533, # 10 degrees
                             'vehicle_mu':0.3,
                             'cor':0.2}
 
@@ -116,10 +115,14 @@ class KinematicsTwo():
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
-
-        print(f"Create impact point for {self.veh1.name} = striking vehicle")
-        print("")
-        self.veh1 = define_impact_plane(veh1)
+        if self.impact_type == 'SS':
+            print(f"Create impact point for {self.veh1.name} = striking vehicle")
+            print("")
+            self.veh1 = define_impact_plane(veh1, iplane=False)
+        else:
+            print(f"Create impact plane for {self.veh1.name} = striking vehicle")
+            print("")
+            self.veh1 = define_impact_plane(veh1)
 
         print(f"Create impacting edge for {self.veh2.name} = struck vehicle")
         print("")
@@ -180,60 +183,11 @@ class KinematicsTwo():
             plt.show()
 
     # plot initial positions and any motion data to show vehicle paths
-    def initial_position(self):
-        # plot initial positions
-        # grid grid based on initial positoin of vehicle
-        # scale x,y axes accordingly
-        # get static geometry
-        self.veh1, self.veh2 = position_data_static([self.veh1, self.veh2])
-        #
-        fig = plt.figure(figsize=figure_size)
-        ax = fig.gca()
+    def show_initial_position(self, i=0):
+        # TODO: future - can choose a time point
+        [self.veh1, self.veh2] = position_data_static([self.veh1, self.veh2])
+        initial_position(self.veh1, self.veh2, i)
 
-        for veh in [self.veh1, self.veh2]:
-            print(f'plotting vehicle {self.veh1.name}')
-            bdy_x = (veh.Px.b_lfc, veh.Px.b_rfc, veh.Px.b_rrc, veh.Px.b_lrc, veh.Px.b_lfc)
-            bdy_y = (veh.Py.b_lfc, veh.Py.b_rfc, veh.Py.b_rrc, veh.Py.b_lrc, veh.Py.b_lfc)
-
-            lfw_x = (veh.Px.lfw_a, veh.Px.lfw_b, veh.Px.lfw_c, veh.Px.lfw_d, veh.Px.lfw_a)
-            lfw_y = (veh.Py.lfw_a, veh.Py.lfw_b, veh.Py.lfw_c, veh.Py.lfw_d, veh.Py.lfw_a)
-
-            rfw_x = (veh.Px.rfw_a, veh.Px.rfw_b, veh.Px.rfw_c, veh.Px.rfw_d, veh.Px.rfw_a)
-            rfw_y = (veh.Py.rfw_a, veh.Py.rfw_b, veh.Py.rfw_c, veh.Py.rfw_d, veh.Py.rfw_a)
-
-            rrw_x = (veh.Px.rrw_a, veh.Px.rrw_b, veh.Px.rrw_c, veh.Px.rrw_d, veh.Px.rrw_a)
-            rrw_y = (veh.Py.rrw_a, veh.Py.rrw_b, veh.Py.rrw_c, veh.Py.rrw_d, veh.Py.rrw_a)
-
-            lrw_x = (veh.Px.lrw_a, veh.Px.lrw_b, veh.Px.lrw_c, veh.Px.lrw_d, veh.Px.lrw_a)
-            lrw_y = (veh.Py.lrw_a, veh.Py.lrw_b, veh.Py.lrw_c, veh.Py.lrw_d, veh.Py.lrw_a)
-
-            plt.plot(bdy_x, bdy_y, 'k')
-            plt.scatter(veh.Px.lfw, veh.Py.lfw, c='b')       # left front wheel center
-            plt.plot(lfw_x, lfw_y, 'b')
-            plt.scatter(veh.Px.rfw, veh.Py.rfw, c='g')       # right front wheel center
-            plt.plot(rfw_x, rfw_y, 'g')
-            plt.scatter(veh.Px.rrw, veh.Py.rrw, c='m')       # right rear wheel center
-            plt.plot(rrw_x, rrw_y,'m')
-            plt.scatter(veh.Px.lrw, veh.Py.lrw, c='orange')  # left rear wheel center
-            plt.plot(lrw_x, lrw_y, 'orange')
-            plt.scatter(veh.Px.cg, veh.Py.cg, s=100, c='k')   # vehicle CG
-            # velocity vector
-            plt.arrow(veh.Px.cg.iloc[0], veh.Py.cg.iloc[0], veh.Px.vel_v.iloc[0] - veh.Px.cg.iloc[0], veh.Py.vel_v.iloc[0] - veh.Py.cg.iloc[0], head_width=1, head_length=1, fc='r', ec='r')
-            # vehicle axes
-            plt.arrow(veh.Px.cg.iloc[0], veh.Py.cg.iloc[0], veh.Px.xaxis.iloc[0] - veh.Px.cg.iloc[0], veh.Py.xaxis.iloc[0] - veh.Py.cg.iloc[0], head_width=.5, head_length=0.5, fc='k', ec='k')
-            plt.arrow(veh.Px.cg.iloc[0], veh.Py.cg.iloc[0], veh.Px.yaxis.iloc[0] - veh.Px.cg.iloc[0], veh.Py.yaxis.iloc[0] - veh.Py.cg.iloc[0], head_width=.5, head_length=0.5, fc='b', ec='b')
-
-        # determine extent of vehicle plot
-        min_x_axis = min([self.veh1.init_x_pos, self.veh2.init_x_pos]) - 20
-        max_x_axis = max([self.veh1.init_x_pos, self.veh2.init_x_pos]) + 20
-        min_y_axis = min([self.veh1.init_y_pos, self.veh2.init_y_pos]) - 20
-        max_y_axis = max([self.veh1.init_y_pos, self.veh2.init_y_pos]) + 20
-
-        plt.xlim([min_x_axis, max_x_axis])
-        plt.ylim([min_y_axis, max_y_axis])
-        plt.grid()
-        plt.gca().invert_yaxis()
-        plt.show()
 
     # run vehicle models iteratively to evaluate for impact
     def simulate(self, ignore_driver=False):
