@@ -1,1 +1,9 @@
+required packages:
 
+pandas
+numpy
+scipy
+tabulate
+cookiecutter
+matplotlib # temporary - will change all to plotly
+plotly

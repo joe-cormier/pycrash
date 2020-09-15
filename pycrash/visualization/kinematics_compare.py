@@ -131,7 +131,7 @@ def compare_kinematics(model1, model2, name1, name2):
                     vertical_spacing = 0.05)
 
     """
-    right tire forces
+    rightward tire forces
     """
     fig.add_trace(go.Scatter(x = model1.t, y = model1.lf_fy,
                             mode = 'lines',
@@ -211,6 +211,92 @@ def compare_kinematics(model1, model2, name1, name2):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()
 
+    fig = make_subplots(rows=4, cols=1,
+                        shared_xaxes=True,
+                        vertical_spacing=0.05)
+
+    """
+    slip angles
+    """
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.lf_alpha * 180 / math.pi,
+                             mode='lines',
+                             name='LF - Pycrash',
+                             line=dict(color='rgb(0, 0, 255)', width=2)),
+                  row=1, col=1)
+    fig.add_trace(go.Scatter(x=model2.t, y=model2.lf_alpha * -1,
+                             mode='lines',
+                             name='LF - Validate',
+                             line=dict(color='rgb(0, 0, 255)', width=2, dash='dash')),
+                  row=1, col=1)
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.rf_alpha * 180 / math.pi,
+                             mode='lines',
+                             name='RF - Pycrash',
+                             line=dict(color='rgb(0, 255, 0)', width=2)),
+                  row=2, col=1)
+    fig.add_trace(go.Scatter(x=model2.t, y=model2.rf_alpha * -1,
+                             mode='lines',
+                             name='RF - Validate',
+                             line=dict(color='rgb(0, 255, 0)', width=2, dash='dash')),
+                  row=2, col=1)
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.rr_alpha * 180 / math.pi,
+                             mode='lines',
+                             name='RR - Pycrash',
+                             line=dict(color='rgb(153, 0, 204)', width=2)),
+                  row=3, col=1)
+    fig.add_trace(go.Scatter(x=model2.t, y=model2.rr_alpha * -1,
+                             mode='lines',
+                             name='RR - Validate',
+                             line=dict(color='rgb(153, 0, 204)', width=2, dash='dash')),
+                  row=3, col=1)
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.lr_alpha * 180 / math.pi,
+                             mode='lines',
+                             name='LR - Pycrash',
+                             line=dict(color='rgb(255, 102, 0)', width=2)),
+                  row=4, col=1)
+    fig.add_trace(go.Scatter(x=model2.t, y=model2.lr_alpha * -1,
+                             mode='lines',
+                             name='LR - Validate',
+                             line=dict(color='rgb(255, 102, 0)', width=2, dash='dash')),
+                  row=4, col=1)
+
+    fig.update_layout(
+        legend=dict(orientation="v", yanchor='top', y=1.1, xanchor='left', x=1.01),
+        autosize=False,
+        width=900,
+        height=900,
+        title='Tire Slip Angles',
+        template='plotly_white',
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=False),
+        font=dict(family='Arial', size=14, color='black'))
+
+    fig.update_xaxes(showgrid=False, title_text='Time (s)', row=4, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=1, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=2, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=3, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid=False, title_text='LF - Slip Angle (deg)', row=1, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid=False, title_text='RF - Slip Angle (deg)', row=2, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid=False, title_text='RR - Slip Angle (deg)', row=3, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid=False, title_text='LR - Slip Angle (deg)', row=4, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.show()
+
+
     # acceleration
     fig = make_subplots(rows=2, cols=1,
                         shared_xaxes=True,
@@ -240,7 +326,7 @@ def compare_kinematics(model1, model2, name1, name2):
                   row=2, col=1)
 
     fig.update_layout(
-        legend=dict(orientation="h", yanchor='top', y=1.1, xanchor='left', x=0.01),
+        legend=dict(orientation="h", yanchor='top', y=1, xanchor='left', x=0.01),
         autosize=False,
         width=900,
         height=900,
@@ -260,6 +346,94 @@ def compare_kinematics(model1, model2, name1, name2):
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(showgrid=False, title_text='Rightward Accel (g)', row=2, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.show()
+
+    """
+    vertical tire forces
+    """
+
+    fig.show()
+
+    fig = make_subplots(rows=4, cols=1,
+                        shared_xaxes=True,
+                        vertical_spacing=0.05)
+
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.lf_fz,
+                            mode = 'lines',
+                            name = 'LF - Pycrash',
+                            line = dict(color = 'rgb(0, 0, 255)', width = 2)),
+                            row = 1, col = 1)
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.lf_fz *1000,
+                            mode = 'lines',
+                            name = 'LF - Validate',
+                            line = dict(color = 'rgb(0, 0, 255)', width = 2, dash = 'dash')),
+                            row = 1, col = 1)
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.rf_fz,
+                            mode = 'lines',
+                            name = 'RF - Pycrash',
+                            line = dict(color = 'rgb(0, 255, 0)', width = 2)),
+                            row = 2, col = 1)
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.rf_fz *1000,
+                            mode = 'lines',
+                            name = 'RF - Validate',
+                            line = dict(color = 'rgb(0, 255, 0)', width = 2, dash = 'dash')),
+                            row = 2, col = 1)
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.rr_fz,
+                            mode = 'lines',
+                            name = 'RR - Pycrash',
+                            line = dict(color = 'rgb(153, 0, 204)', width = 2)),
+                            row = 3, col = 1)
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.rr_fz *1000,
+                            mode = 'lines',
+                            name = 'RR - Validate',
+                            line = dict(color = 'rgb(153, 0, 204)', width = 2, dash = 'dash')),
+                            row = 3, col = 1)
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.lr_fz,
+                            mode = 'lines',
+                            name = 'LR - Pycrash',
+                            line = dict(color = 'rgb(255, 102, 0)', width = 2)),
+                            row = 4, col = 1)
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.lr_fz *1000,
+                            mode = 'lines',
+                            name = 'LR - Validate',
+                            line = dict(color = 'rgb(255, 102, 0)', width = 2, dash = 'dash')),
+                            row = 4, col = 1)
+
+    fig.update_layout(
+        legend = dict(orientation = "v", yanchor = 'top', y = 1.1, xanchor = 'left', x = 1.01),
+        autosize=False,
+        width = 900,
+        height = 900,
+        title = 'Vertical Tire Forces',
+        template = 'plotly_white',
+        xaxis = dict(showgrid = False),
+        yaxis = dict(showgrid = False),
+        font = dict(family = 'Arial', size = 14, color = 'black'))
+
+    fig.update_xaxes(showgrid = False, title_text = 'Time (s)', row = 4, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid = False, title_text = '', row = 1, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid = False, title_text = '', row = 2, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid = False, title_text = '', row = 3, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid = False, title_text = 'LF - Force (lb)', row = 1, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid = False, title_text = 'RF - Force (lb)', row = 2, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid = False, title_text = 'RR - Force (lb)', row = 3, col = 1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid = False, title_text = 'LR - Force (lb)', row = 4, col = 1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()

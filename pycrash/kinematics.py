@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from copy import deepcopy
 from .vehicle_model import vehicle_model
 from pycrash.model_calcs.position_data import position_data_motion
