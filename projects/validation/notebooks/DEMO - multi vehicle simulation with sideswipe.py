@@ -9,7 +9,6 @@ os.chdir(projects_dir)
 #pycrash_dir = os.path.dirname(os.getcwd())
 #os.chdir(pycrash_dir)
 os.getcwd()
-# TODO:
 # %% allow reloading of modules
 %load_ext autoreload
 %autoreload 2

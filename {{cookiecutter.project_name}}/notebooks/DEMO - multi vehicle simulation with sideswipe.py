@@ -4,7 +4,6 @@ path_parent = os.path.dirname(os.getcwd())
 data_directory = os.path.join(path_parent, "data")
 os.chdir(path_parent)
 
-# TODO:
 # %% allow reloading of modules
 %load_ext autoreload
 %autoreload 2
@@ -99,7 +98,6 @@ veh1.impact_point()
 
 # %% Create Vehicle 2
 # vehicle data can also be created by importing a CSV file in the data/input directory
-# TODO: change this directory to the "Project" directory - seperate input folder etc.
 
 veh2 = Vehicle('Veh2')
 veh2.load_specs('fordGT.csv')

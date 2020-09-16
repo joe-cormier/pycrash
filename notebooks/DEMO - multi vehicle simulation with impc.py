@@ -139,7 +139,6 @@ mutli = KinematicsTwo('tbone', 'IMPC', veh1, veh2)
 
 # %% Create Vehicle 2
 # vehicle data can also be created by importing a CSV file in the data/input directory
-# TODO: change this directory to the "Project" directory - seperate input folder etc.
 
 veh2 = Vehicle('Veh2')
 veh2.load_specs('fordGT.csv')

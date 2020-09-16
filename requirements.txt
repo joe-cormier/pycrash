@@ -7,3 +7,5 @@ tabulate
 cookiecutter
 matplotlib # temporary - will change all to plotly
 plotly
+PyQt5
+xlrd
