@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-from .sdof_calculations import SingleDOFmodel
+from .sdof_calcs.sdof_calculations import SingleDOFmodel
 from copy import deepcopy
 import inspect
 import csv

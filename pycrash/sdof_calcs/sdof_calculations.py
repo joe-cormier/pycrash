@@ -1,4 +1,4 @@
-from .data.defaults.config import default_dict
+
 import pandas as pd
 import numpy as np
 import csv
@@ -7,10 +7,7 @@ import os
 """
 Performs interative calculations for the SDOF impact simulation
 """
-
-# load constants
-mu_max = default_dict['mu_max']             # maximum available friction
-dt_impact = default_dict['dt_impact']       # impact time step
+# TODO: update to take user defined inputs
 
 # Functions
 # v2 brake force wil oppose the spring force as long as the vehicle is moving forward

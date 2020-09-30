@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pycrash",
-    version="0.0.9",
+    version="0.0.11",
     author="Joe Cormier",
     author_email="joemcormier@outlook.com",
     description="software tool for simulating vehicle motion and impacts based on \
@@ -13,7 +13,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/joe-cormier/pycrash",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=("__pycache__", )),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

@@ -2,7 +2,7 @@
 create a collision plane on the striking vehicle
 this will indicate the contact point and direction of the nornmal and tangential axis of impact force / momentum balance
 """
-from .visualization.vehicle import plot_impact_points, plot_impact_edge
+from pycrash.visualization.vehicle import plot_impact_points, plot_impact_edge
 import math
 
 def define_impact_plane(veh, iplane = True):

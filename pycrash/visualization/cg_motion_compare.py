@@ -39,7 +39,7 @@ def cg_motion(model1, model2, name1, name2):
     fig.add_trace(go.Scatter(x=model1.Dx, y=model1.Dy,
                              mode='markers',
                              name=f'{name1}',
-                             marker=dict(color='rgb(0, 0, 0)', size=2)
+                             marker=dict(color='rgb(0, 0, 0)', size=2),
                              ))
     fig.add_trace(go.Scatter(x=model2.Dx, y=model2.Dy,
                              mode='markers',
@@ -48,7 +48,7 @@ def cg_motion(model1, model2, name1, name2):
                              ))
 
     fig.update_layout(
-        showlegend=False,
+        showlegend=True,
         autosize=False,
         width=width,
         height=width / aspect_ratio,

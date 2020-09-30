@@ -12,7 +12,7 @@ from .multi_vehicle_model import multi_vehicle_model
 from pycrash.model_calcs.position_data import position_data_motion, position_data_static
 from .visualization.vehicle import plot_driver_inputs
 from .visualization.initial_positions import initial_position
-from .collision_plane import define_impact_plane, define_impact_edge
+from .model_calcs.collision_plane import define_impact_plane, define_impact_edge
 import pandas as pd
 import numpy as np
 import os

@@ -1,5 +1,5 @@
 
-from .data.defaults.config import default_dict
+
 import numpy as np
 import os
 

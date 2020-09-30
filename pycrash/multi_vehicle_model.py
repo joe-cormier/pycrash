@@ -1,12 +1,11 @@
 """
 vehicle motion for mutliple vehicles
 """
-from .data.defaults.config import default_dict
-from .sideswipe import ss
-from .tire_model import tire_forces
-from .impact_detect import detect
+from .model_calcs.sideswipe import ss
+from .model_calcs.tire_model import tire_forces
+from .model_calcs.impact_detect import detect
 from .vehicle_model import vehicle_model
-from .carpenter_momentum import impc
+from .model_calcs.carpenter_momentum import impc
 import pandas as pd
 import numpy as np
 from scipy import integrate
@@ -38,7 +37,6 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, kmutual=None, v
     kmutual must be defined by sideswipe simulations
     """
     # load defaults
-    mu_max = sim_defaults['mu_max']             # maximum available friction
     dt_motion = sim_defaults['dt_motion']       # iteration time step
 
     j = 0

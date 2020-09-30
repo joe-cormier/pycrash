@@ -4,7 +4,7 @@ accounts for pitch due to braking and roll from cornering forces
 
 Dependencies - v, vx, vy, au, av, omega, constants
 """
-from .data.defaults.config import default_dict
+
 import math
 import numpy as np
 import math
