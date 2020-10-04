@@ -5,7 +5,7 @@ from .model_calcs.sideswipe import ss
 from .model_calcs.tire_model import tire_forces
 from .model_calcs.impact_detect import detect
 from .vehicle_model import vehicle_model
-from .model_calcs.carpenter_momentum import impc
+from .model_calcs.carpenter_momentum_calcs import impc
 import pandas as pd
 import numpy as np
 from scipy import integrate
@@ -24,7 +24,7 @@ column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip
 # TODO: ignore driver inputs after impact
 # TODO: disable tire after impact
 
-def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, kmutual=None, vehicle_mu=None, ignore_driver = False):
+def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver = False, kmutual=None, vehicle_mu=None):
 
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
@@ -131,9 +131,10 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, kmutual=None, v
 
         if (crush_data.impact[i]):
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
-            if (impact_type == 'IMPC'):
-                vehicle_list = impc(self.veh1, self.veh1, sim_defaults)              # run impc model - create inputs using vehicle class
-            elif (impact_type == 'SS'):
+            print(sim_defaults)
+            if impact_type == 'IMPC':
+                vehicle_list, impc_energy = impc(vehicle_list=vehicle_list, sim_defaults=sim_defaults)              # run impc model - create inputs using vehicle class
+            elif impact_type == 'SS':
                 vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
             else:
                 print(f'impact_type {impact_type} is not defined - no impact forces generated')

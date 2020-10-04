@@ -211,6 +211,7 @@ def compare_kinematics(model1, model2, name1, name2):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()
 
+
     fig = make_subplots(rows=4, cols=1,
                         shared_xaxes=True,
                         vertical_spacing=0.05)
@@ -353,8 +354,6 @@ def compare_kinematics(model1, model2, name1, name2):
     """
     vertical tire forces
     """
-
-    fig.show()
 
     fig = make_subplots(rows=4, cols=1,
                         shared_xaxes=True,

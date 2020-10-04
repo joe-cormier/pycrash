@@ -17,13 +17,11 @@ import math
 import os
 
 
-cof = 0.6
-cor = 0.1
-
-def impc(veh1, veh2, sim_defaults):
+def impc(vehicle_list, sim_defaults):
     cor = sim_defaults['cor']
     cof = sim_defaults['vehicle_mu']
-
+    veh1 = vehicle_list[0]
+    veh2 = vehicle_list[1]
     # vehicle impact conditions, collision plane angle (radians)
 
     theta1 = veh1['theta_rad']   # vehicle 1 heading angle
@@ -188,4 +186,4 @@ def impc(veh1, veh2, sim_defaults):
     veh2.impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx':dvx2, 'dvy': dvy2, 'dv':dveh2}
     impc_energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
 
-    return veh1, veh2, impc_energy
+    return vehicle_list, impc_energy

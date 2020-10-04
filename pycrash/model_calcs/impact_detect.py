@@ -26,12 +26,13 @@ def detect(vehicle_list, i, crush_data = None):
     impactp_veh2x = ((impactp_gx-cgx2) * math.cos(theta_rad2) + (impactp_gy-cgy2) * math.sin(theta_rad2))
     impactp_veh2y = (-1 * (impactp_gx-cgx2) * math.sin(theta_rad2) + (impactp_gy-cgy2) * math.cos(theta_rad2))
 
+    """
     print(f'Vehicle 2 Heading Angle = {theta_rad2 * 180 / math.pi} degrees')
     print(f'Impact Point in Veh2 Frame x = {impactp_veh2x}, y = {impactp_veh2y}')
     print(f'Impact Point location: x = {impactp_gx}, y = {impactp_gy}')
     print(f'Veh1 CG location: x = {cgx1}, y = {cgy1}')
     print(f'Veh2 CG location: x = {cgx2}, y = {cgy2}')
-
+    """
 
     """
     calculate relative position of impact point and impact edge

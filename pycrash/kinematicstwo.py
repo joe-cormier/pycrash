@@ -191,11 +191,13 @@ class KinematicsTwo():
 
     # run vehicle models iteratively to evaluate for impact
     def simulate(self, ignore_driver=False):
-        # run multi vehicle simulation model
+        # run multi vehicle simulation model    (vehicle_list, sim_defaults, impact_type, ignore_driver = False, kmutual=None, vehicle_mu=None):
         if self.impact_type == 'SS':
-            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.impact_type, self.kmutual, self.vehicle_mu, ignore_driver, self.sim_defaults)
+            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model(vehicle_list=[self.veh1,self.veh2], sim_defaults=self.sim_defaults,
+                                                                          impact_type=self.impact_type, ignore_driver=ignore_driver, kmutual=self.kmutual, vehicle_mu=self.vehicle_mu)
         else:
-            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model([self.veh1,self.veh2], self.sim_defaults, self.impact_type, ignore_driver)
+            [self.veh1, self.veh2], self.crush_data = multi_vehicle_model(vehicle_list=[self.veh1,self.veh2], sim_defaults=self.sim_defaults,
+                                                                          impact_type=self.impact_type, ignore_driver=ignore_driver)
 
         self.veh1 = position_data_motion(self.veh1, striking = True)
         self.veh2 = position_data_motion(self.veh2)
