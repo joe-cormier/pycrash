@@ -6,8 +6,8 @@ import numpy as np
 import math
 
 def detect(vehicle_list, i, crush_data = None):
-    print('-- looking for impact --')
-    print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
+    #print('-- looking for impact --')
+    #print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
     # TODO: assuming that vehicle_list = [veh1, veh2] - can fix by checking for impact point definition
     # current location of impact point - vehicle 1
     cgx1 = vehicle_list[0].model.Dx[i]  # take last value in Dx

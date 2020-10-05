@@ -3,7 +3,8 @@ import os
 path_parent = os.path.dirname(os.getcwd())
 
 import sys
-sys.path.append("D:\\OneDrive\\pycrash")
+#sys.path.append("D:\\OneDrive\\pycrash")
+sys.path.append('/home/joemcormier/pycrash')
 
 import pycrash
 from pycrash.project import Project, project_info, load_project
@@ -105,7 +106,22 @@ veh2.time_inputs(t, throttle, brake, steer)
 veh2.vx_initial = 15
 veh2.hcg = 2   # vary cg height
 
+# define impact point - Vehicle 1
+# option 2
+veh1.pimpact_x = veh1.lcgf + veh1.f_hang
+veh1.pimpact_y = veh1.width / 2
+veh1.impact_norm_rad = 0
+veh1.striking = True
+
+# define impact edge - Vehicle 2
+#option 4
+veh2.edgeimpact = 4
+veh2.edgeimpact_x1 = -1 * veh2.lcgr - veh2.r_hang
+veh2.edgeimpact_y1 = -1 * veh2.width / 2
+veh2.edgeimpact_x2 = veh2.lcgf + veh2.f_hang
+veh2.edgeimpact_y2 = -1 * veh2.width / 2
+veh2.striking = False
+
 run = KinematicsTwo('run1', 'IMPC', veh1, veh2)
 
 run.simulate()
-

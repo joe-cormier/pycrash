@@ -8,20 +8,20 @@ import pandas as pd
 import math
 import os
 
-def impc(vehicle_list, sim_defaults):
+def impc(i, vehicle_list, sim_defaults):
     cor = sim_defaults['cor']
     cof = sim_defaults['vehicle_mu']
     veh1 = vehicle_list[0]
     veh2 = vehicle_list[1]
 
-    theta1 = veh1['theta_rad']   # vehicle 1 heading angle
-    dx1 = veh1['dx']
-    dy1 = veh1['dy']
-    w1 = v_dict1['weight']
+    theta1 = veh1.model.theta_rad[i]   # vehicle 1 heading angle
+    dx1 = veh1.model.Dx[i]
+    dy1 = veh1.model.Dy[i]
+    w1 = veh1.weight
     m1 = w1/32.2
-    i1 = v_dict1['izz']
-    vx1 = veh1['vx']
-    vy1 = veh1['vy']
+    i1 = veh1.izz
+    vx1 = veh.Vx[i]
+    vy1 = veh.Vy[i]
     oz_rad1 = veh1['oz_rad']
 
     # vehicle 2

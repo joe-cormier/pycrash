@@ -115,18 +115,28 @@ class KinematicsTwo():
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
-        if self.impact_type == 'SS':
-            print(f"Create impact point for {self.veh1.name} = striking vehicle")
-            print("")
-            self.veh1 = define_impact_plane(veh1, iplane=False)
-        else:
-            print(f"Create impact plane for {self.veh1.name} = striking vehicle")
-            print("")
-            self.veh1 = define_impact_plane(veh1)
 
-        print(f"Create impacting edge for {self.veh2.name} = struck vehicle")
-        print("")
-        self.veh2 = define_impact_edge(veh2, iplane = False)
+        if self.impact_type == 'SS':
+            if all(hasattr(self.veh1, attr) for attr in ["pimpact_x", "pimpact_y"]):
+                print(f'Predefined impact point for {self.veh1.name}: x={self.veh1.pimpact_x:.1f}, y={self.veh1.pimpact_y:.1f}')
+            else:
+                print(f"Create impact point for {self.veh1.name} = striking vehicle")
+                print("")
+                self.veh1 = define_impact_plane(veh1, iplane=False)
+        else:
+            if all(hasattr(self.veh1, attr) for attr in ["pimpact_x", "pimpact_y", "impact_norm_rad"]):
+                print(f'Predefined impact point for {self.veh1.name}: x={self.veh1.pimpact_x:.1f}, y={self.veh1.pimpact_y:.1f}, impact plane angle: {self.veh1.impact_norm_rad*180/3.14159:.1f}')
+            else:
+                print(f"Create impact plane for {self.veh1.name} = striking vehicle")
+                print("")
+                self.veh1 = define_impact_plane(veh1)
+
+        if all(hasattr(self.veh2, attr) for attr in ["edgeimpact_x1", "edgeimpact_y1", "edgeimpact_x2", "edgeimpact_y2", "edgeimpact"]):
+            print(f'Predefined impact edge for {self.veh2.name} x1={self.veh2.edgeimpact_x1:.1f}, y1={self.veh2.edgeimpact_y1}; x2={self.veh2.edgeimpact_x2:.1f}, y2={self.veh2.edgeimpact_y2:.1f}')
+        else:
+            print(f"Create impacting edge for {self.veh2.name} = struck vehicle")
+            print("")
+            self.veh2 = define_impact_edge(veh2, iplane = False)
 
     def plot_inputs(self):
         for veh in [self.veh1, self.veh2]:
