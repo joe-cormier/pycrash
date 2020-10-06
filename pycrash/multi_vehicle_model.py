@@ -39,6 +39,8 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver =
     # load defaults
     dt_motion = sim_defaults['dt_motion']       # iteration time step
 
+    impc_complete = False                       # flag to allow impc model to run only once
+
     j = 0
 
     print(f"Two vehicle simulation will run for {max(vehicle_list[0].driver_input.t)} s")
@@ -129,11 +131,12 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver =
         crush_data = detect(vehicle_list, i, crush_data)
         #print(crush_data)
 
-        if (crush_data.impact[i]):
+        if (crush_data.impact[i]) & (impc_complete == False):
             print(f'Impact dectected at t = {veh.model.t[i]} seconds')
-            print(sim_defaults)
+            print(f'i: {i}')
             if impact_type == 'IMPC':
-                vehicle_list, impc_energy = impc(i, vehicle_list=vehicle_list, sim_defaults=sim_defaults)              # run impc model - create inputs using vehicle class
+                vehicle_list, impc_energy = impc(i, crush_data.impactp_veh2x[i], crush_data.impactp_veh2y[i], vehicle_list=vehicle_list, sim_defaults=sim_defaults)          # run impc model - create inputs using vehicle class
+                impc_complete = True  # <- only run IMPC model once
             elif impact_type == 'SS':
                 vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
             else:

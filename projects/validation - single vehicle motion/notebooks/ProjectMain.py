@@ -3,7 +3,8 @@ import os
 path_parent = os.path.dirname(os.getcwd())
 
 import sys
-sys.path.insert(0,'D:\\OneDrive\\pycrash')
+#sys.path.insert(0,'D:\\OneDrive\\pycrash')
+sys.path.insert(0,'/home/jmc/Documents/pycrash')
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle
@@ -22,18 +23,20 @@ pd.options.display.max_columns = None
 pd.options.display.max_rows = None
 
 pc_crash_column_names = ['t', 'ax', 'ay', 'az', 'phi_deg', 'rf_fy', 'lf_fy',
-                         'rr_fy', 'lr_fy', 'delta_deg', 'rf_delta_deg', 'steer', 
+                         'rr_fy', 'lr_fy', 'delta_deg', 'rf_delta_deg', 'steer',
                          'steer_rate', 'X', 'Y', 'Z', 'roll', 'pitch', 'theta_deg',
                          'Vx', 'Vy', 'Vz', 'rf_fz', 'lf_fz', 'rr_fz', 'lr_fz',
                          'rf_alpha', 'lf_alpha', 'lr_alpha', 'rr_alpha']
-                         
-            
-pc_crash_file = '15-mph-steer-data.xlsx'
+
+
+#pc_crash_file = '15-mph-steer-data.xlsx'
+#pc_crash_file = '15-mph-steer-no-cg-height-data.xlsx'
+pc_crash_file = '15-mph-steer-rigid-suspension-data.xlsx'
 df = pd.read_excel(os.path.join(path_parent, 'data', 'external', pc_crash_file),
                             na_filter = False, header = None, names = pc_crash_column_names, skiprows = 2,
                             usecols = 'A:AD')
-                            
-                       
+
+
 # convert velocities to fps
 df.Vx = [x * 1.46667 for x in df.Vx]
 df.Vy = [x * 1.46667 for x in df.Vy]
@@ -96,9 +99,9 @@ vehicle_input_dict = {"year":2004,  # <- creates dictionary of vehicle data for 
 
 end_time = df.t.max()
 t = np.arange(0, end_time + 0.1, 0.1).tolist()
-throttle = [0] * len(t)                      
-brake = [0] * len(t)                         
-steer = list(df.steer)                                   
+throttle = [0] * len(t)
+brake = [0] * len(t)
+steer = list(df.steer)
 driver_input_dict = {'t':t, 'throttle':throttle, 'brake':brake, 'steer':steer}
 driver_input_df = pd.DataFrame.from_dict(driver_input_dict)
 
@@ -117,7 +120,7 @@ steer = [0, 0, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360]
 # ".time_inputs()" is an internal function that interpolates time inputs
 veh1.time_inputs(t, throttle, brake, steer)
 veh1.vx_initial = 15
-veh1.hcg = 2   # vary cg height
+veh1.hcg = 0   # vary cg height
 
 
 
@@ -138,9 +141,9 @@ run.global_motion(i)
 phi_rad = []
 phi_deg = []
 for i in range(len(run.veh.model.t)):
-    phi_rad.append(math.atan2(run.veh.model.vy[i], run.veh.model.vx[i]) * - 1) 
+    phi_rad.append(math.atan2(run.veh.model.vy[i], run.veh.model.vx[i]) * - 1)
     phi_deg.append(math.atan2(run.veh.model.vy[i], run.veh.model.vx[i]) * -1 *(180 / math.pi))
-    
+
 run.veh.model['phi_rad'] = phi_rad
 run.veh.model['phi_deg'] = phi_deg
 

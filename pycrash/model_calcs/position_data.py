@@ -13,7 +13,6 @@ def position_data_motion(veh, striking=False):
     set striking to True to return location of impact point in vehicle 1
     """
     # initialize empty dataframe
-    print('hello from position data')
     veh.p_vx = pd.DataFrame(columns = column_list)                                      # time variant vehicle geometry for plotting in vehicle frame
     veh.p_vy = pd.DataFrame(columns = column_list)                                      # time variant vehicle geometry for plotting in vehicle frame
 

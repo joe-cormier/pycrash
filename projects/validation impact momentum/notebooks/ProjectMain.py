@@ -4,7 +4,8 @@ path_parent = os.path.dirname(os.getcwd())
 
 import sys
 #sys.path.append("D:\\OneDrive\\pycrash")
-sys.path.append('/home/joemcormier/pycrash')
+#sys.path.append('/home/joemcormier/pycrash')
+sys.path.insert(0,'/home/jmc/Documents/pycrash')
 
 import pycrash
 from pycrash.project import Project, project_info, load_project
@@ -93,13 +94,13 @@ vehicle_input_dict2 = {"year":2016,
 
 veh2 = Vehicle('Veh2', vehicle_input_dict2)
 
-t = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-brake = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-throttle = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-steer = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+t = [0, 1, 2]
+brake = [0, 0, 0]
+throttle = [0, 0, 0]
+steer = [0, 0, 0]
 veh1.time_inputs(t, throttle, brake, steer)
 veh1.vx_initial = 15
-veh1.hcg = 0.5   # vary cg height
+veh1.hcg = 2   # vary cg height
 
 
 veh2.time_inputs(t, throttle, brake, steer)
@@ -109,7 +110,7 @@ veh2.hcg = 2   # vary cg height
 # define impact point - Vehicle 1
 # option 2
 veh1.pimpact_x = veh1.lcgf + veh1.f_hang
-veh1.pimpact_y = veh1.width / 2
+veh1.pimpact_y = 0
 veh1.impact_norm_rad = 0
 veh1.striking = True
 
@@ -125,3 +126,6 @@ veh2.striking = False
 run = KinematicsTwo('run1', 'IMPC', veh1, veh2)
 
 run.simulate()
+
+#run.draw_simulation(len(run.veh1.model)-1)
+run.draw_simulation(100)

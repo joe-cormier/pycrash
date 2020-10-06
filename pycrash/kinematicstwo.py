@@ -209,7 +209,7 @@ class KinematicsTwo():
             [self.veh1, self.veh2], self.crush_data = multi_vehicle_model(vehicle_list=[self.veh1,self.veh2], sim_defaults=self.sim_defaults,
                                                                           impact_type=self.impact_type, ignore_driver=ignore_driver)
 
-        self.veh1 = position_data_motion(self.veh1, striking = True)
+        self.veh1 = position_data_motion(self.veh1, striking=True)
         self.veh2 = position_data_motion(self.veh2)
 
     def draw_simulation(self, i, tire_path=True):
@@ -217,7 +217,7 @@ class KinematicsTwo():
         """
         Plot Vehicle in Global reference frame
         """
-        fig = plt.figure(figsize = figure_size)
+        fig = plt.figure(figsize=figure_size)
 
         for veh in [self.veh1, self.veh2]:
             bdy_x = (veh.p_gx.b_lfc[i], veh.p_gx.b_rfc[i], veh.p_gx.b_rrc[i], veh.p_gx.b_lrc[i], veh.p_gx.b_lfc[i])
