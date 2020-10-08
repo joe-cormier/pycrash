@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import csv
 import os
+dt_impact = 0.001
+mu_max = 0.9
 
 """
 Performs interative calculations for the SDOF impact simulation

@@ -39,7 +39,6 @@ class SDOF_Model():
             self.k = model_inputs['k']
             self.tstop = model_inputs['tstop']
 
-
         print("")
         print("------------ Model Inputs ---------------")
         print(f"Model Run = {self.name}")
@@ -59,7 +58,7 @@ class SDOF_Model():
 
         elif isinstance(self.k, pd.DataFrame):
             print(f"Stiffness Function Dataframe [disp (ft) | force (lb)] of shape = {self.k.shape}")
-            self.__ktype = 'tableK'                   # define stiffness type for model
+            self.ktype = 'tableK'                   # define stiffness type for model
             if hasattr(self.veh1, 'k'):
                 self.k1known = True   # if k1 is known, then veh1 crush can be calculated
             else:
