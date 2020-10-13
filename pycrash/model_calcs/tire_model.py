@@ -43,7 +43,20 @@ def tire_forces(veh, i, sim_defaults):
 
     # current steer angle
     veh.model.delta_deg[i] = veh.driver_input.steer[i] / veh.steer_ratio   # steer angle (delta) will always be derived from driver input
-    veh.model.delta_rad[i] = veh.model.delta_deg[i] * (math.pi/180)
+    veh.model.delta_rad[i] = veh.model.delta_deg[i] * (math.pi/180)        # net steer angle
+
+    # Ackerman steering effects
+    if veh.model.delta_rad[i] > 0:   # positive steer
+        r_net = veh.wb / np.tan(veh.model.delta_rad[i])  # turn radius  (Gillespie)
+        rf_steer_angle = np.arctan(veh.wb / (r_net - veh.track))
+        lf_steer_angle = veh.model.delta_rad[i]
+    elif veh.model.delta_rad[i] < 0:
+        r_net = veh.wb / np.tan(veh.model.delta_rad[i])  # turn radius  (Gillespie)
+        rf_steer_angle = veh.model.delta_rad[i]
+        lf_steer_angle = np.arctan(veh.wb / (r_net + veh.track))
+    elif veh.model.delta_rad[i] == 0:
+        rf_steer_angle = 0
+        lf_steer_angle = 0
 
     # Forward / Rearward weight shift due to braking or acceleration
     veh_m = veh.weight / 32.2
@@ -58,7 +71,7 @@ def tire_forces(veh, i, sim_defaults):
     lf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
 
     veh.model.lf_lock[i] = 0  # locked status of Left Front Wheel - initially set to unlocked
-    veh.model.lf_alpha[i] = -1 * np.arctan2(lf_vy, lf_vx) + veh.model.delta_rad[i]   # tire slip angle (rad)
+    veh.model.lf_alpha[i] = -1 * np.arctan2(lf_vy, lf_vx) + lf_steer_angle   # tire slip angle (rad)
 
     if math.fabs(veh.model.lf_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
         lf_latf = sign(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
@@ -87,7 +100,7 @@ def tire_forces(veh, i, sim_defaults):
     rf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
 
     veh.model.rf_lock[i] = 0  # locked status - initially set to unlocked
-    veh.model.rf_alpha[i] = -1 * np.arctan2(rf_vy, rf_vx) + veh.model.delta_rad[i]  # tire slip angle (rad)
+    veh.model.rf_alpha[i] = -1 * np.arctan2(rf_vy, rf_vx) + rf_steer_angle  # tire slip angle (rad)
 
     if math.fabs(veh.model.rf_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
         rf_latf = sign(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]  # lateral force if alpha is greater than maximum slip angle - input

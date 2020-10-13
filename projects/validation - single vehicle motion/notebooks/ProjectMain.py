@@ -1,10 +1,11 @@
 # Main Pycrash File
 import os
-path_parent = os.path.dirname(os.getcwd())
+#path_parent = os.getcwd()
+project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
 
 import sys
 #sys.path.insert(0,'D:\\OneDrive\\pycrash')
-sys.path.insert(0,'/home/jmc/Documents/pycrash')
+sys.path.insert(0, '/home/jmc/Documents/pycrash')
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle
@@ -22,6 +23,14 @@ from scipy import integrate
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
 
+"""
+pc_crash_column_names = ['t', 'ax', 'ay', 'az', 'phi_deg', 'lf_fy', 'rf_fy',
+                         'lr_fy', 'rr_fy', 'delta_deg', 'rf_delta_deg', 'steer',
+                         'steer_rate', 'X', 'Y', 'Z', 'roll', 'pitch', 'theta_deg',
+                         'Vx', 'Vy', 'Vz', 'lf_fz', 'rf_fz', 'lr_fz', 'rr_fz',
+                         'lf_alpha', 'rf_alpha', 'lr_alpha', 'rr_alpha']
+"""
+
 pc_crash_column_names = ['t', 'ax', 'ay', 'az', 'phi_deg', 'rf_fy', 'lf_fy',
                          'rr_fy', 'lr_fy', 'delta_deg', 'rf_delta_deg', 'steer',
                          'steer_rate', 'X', 'Y', 'Z', 'roll', 'pitch', 'theta_deg',
@@ -30,9 +39,12 @@ pc_crash_column_names = ['t', 'ax', 'ay', 'az', 'phi_deg', 'rf_fy', 'lf_fy',
 
 
 #pc_crash_file = '15-mph-steer-data.xlsx'
+#pc_crash_file = '30-mph-steer-data.xlsx'
+pc_crash_file = '60-mph-steer-data.xlsx'
 #pc_crash_file = '15-mph-steer-no-cg-height-data.xlsx'
-pc_crash_file = '15-mph-steer-rigid-suspension-data.xlsx'
-df = pd.read_excel(os.path.join(path_parent, 'data', 'external', pc_crash_file),
+#pc_crash_file = '15-mph-steer-rigid-suspension-data.xlsx'
+#pc_crash_file = '15-mph-no-ac-steer-no-cg-height-data.xlsx'
+df = pd.read_excel(os.path.join(project_dir, 'data', 'external', pc_crash_file),
                             na_filter = False, header = None, names = pc_crash_column_names, skiprows = 2,
                             usecols = 'A:AD')
 
@@ -116,11 +128,11 @@ t = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 brake = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 throttle = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 steer = [0, 0, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360]
-
+#steer = [0, 0, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360]
 # ".time_inputs()" is an internal function that interpolates time inputs
 veh1.time_inputs(t, throttle, brake, steer)
-veh1.vx_initial = 15
-veh1.hcg = 0   # vary cg height
+veh1.vx_initial = 60
+veh1.hcg = 2  # vary cg height
 
 
 
@@ -150,3 +162,5 @@ run.veh.model['phi_deg'] = phi_deg
 compare_kinematics(run.veh.model, df, 'pycrash', 'validate')
 
 cg_motion(run.veh.model, df, 'pycrash', 'validate')
+
+tire_details(run.veh)
