@@ -3,7 +3,8 @@ functions for plotting data related to vehicle kinematics for multiple vehicles
 """
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
+import plotly.io as pio
+pio.renderers.default = "browser"
 import math
 # TODO: create input for figure size - loads from "defaults" folder?
 figure_size = (800, 450)
@@ -75,34 +76,34 @@ def compare_kinematics(model1, model2, name1, name2):
                     vertical_spacing = 0.07)
 
     # CG Velocity
-    fig.add_trace(go.Scatter(x = model1.t, y = model1.Vx / 1.46667,
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.vx / 1.46667,
                             mode = 'lines',
-                            name = f'{name1} - X',
+                            name = f'{name1} - vx',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 1, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.Vx / 1.46667,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.vx / 1.46667,
                             mode = 'lines',
-                            name = f'{name2} - X',
+                            name = f'{name2} - vx',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2, dash='dash')),
                             row = 1, col = 1)
 
-    fig.add_trace(go.Scatter(x = model1.t, y = model1.Vy / 1.46667,
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.vy / 1.46667,
                             mode = 'lines',
-                            name = f'{name1} - Y',
+                            name = f'{name1} - vx',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 1, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.Vy / 1.46667,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.vy / 1.46667,
                             mode = 'lines',
-                            name = f'{name2} - Y',
+                            name = f'{name2} - vy',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2, dash='dash')),
                             row = 1, col = 1)
     # Slip angle - compare to beta_deg
-    fig.add_trace(go.Scatter(x = model1.t, y = model1.phi_deg,
+    fig.add_trace(go.Scatter(x = model1.t, y = model1.beta_deg,
                             mode = 'lines',
                             name = f'{name1} - slip angle',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2)),
                             row = 2, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.phi_deg,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.beta_deg,
                             mode = 'lines',
                             name = f'{name2} - slip angle',
                             line = dict(color = 'rgb(0, 0, 0)', width = 2, dash='dash')),
@@ -136,42 +137,42 @@ def compare_kinematics(model1, model2, name1, name2):
     """
     fig.add_trace(go.Scatter(x = model1.t, y = model1.lf_fy,
                             mode = 'lines',
-                            name = 'LF - Pycrash',
+                            name = f'LF - {name1}',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 1, col = 1)
     fig.add_trace(go.Scatter(x = model2.t, y = model2.lf_fy,
                             mode = 'lines',
-                            name = 'LF - Validate',
+                            name = f'LF - {name2}',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2, dash = 'dash')),
                             row = 1, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.rf_fy,
                             mode = 'lines',
-                            name = 'RF - Pycrash',
+                            name = f'RF - {name1}',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = model2.t, y = model2.rf_fy,
                             mode = 'lines',
-                            name = 'RF - Validate',
+                            name = f'RF - {name2}',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2, dash = 'dash')),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.rr_fy,
                             mode = 'lines',
-                            name = 'RR - Pycrash',
+                            name = f'RR - {name1}',
                             line = dict(color = 'rgb(153, 0, 204)', width = 2)),
                             row = 3, col = 1)
     fig.add_trace(go.Scatter(x = model2.t, y = model2.rr_fy,
                             mode = 'lines',
-                            name = 'RR - Validate',
+                            name = f'RR - {name2}',
                             line = dict(color = 'rgb(153, 0, 204)', width = 2, dash = 'dash')),
                             row = 3, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.lr_fy,
                             mode = 'lines',
-                            name = 'LR - Pycrash',
+                            name = f'LR - {name1}',
                             line = dict(color = 'rgb(255, 102, 0)', width = 2)),
                             row = 4, col = 1)
     fig.add_trace(go.Scatter(x = model2.t, y = model2.lr_fy,
                             mode = 'lines',
-                            name = 'LR - Validate',
+                            name = f'LR - {name2}',
                             line = dict(color = 'rgb(255, 102, 0)', width = 2, dash = 'dash')),
                             row = 4, col = 1)
 
@@ -222,42 +223,42 @@ def compare_kinematics(model1, model2, name1, name2):
     """
     fig.add_trace(go.Scatter(x=model1.t, y=model1.lf_alpha * 180 / math.pi,
                              mode='lines',
-                             name='LF - Pycrash',
+                             name= f'LF - {name1}',
                              line=dict(color='rgb(0, 0, 255)', width=2)),
                   row=1, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.lf_alpha * -1,
                              mode='lines',
-                             name='LF - Validate',
+                             name= f'LF - {name2}',
                              line=dict(color='rgb(0, 0, 255)', width=2, dash='dash')),
                   row=1, col=1)
     fig.add_trace(go.Scatter(x=model1.t, y=model1.rf_alpha * 180 / math.pi,
                              mode='lines',
-                             name='RF - Pycrash',
+                             name= f'RF - {name1}',
                              line=dict(color='rgb(0, 255, 0)', width=2)),
                   row=2, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.rf_alpha * -1,
                              mode='lines',
-                             name='RF - Validate',
+                             name= f'RF - {name2}',
                              line=dict(color='rgb(0, 255, 0)', width=2, dash='dash')),
                   row=2, col=1)
     fig.add_trace(go.Scatter(x=model1.t, y=model1.rr_alpha * 180 / math.pi,
                              mode='lines',
-                             name='RR - Pycrash',
+                             name= f'RR - {name1}',
                              line=dict(color='rgb(153, 0, 204)', width=2)),
                   row=3, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.rr_alpha * -1,
                              mode='lines',
-                             name='RR - Validate',
+                             name= f'RR - {name2}',
                              line=dict(color='rgb(153, 0, 204)', width=2, dash='dash')),
                   row=3, col=1)
     fig.add_trace(go.Scatter(x=model1.t, y=model1.lr_alpha * 180 / math.pi,
                              mode='lines',
-                             name='LR - Pycrash',
+                             name= f'LR - {name1}',
                              line=dict(color='rgb(255, 102, 0)', width=2)),
                   row=4, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.lr_alpha * -1,
                              mode='lines',
-                             name='LR - Validate',
+                             name= f'LR - {name2}',
                              line=dict(color='rgb(255, 102, 0)', width=2, dash='dash')),
                   row=4, col=1)
 
@@ -300,7 +301,6 @@ def compare_kinematics(model1, model2, name1, name2):
 
 
     # acceleration
-    """"
     fig = make_subplots(rows=2, cols=1,
                         shared_xaxes=True,
                         vertical_spacing=0.07)
@@ -352,7 +352,6 @@ def compare_kinematics(model1, model2, name1, name2):
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()
-    """
 
     """
     vertical tire forces
@@ -364,42 +363,42 @@ def compare_kinematics(model1, model2, name1, name2):
 
     fig.add_trace(go.Scatter(x = model1.t, y = model1.lf_fz,
                             mode = 'lines',
-                            name = 'LF - Pycrash',
+                            name = f'LF - {name1}',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2)),
                             row = 1, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.lf_fz *1000,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.lf_fz,
                             mode = 'lines',
-                            name = 'LF - Validate',
+                            name = f'LF - {name2}',
                             line = dict(color = 'rgb(0, 0, 255)', width = 2, dash = 'dash')),
                             row = 1, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.rf_fz,
                             mode = 'lines',
-                            name = 'RF - Pycrash',
+                            name = f'RF - {name1}',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2)),
                             row = 2, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.rf_fz *1000,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.rf_fz,
                             mode = 'lines',
-                            name = 'RF - Validate',
+                            name = f'RF - {name2}',
                             line = dict(color = 'rgb(0, 255, 0)', width = 2, dash = 'dash')),
                             row = 2, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.rr_fz,
                             mode = 'lines',
-                            name = 'RR - Pycrash',
+                            name = f'RR - {name1}',
                             line = dict(color = 'rgb(153, 0, 204)', width = 2)),
                             row = 3, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.rr_fz *1000,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.rr_fz,
                             mode = 'lines',
-                            name = 'RR - Validate',
+                            name = f'RR - {name2}',
                             line = dict(color = 'rgb(153, 0, 204)', width = 2, dash = 'dash')),
                             row = 3, col = 1)
     fig.add_trace(go.Scatter(x = model1.t, y = model1.lr_fz,
                             mode = 'lines',
-                            name = 'LR - Pycrash',
+                            name = f'LR - {name1}',
                             line = dict(color = 'rgb(255, 102, 0)', width = 2)),
                             row = 4, col = 1)
-    fig.add_trace(go.Scatter(x = model2.t, y = model2.lr_fz *1000,
+    fig.add_trace(go.Scatter(x = model2.t, y = model2.lr_fz,
                             mode = 'lines',
-                            name = 'LR - Validate',
+                            name = f'LR - {name2}',
                             line = dict(color = 'rgb(255, 102, 0)', width = 2, dash = 'dash')),
                             row = 4, col = 1)
 

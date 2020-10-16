@@ -1,11 +1,12 @@
 # Main Pycrash File
 import os
 #path_parent = os.getcwd()
-project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
+#project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
+project_dir = 'D:\\OneDrive\\pycrash\\projects\\validation - single vehicle motion'
 
 import sys
-#sys.path.insert(0,'D:\\OneDrive\\pycrash')
-sys.path.insert(0, '/home/jmc/Documents/pycrash')
+sys.path.insert(0,'D:\\OneDrive\\pycrash')
+#sys.path.insert(0, '/home/jmc/Documents/pycrash')
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle
@@ -140,14 +141,11 @@ simulation_name = '15_mph_steer'
 print(f'Creating Simulation: {simulation_name}')
 run = SingleMotion(simulation_name, veh1)
 
-
 run.plot_model()
-
 
 i = len(run.veh.model) - 1 # draw motion at end of simulation
 print(f"Time: {run.veh.model.t[i]}")
 run.global_motion(i)
-
 
 # calculate vehicle slip angle for pycrash model - need to correct
 phi_rad = []

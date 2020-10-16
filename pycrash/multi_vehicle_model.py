@@ -120,9 +120,16 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver =
                 veh.model.Vx[i] = veh.model.Vx[i-1] + dt_motion * np.mean([veh.model.Ax[i-1], veh.model.Ax[i]])
                 veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
 
+                # velocity vector in inertial frame
+                veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to seperate calc
+
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
             veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
+            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to seperate calc
+            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to seperate calc
+            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
+            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to seperate calc
 
         # detect impact using current vehicle positions after first iterations
         if i == 0:

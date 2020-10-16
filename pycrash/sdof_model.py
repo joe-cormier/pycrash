@@ -152,6 +152,8 @@ class SDOF_Model():
                                     ttype = self.ttype
                                     )
         if (self.AB_offset != 0):
+            """The offset corrects for the force required to initiate permanent crush based on the A/B assumptions
+            """
             print(f"Model Diplacement 'Dx' will be reduced by {self.AB_offset} inches")
             self.model.dx = [row + self.AB_offset / 12 for row in self.model.dx]
 
@@ -204,8 +206,17 @@ class SDOF_Model():
         #plt.legend(fontsize=14, frameon = False)
         fig.show()
 
-    def plot_v(self):
+    def get_results(self):
+        print('')
+        print(f'Simulation results for {self.veh1.name}:')
+        print(f'delta-V: {(self.model.v1.iloc[0]-self.model.v1.iloc[-1]) / 1.46667:0.2f} mph')
+        print(f'Peak acceleration: {min(self.model.a1) /32.2:0.1f} g')
+        if self.k1known:
+            print(f'Residual crush: {self.model.veh1_dx.iloc[-1] * 12:0.2f} inches')
 
-        """
-        plot vehicle velocities
-        """
+        print('')
+        print(f'Simulation results for {self.veh2.name}:')
+        print(f'delta-V: {(self.model.v2.iloc[-1]-self.model.v2.iloc[0]) / 1.46667:0.2f} mph')
+        print(f'Peak acceleration: {max(self.model.a2) / 32.2:0.1f} g')
+        if self.k2known:
+            print(f'Residual crush: {self.model.veh2_dx.iloc[-1] * 12:0.2f} inches')

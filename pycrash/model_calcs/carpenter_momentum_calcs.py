@@ -11,6 +11,7 @@ import os
 def impc(i, poi_veh2x, poi_veh2y, vehicle_list, sim_defaults):
     cor = sim_defaults['cor']
     cof = sim_defaults['vehicle_mu']
+    dt_motion = sim_defaults['dt_motion']
     veh1 = vehicle_list[0]
     veh2 = vehicle_list[1]
 
@@ -38,7 +39,7 @@ def impc(i, poi_veh2x, poi_veh2y, vehicle_list, sim_defaults):
     """
     # heading angle of normal impact direction in global frame
     theta_c = veh1.model.theta_rad[i] + veh1.impact_norm_rad + (90 / 180 * 3.14159)
-    print(f'theta c: {theta_c}')
+    print(f'theta c (deg): {theta_c*180/3.14159}')
     # carpenter + welcher model
 
     # get cosine / sine results for coordinate transformation to the normal - tangent axis
@@ -181,13 +182,33 @@ def impc(i, poi_veh2x, poi_veh2y, vehicle_list, sim_defaults):
     impc_energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
 
     # assign vehicle kinematics to results from IMPC
+    # ---- Vehicle 1 ---------- #
     vehicle_list[0].model.vx[i] = vx1_
     vehicle_list[0].model.vy[i] = vy1_
     vehicle_list[0].model.oz_rad[i] = oz_rad1_
 
+    # heading angle
+    vehicle_list[0].model.theta_rad[i] = vehicle_list[0].model.theta_rad[i - 1] + dt_motion * oz_rad1_
+
+    # inertial frame coorindates - capital letters
+    vehicle_list[0].model.Vx[i] = vx1_ * math.cos(vehicle_list[0].model.theta_rad[i]) - vy1_ * math.sin(vehicle_list[0].model.theta_rad[i])
+    vehicle_list[0].model.Vy[i] = vx1_ * math.sin(vehicle_list[0].model.theta_rad[i]) + vy1_ * math.cos(vehicle_list[0].model.theta_rad[i])
+
+    # ------------- Vehicle 2 ------------ #
     vehicle_list[1].model.vx[i] = vx2_
     vehicle_list[1].model.vy[i] = vy2_
     vehicle_list[1].model.oz_rad[i] = oz_rad2_
 
+    # heading angle
+    vehicle_list[1].model.theta_rad[i] = vehicle_list[1].model.theta_rad[i - 1] + dt_motion * oz_rad2_
+
+    # inertial frame coorindates - capital letters
+    vehicle_list[1].model.Vx[i] = vx2_ * math.cos(vehicle_list[1].model.theta_rad[i]) - vy2_ * math.sin(vehicle_list[1].model.theta_rad[i])
+    vehicle_list[1].model.Vy[i] = vx2_ * math.sin(vehicle_list[1].model.theta_rad[i]) + vy2_ * math.cos(vehicle_list[1].model.theta_rad[i])
+
+
     print(impc_energy)
+    print(f'Veh1 DVx: {dvx1*0.681818:0.2f}, Veh1 DVy: {dvy1*0.681818:0.2f} (mph)')
+    print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f}, Veh2 DVy: {dvy2 * 0.681818:0.2f} (mph)')
+
     return vehicle_list, impc_energy

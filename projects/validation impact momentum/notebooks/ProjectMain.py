@@ -1,23 +1,24 @@
-
 import os
 path_parent = os.path.dirname(os.getcwd())
 
 import sys
-#sys.path.append("D:\\OneDrive\\pycrash")
+sys.path.append("D:\\OneDrive\\pycrash")
 #sys.path.append('/home/joemcormier/pycrash')
-sys.path.insert(0,'/home/jmc/Documents/pycrash')
+#sys.path.insert(0,'/home/jmc/Documents/pycrash')
 
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle
 from pycrash.kinematicstwo import KinematicsTwo
-
+from pycrash.visualization.model_compare import compare_kinematics
 import pandas as pd
 import numpy as np
 import math
 from scipy import integrate
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 # Create Vehicle 1:
 vehicle_input_dict = {"year":2016,
@@ -127,5 +128,11 @@ run = KinematicsTwo('run1', 'IMPC', veh1, veh2)
 
 run.simulate()
 
-#run.draw_simulation(len(run.veh1.model)-1)
-run.draw_simulation(100)
+run.draw_simulation(len(run.veh1.model)-1)
+run.draw_simulation(64)
+
+compare_kinematics(run.veh1.model, run.veh2.model, 'Veh1', 'Veh2')
+
+import matplotlib.pyplot as plt
+run.veh2.model.plot(x='t', y='vx')
+plt.show()
