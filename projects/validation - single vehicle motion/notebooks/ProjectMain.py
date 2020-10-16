@@ -1,18 +1,18 @@
 # Main Pycrash File
 import os
 #path_parent = os.getcwd()
-#project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
-project_dir = 'D:\\OneDrive\\pycrash\\projects\\validation - single vehicle motion'
+project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
+#project_dir = 'D:\\OneDrive\\pycrash\\projects\\validation - single vehicle motion'
 
 import sys
-sys.path.insert(0,'D:\\OneDrive\\pycrash')
-#sys.path.insert(0, '/home/jmc/Documents/pycrash')
+#sys.path.insert(0,'D:\\OneDrive\\pycrash')
+sys.path.insert(0, '/home/jmc/Documents/pycrash')
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle
 from pycrash.kinematics import SingleMotion
 from pycrash.visualization.kinematics_compare import compare_kinematics
-from pycrash.visualization.tire_details import tire_details, vertical_forces
+from pycrash.visualization.tire_details import tire_details, vertical_forces, long_forces
 from pycrash.visualization.cg_motion_compare import cg_motion
 
 import pandas as pd
@@ -133,9 +133,7 @@ steer = [0, 0, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360]
 # ".time_inputs()" is an internal function that interpolates time inputs
 veh1.time_inputs(t, throttle, brake, steer)
 veh1.vx_initial = 60
-veh1.hcg = 2  # vary cg height
-
-
+veh1.hcg = 1.0  # vary cg height
 
 simulation_name = '15_mph_steer'
 print(f'Creating Simulation: {simulation_name}')
@@ -162,3 +160,5 @@ compare_kinematics(run.veh.model, df, 'pycrash', 'validate')
 cg_motion(run.veh.model, df, 'pycrash', 'validate')
 
 tire_details(run.veh)
+long_forces(run.veh)
+vertical_forces(run.veh)

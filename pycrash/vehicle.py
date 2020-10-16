@@ -125,7 +125,8 @@ class Vehicle:
                     else:
                         setattr(self, key, float(value))
                 else:
-                    print(f"Input entry {key} unknown")
+                    print(f"Input entry {key} unknown, setting to {value}")
+                    setattr(self, key, float(value))
 
             print(f'Vehicle inputs for {self.name} applied succesfully')
 
