@@ -1,71 +1,99 @@
-
+import sys
+sys.path.insert(0, '/home/joemcormier/pycrash/')
 import numpy as np
 from pycrash.vehicle import Vehicle
 from pycrash.model_calcs.carpenter_momentum import IMPC
+from pycrash.visualization.initial_positions import initial_position
+from pycrash.model_calcs.position_data import position_data_static
+import os
+os.chdir('/home/joemcormier/pycrash/projects/validation impact momentum/')
+import data.input.vehicles as vehicle
 
 
+
+veh1_input = vehicle.subaru.copy()
+veh1_input['vx_initial'] = 15
+veh1_input['pimpact_x'] = 8.08
+veh1_input['pimpact_y'] = -2.5
+veh1_input['impact_norm_rad'] = (0 * np.pi / 180)  # <- normal impact plane angle
+
+
+veh2_input = vehicle.barrier.copy()
+veh2_input['vx_initial'] = 0
+veh2_input['init_x_pos'] = 10.75
+veh2_input['init_y_pos'] = -2.5
+veh2_input['head_angle'] = 180
+
+
+veh1 = Vehicle('Veh1', veh1_input)
+veh2 = Vehicle('Veh2', veh2_input)
+
+
+initial_position(position_data_static([veh1, veh2]))
+
+
+# test inputs to match
+dvx_test = 10
+dvy_test = 5
+dvomega_test = -250
+
+# Create simulation
 sim_inputs = {'cor': 0.1,
               'cof': 0.3,
               'impact_norm_rad': 0}
 
-vehicle1_input_dict = {"year": 2016,
-                       "make": "Subaru",
-                       "model": "WRX Sti",
-                       "weight": 3200,
-                       "steer_ratio": 16.5,
-                       "init_x_pos": 0,
-                       "init_y_pos": 0,
-                       "head_angle": 0 * np.pi / 180,  # <- vehicle heading angle
-                       "width": 6,
-                       "length": 19.3,
-                       "hcg": 1,
-                       "lcgf": 4.88,
-                       "lcgr": 6.96,
-                       "wb": 11.84,
-                       "track": 6.6,
-                       "f_hang": 3.2,
-                       "r_hang": 4.1,
-                       "tire_d": 2.716666667,
-                       "tire_w": 0.866666667,
-                       "izz": 2500,
-                       "vx_initial": 15,
-                       "vy_initial": 0,
-                       "omega_z": 0,
-                       "pimpact_x": 8.08,
-                       "pimpact_y": 0,
-                       "impact_norm_rad": (0 * np.pi / 180)}  # <- normal impact plane angle
+veh1_input['vx_initial'] = 15
+veh1_input['pimpact_x'] = 8.08
+veh1_input['pimpact_y'] = -2.5
+veh1_input['impact_norm_rad'] = (0 * np.pi / 180)  # <- normal impact plane angle
+veh1_input['striking'] = True
+veh2_input['init_x_pos'] = 10.75
+veh2_input['init_y_pos'] = -2.5
 
-vehicle2_input_dict = {"year": 2016,
-                       "make": "Subaru",
-                       "model": "WRX Sti",
-                       "weight": 3200,
-                       "steer_ratio": 16.5,
-                       "init_x_pos": 11,
-                       "init_y_pos": -4,
-                       "head_angle": 270 * np.pi / 180,  # <- vehicle heading angle
-                       "width": 6,
-                       "length": 19.3,
-                       "hcg": 1,
-                       "lcgf": 4.88,
-                       "lcgr": 6.96,
-                       "wb": 11.84,
-                       "track": 6.6,
-                       "f_hang": 3.2,
-                       "r_hang": 4.1,
-                       "tire_d": 2.716666667,
-                       "tire_w": 0.866666667,
-                       "izz": 2500,
-                       "vx_initial": 15,
-                       "vy_initial": 0,
-                       "omega_z": 0}
+veh2_input['striking'] = False
 
-veh1 = Vehicle('Veh1', vehicle1_input_dict)
-veh2 = Vehicle('Veh2', vehicle2_input_dict)
 name = 'run1'
-
 run = IMPC('run1', veh1, veh2, sim_inputs)
 
-print(run.poi_veh2x)
-print(run.poi_veh2y)
+test_inputs = {}
+test_inputs['run1'] = {'cor': 0.1,
+                       'cof': 0.3,
+                       'impact_norm_rad': 0 * np.pi / 180,
+                       'vehicle':'subaru',
+                       'pimpact_x':8.08,
+                       'pimpact_y':-2.5,
+                       'impact_speed':40,
+                       'barrier':'barrier',
+                       'barrier_x_pos':10.75,
+                       'barrier_y_pos':-2.5,
+                       'dvx_test': 10,
+                       'dvy_test': 5,
+                       'dvomega_test': -250}
+
+def function_optimize(cor, cof, impact_norm_deg, test_inputs):
+    veh1_input = vehicle[test_inputs['vehicle']].copy()  # import vehicle
+    veh1_input['vx_initial'] = test_inputs['impact_speed']
+    veh1_input['pimpact_x'] = test_inputs['pimpact_x']
+    veh1_input['pimpact_y'] = test_inputs['pimpact_y']
+    veh1_input['impact_norm_rad'] = test_inputs['impact_norm_rad']
+    veh1 = Vehicle('Veh1', veh1_input)
+
+    veh2_input = vehicle[test_inputs['barrier']].copy()  # import barrier
+    veh2_input['init_x_pos'] = test_inputs['barrier_x_pos']
+    veh2_input['init_y_pos'] = test_inputs['barrier_y_pos']
+
+    veh1 = Vehicle('Veh1', veh1_input)
+    veh2 = Vehicle('Veh2', veh2_input)
+    sim_inputs = {'cor': 0.1,
+                  'cof': 0.3,
+                  'impact_norm_rad': impact_norm_deg * np.pi / 180}
+
+    run = IMPC(name, veh1, veh2, sim_inputs)
+    
+    diff_dv_x = run.v1_result['dvx'] - test_inputs['dvx_test']
+    diff_dv_y = run.v1_result['dvy'] - test_inputs['dvy_test']
+    diff_omega = run.v1_result['oz_rad'] - test_inputs['dvomega_test']
+
 
 run.results()
+run.v1_result['dvx']

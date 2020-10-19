@@ -1,12 +1,12 @@
 import plotly.graph_objects as go
-import numpy as np
+import math
 
 width = 1000
 aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 # plot initial positions and any motion data to show vehicle paths
-def initial_position(vehicle_list):
+def initial_position(veh1, veh2, i):
     # plot initial positions
     # grid grid based on initial position of vehicle
     # scale x,y axes accordingly
@@ -16,22 +16,22 @@ def initial_position(vehicle_list):
     combine two vehicles into a single df, to allow for max / min check
     """
     fig = go.Figure()
-    for veh in vehicle_list:
+    for veh in [veh1, veh2]:
         # Body and tire outlines
-        bdy_x = (veh.Px['b_lfc'], veh.Px['b_rfc'], veh.Px['b_rrc'], veh.Px['b_lrc'], veh.Px['b_lfc'])
-        bdy_y = (veh.Py['b_lfc'], veh.Py['b_rfc'], veh.Py['b_rrc'], veh.Py['b_lrc'], veh.Py['b_lfc'])
+        bdy_x = (veh.Px.b_lfc[i], veh.Px.b_rfc[i], veh.Px.b_rrc[i], veh.Px.b_lrc[i], veh.Px.b_lfc[i])
+        bdy_y = (veh.Py.b_lfc[i], veh.Py.b_rfc[i], veh.Py.b_rrc[i], veh.Py.b_lrc[i], veh.Py.b_lfc[i])
 
-        lfw_x = (veh.Px['lfw_a'], veh.Px['lfw_b'], veh.Px['lfw_c'], veh.Px['lfw_d'], veh.Px['lfw_a'])
-        lfw_y = (veh.Py['lfw_a'], veh.Py['lfw_b'], veh.Py['lfw_c'], veh.Py['lfw_d'], veh.Py['lfw_a'])
+        lfw_x = (veh.Px.lfw_a[i], veh.Px.lfw_b[i], veh.Px.lfw_c[i], veh.Px.lfw_d[i], veh.Px.lfw_a[i])
+        lfw_y = (veh.Py.lfw_a[i], veh.Py.lfw_b[i], veh.Py.lfw_c[i], veh.Py.lfw_d[i], veh.Py.lfw_a[i])
 
-        rfw_x = (veh.Px['rfw_a'], veh.Px['rfw_b'], veh.Px['rfw_c'], veh.Px['rfw_d'], veh.Px['rfw_a'])
-        rfw_y = (veh.Py['rfw_a'], veh.Py['rfw_b'], veh.Py['rfw_c'], veh.Py['rfw_d'], veh.Py['rfw_a'])
+        rfw_x = (veh.Px.rfw_a[i], veh.Px.rfw_b[i], veh.Px.rfw_c[i], veh.Px.rfw_d[i], veh.Px.rfw_a[i])
+        rfw_y = (veh.Py.rfw_a[i], veh.Py.rfw_b[i], veh.Py.rfw_c[i], veh.Py.rfw_d[i], veh.Py.rfw_a[i])
 
-        rrw_x = (veh.Px['rrw_a'], veh.Px['rrw_b'], veh.Px['rrw_c'], veh.Px['rrw_d'], veh.Px['rrw_a'])
-        rrw_y = (veh.Py['rrw_a'], veh.Py['rrw_b'], veh.Py['rrw_c'], veh.Py['rrw_d'], veh.Py['rrw_a'])
+        rrw_x = (veh.Px.rrw_a[i], veh.Px.rrw_b[i], veh.Px.rrw_c[i], veh.Px.rrw_d[i], veh.Px.rrw_a[i])
+        rrw_y = (veh.Py.rrw_a[i], veh.Py.rrw_b[i], veh.Py.rrw_c[i], veh.Py.rrw_d[i], veh.Py.rrw_a[i])
 
-        lrw_x = (veh.Px['lrw_a'], veh.Px['lrw_b'], veh.Px['lrw_c'], veh.Px['lrw_d'], veh.Px['lrw_a'])
-        lrw_y = (veh.Py['lrw_a'], veh.Py['lrw_b'], veh.Py['lrw_c'], veh.Py['lrw_d'], veh.Py['lrw_a'])
+        lrw_x = (veh.Px.lrw_a[i], veh.Px.lrw_b[i], veh.Px.lrw_c[i], veh.Px.lrw_d[i], veh.Px.lrw_a[i])
+        lrw_y = (veh.Py.lrw_a[i], veh.Py.lrw_b[i], veh.Py.lrw_c[i], veh.Py.lrw_d[i], veh.Py.lrw_a[i])
 
 
         # body outline
@@ -59,8 +59,8 @@ def initial_position(vehicle_list):
                             line = dict(color = wheel_colors[3], width = 1)))
 
         # CG
-        cgx = [veh.init_x_pos, veh.init_x_pos]
-        cgy = [veh.init_y_pos, veh.init_y_pos]
+        cgx = [veh.Px.cg[i], veh.Px.cg[i]]
+        cgy = [veh.Py.cg[i], veh.Py.cg[i]]
 
         # adjust axes to keep aspect aspect ratio
         """
@@ -98,10 +98,10 @@ def initial_position(vehicle_list):
 
 
         # velocity vector
-        fig.add_annotation(x = veh.Px['vel_v'],
-                           y = veh.Py['vel_v'],
-                           ax = veh.Px['cg'],
-                           ay = veh.Py['cg'],
+        fig.add_annotation(x = veh.Px.vel_v[i],
+                           y = veh.Py.vel_v[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
@@ -114,10 +114,10 @@ def initial_position(vehicle_list):
                            arrowcolor = 'rgb(255, 0, 0)')
 
         # x axis
-        fig.add_annotation(x = veh.Px['xaxis'],
-                           y = veh.Py['xaxis'],
-                           ax = veh.Px['cg'],
-                           ay = veh.Py['cg'],
+        fig.add_annotation(x = veh.Px.xaxis[i],
+                           y = veh.Py.xaxis[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
@@ -130,10 +130,10 @@ def initial_position(vehicle_list):
                            arrowcolor = 'rgb(0, 0, 0)')
 
         # y axis
-        fig.add_annotation(x = veh.Px['yaxis'],
-                           y = veh.Py['yaxis'],
-                           ax = veh.Px['cg'],
-                           ay = veh.Py['cg'],
+        fig.add_annotation(x = veh.Px.yaxis[i],
+                           y = veh.Py.yaxis[i],
+                           ax = veh.Px.cg[i],
+                           ay = veh.Py.cg[i],
                            axref = 'x',
                            ayref = 'y',
                            xref = 'x',
@@ -144,40 +144,6 @@ def initial_position(vehicle_list):
                            arrowhead = 1,
                            arrowwidth = 1.5,
                            arrowcolor = 'rgb(0, 0, 255)')
-
-        if (veh.striking):
-            # normal impact plane
-            fig.add_annotation(x = veh.impact_norm_X,
-                               y = veh.impact_norm_Y,
-                               axref = 'x',
-                               ayref = 'y',
-                               text = "",
-                               showarrow = True,
-                               ax = veh.pimpact_X,
-                               ay = veh.pimpact_Y,
-                               arrowsize = 2,
-                               arrowhead = 2,
-                               arrowwidth = 1.5,
-                               arrowcolor = 'rgb(153, 0, 51)')
-            # tangential impact plane
-            fig.add_annotation(x = veh.impact_tang_X,
-                               y = veh.impact_tang_Y,
-                               axref = 'x',
-                               ayref = 'y',
-                               text = "",
-                               showarrow = True,
-                               ax = veh.pimpact_X,
-                               ay = veh.pimpact_Y,
-                               arrowsize = 1,
-                               arrowhead = 1,
-                               arrowwidth = 1,
-                               arrowcolor = 'rgb(153, 0, 51)')
-
-            fig.add_trace(go.Scatter(x = [veh.pimpact_X, veh.pimpact_X], y = [veh.pimpact_Y, veh.pimpact_Y],
-                                mode = 'markers',
-                                name = f'POI - {veh.name}',
-                                marker = dict(color = 'rgb(153, 0, 51)', size = 7),
-                                ))
 
     fig.update_layout(
         showlegend = False,
@@ -204,13 +170,13 @@ def initial_position(vehicle_list):
                 line_color='darkslategray',
                 fill_color='lightskyblue',
                 align='left'),
-    cells=dict(values=[[f'{vehicle_list[0].name}', f'{vehicle_list[1].name}'],
-                       [vehicle_list[0].vx_initial, vehicle_list[1].vx_initial],
-                       [vehicle_list[0].vy_initial, vehicle_list[1].vy_initial],
-                       [np.sqrt(vehicle_list[0].vx_initial**2 + vehicle_list[0].vy_initial**2), np.sqrt(vehicle_list[1].vx_initial**2 + vehicle_list[1].vy_initial**2)],
-                       [vehicle_list[0].omega_z, vehicle_list[1].omega_z],
-                       [vehicle_list[0].init_x_pos, vehicle_list[1].init_x_pos],
-                       [vehicle_list[0].init_y_pos, vehicle_list[1].init_y_pos]],
+    cells=dict(values=[[f'{veh1.name}', f'{veh2.name}'],
+                       [veh1.vx_initial, veh2.vx_initial],
+                       [veh1.vy_initial, veh2.vy_initial],
+                       [math.sqrt(veh1.vx_initial**2 + veh1.vy_initial**2), math.sqrt(veh2.vx_initial**2 + veh2.vy_initial**2)],
+                       [veh1.omega_z, veh2.omega_z],
+                       [veh1.init_x_pos, veh2.init_x_pos],
+                       [veh1.init_y_pos, veh2.init_y_pos]],
                line_color='darkslategray',
                fill_color='lightcyan',
                align='left'))
