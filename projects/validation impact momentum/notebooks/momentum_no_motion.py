@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0, '/home/joemcormier/pycrash/')
 import numpy as np
+from scipy.optimize import minimize
+from scipy.optimize import Bounds
 from pycrash.vehicle import Vehicle
 from pycrash.model_calcs.carpenter_momentum import IMPC
 from pycrash.visualization.initial_positions import initial_position
@@ -56,7 +58,7 @@ name = 'run1'
 run = IMPC('run1', veh1, veh2, sim_inputs)
 
 test_inputs = {}
-test_inputs['run1'] = {'cor': 0.1,
+test_inputs = {'cor': 0.1,
                        'cof': 0.3,
                        'impact_norm_rad': 0 * np.pi / 180,
                        'vehicle':'subaru',
@@ -70,15 +72,19 @@ test_inputs['run1'] = {'cor': 0.1,
                        'dvy_test': 5,
                        'dvomega_test': -250}
 
-def function_optimize(cor, cof, impact_norm_deg, test_inputs):
-    veh1_input = vehicle[test_inputs['vehicle']].copy()  # import vehicle
+
+def function_optimize(params, test_inputs):
+    cor = params[0]
+    cof = params[1]
+    impact_norm_deg = params[2]
+    veh1_input = vehicle.subaru.copy()  # import vehicle
     veh1_input['vx_initial'] = test_inputs['impact_speed']
     veh1_input['pimpact_x'] = test_inputs['pimpact_x']
     veh1_input['pimpact_y'] = test_inputs['pimpact_y']
     veh1_input['impact_norm_rad'] = test_inputs['impact_norm_rad']
     veh1 = Vehicle('Veh1', veh1_input)
 
-    veh2_input = vehicle[test_inputs['barrier']].copy()  # import barrier
+    veh2_input = vehicle.barrier.copy()  # import barrier
     veh2_input['init_x_pos'] = test_inputs['barrier_x_pos']
     veh2_input['init_y_pos'] = test_inputs['barrier_y_pos']
 
@@ -89,11 +95,17 @@ def function_optimize(cor, cof, impact_norm_deg, test_inputs):
                   'impact_norm_rad': impact_norm_deg * np.pi / 180}
 
     run = IMPC(name, veh1, veh2, sim_inputs)
-    
+
     diff_dv_x = run.v1_result['dvx'] - test_inputs['dvx_test']
     diff_dv_y = run.v1_result['dvy'] - test_inputs['dvy_test']
     diff_omega = run.v1_result['oz_rad'] - test_inputs['dvomega_test']
+    omega_scale = 2
+
+    return diff_dv_x**2 + diff_dv_y**2 + (omega_scale*diff_omega)**2
 
 
-run.results()
-run.v1_result['dvx']
+x0 = np.array([0.3, 0.3, 0])
+#x0 = [0.3, 0.3, 0]
+bounds = Bounds([0, 0.4], [0, .6], [0, 360])
+res = minimize(function_optimize, x0, args=(test_inputs,), method='nelder-mead',
+               options={'disp': True}, bounds=bounds)
