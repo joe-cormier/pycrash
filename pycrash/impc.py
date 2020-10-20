@@ -1,36 +1,19 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May 28 22:54:52 2019
-
-@author: JCormier
-
-# with no pre vehicle motion, vehicle 1 is aligned with global coordinates
-CG1 = (0,0)
-delta_rad (steer tire turn angle)
-beta_rad (velocity vector)
-Dx, Dy, vehicle displacement in global frame
-
-"""
-
-import pandas as pd
-import math
-import os
-
+import numpy as np
 
 def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     cor = sim_inputs['cor']
     cof = sim_inputs['cof']
-
+    impact_norm_deg = sim_inputs['impact_norm_deg']
     # heading angle of normal impact direction in global frame
-    theta_c = veh1.head_angle + veh1.impact_norm_rad + (90 / 180 * 3.14159)
-    print(f'theta c: {theta_c}')
-    # carpenter + welcher model
+    theta_c = (veh1.head_angle * np.pi / 180) + (impact_norm_deg * np.pi / 180) + (90 / 180 * np.pi)
+    print(f'theta c: {theta_c * 180 / np.pi:0.2f} [deg]')
 
+    # carpenter + welcher model
     # get cosine / sine results for coordinate transformation to the normal - tangent axis
-    c1 = math.cos(veh1.head_angle - theta_c)
-    s1 = math.sin(veh1.head_angle - theta_c)
-    c2 = math.cos(veh2.head_angle - theta_c)
-    s2 = math.sin(veh2.head_angle - theta_c)
+    c1 = np.cos(veh1.head_angle * np.pi / 180 - theta_c)
+    s1 = np.sin(veh1.head_angle * np.pi / 180 - theta_c)
+    c2 = np.cos(veh2.head_angle * np.pi / 180 - theta_c)
+    s2 = np.sin(veh2.head_angle * np.pi / 180 - theta_c)
 
     # translate distances to n-t frame
     dt1 = c1*(veh1.pimpact_x) - s1*(veh1.pimpact_y)
@@ -45,12 +28,12 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     vn2 = s2*veh2.vx_initial + c2*veh2.vy_initial
 
     # pre-impact POI velocities (Equations 1)
-    vct1 = vt1 - dn1*veh1.omega_z
-    vct2 = vt2 - dn2*veh2.omega_z
+    vct1 = vt1 - dn1 * veh1.omega_z * np.pi / 180
+    vct2 = vt2 - dn2 * veh2.omega_z * np.pi / 180
     vct21 = vct2 - vct1
 
-    vcn1 = vn1 + dt1*veh1.omega_z
-    vcn2 = vn2 + dt2*veh2.omega_z
+    vcn1 = vn1 + dt1 * veh1.omega_z * np.pi / 180
+    vcn2 = vn2 + dt2 * veh2.omega_z * np.pi / 180
     vcn21 = vcn2 - vcn1
 
     A11 = (1 / (veh1.weight / 32.2) + 1 / (veh2.weight / 32.2) + dn1**2 / veh1.izz + dn2**2 / veh2.izz)
@@ -98,28 +81,28 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
 
     # tranform back to local vehicle coordinate system
     # delta-Vs
-    dvx1 = (c1*dvt1 + s1*dvn1) / 1.46667
-    dvy1 = (-1*s1*dvt1 + c1*dvn1) / 1.46667
-    dveh1 = math.sqrt(dvx1**2 + dvy1**2)
-    doz1_deg = doz1 * 180 / math.pi
+    dvx1 = (c1*dvt1 + s1*dvn1)
+    dvy1 = (-1*s1*dvt1 + c1*dvn1)
+    dveh1 = np.sqrt(dvx1**2 + dvy1**2)
+    doz1_deg = doz1 * 180 / np.pi
 
-    dvx2 = (c2*dvt2 + s2*dvn2) / 1.46667
-    dvy2 = (-1*s2*dvt2 + c2*dvn2) / 1.46667
-    dveh2 = math.sqrt(dvx2**2 + dvy2**2)
-    doz2_deg = doz2 * 180 / math.pi
+    dvx2 = (c2*dvt2 + s2*dvn2)
+    dvy2 = (-1*s2*dvt2 + c2*dvn2)
+    dveh2 = np.sqrt(dvx2**2 + dvy2**2)
+    doz2_deg = doz2 * 180 / np.pi
 
     # post impact speeds
-    vx1_ = veh1.vx_initial / 1.46667 + dvx1
-    vy1_ = veh1.vy_initial / 1.46667 + dvy1
-    veh1_ = math.sqrt(vx1_**2 + vy1_**2)
-    oz_deg1_ = veh1.omega_z * 180 / math.pi + doz1_deg
-    oz_rad1_ = oz_deg1_ * math.pi / 180
+    vx1_ = veh1.vx_initial + dvx1
+    vy1_ = veh1.vy_initial + dvy1
+    veh1_ = np.sqrt(vx1_**2 + vy1_**2)
+    oz_deg1_ = veh1.omega_z + doz1_deg
+    oz_rad1_ = oz_deg1_ * np.pi / 180
 
-    vx2_ = veh2.vx_initial / 1.46667 + dvx2
-    vy2_ = veh2.vy_initial / 1.46667 + dvy2
-    veh2_ = math.sqrt(vx2_**2 + vy2_**2)
-    oz_deg2_ = veh2.omega_z * 180 / math.pi + doz2_deg
-    oz_rad2_ = oz_deg2_ * math.pi / 180
+    vx2_ = veh2.vx_initial + dvx2
+    vy2_ = veh2.vy_initial + dvy2
+    veh2_ = np.sqrt(vx2_**2 + vy2_**2)
+    oz_deg2_ = veh2.omega_z + doz2_deg
+    oz_rad2_ = oz_deg2_ * np.pi / 180
 
     # calculations for energy dissipated
     vmt1 = vt1 + dvt1 / (1 + cor)
@@ -155,12 +138,13 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     tn_total_dis = t_effects_dis + n_effects_dis
 
     # speeds in mph -
-    veh1_imp = {'vx': vx1_* 1.46667, 'vy': vy1_* 1.46667, 'oz_rad': oz_rad1_, 'dvx':dvx1* 1.46667, 'dvy': dvy1* 1.46667, 'dv':dveh1* 1.46667}
-    veh2_imp = {'vx': vx2_* 1.46667, 'vy': vy2_* 1.46667, 'oz_rad': oz_rad2_, 'dvx':dvx2* 1.46667, 'dvy': dvy2* 1.46667, 'dv':dveh2* 1.46667}
+    veh1_imp = {'vx': vx1_* 0.681818, 'vy': vy1_* 0.681818, 'oz_rad': oz_rad1_, 'oz_deg': oz_deg1_, 'dvx':dvx1 * 0.681818, 'dvy': dvy1 * 0.681818, 'dv':dveh1 * 0.681818}
+    veh2_imp = {'vx': vx2_* 0.681818, 'vy': vy2_* 0.681818, 'oz_rad': oz_rad2_, 'oz_deg': oz_deg2_, 'dvx':dvx2 * 0.681818, 'dvy': dvy2 * 0.681818, 'dv':dveh2 * 0.681818}
 
 
     #veh1.impc_result = {'vx_post': vx1_, 'vy_post': vy1_, 'oz_rad_post': oz_rad1_, 'dvx':dvx1, 'dvy': dvy1, 'dv':dveh1}
     #veh2.impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx':dvx2, 'dvy': dvy2, 'dv':dveh2}
-    #impc_energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
+    impc_energy = {'t_effects_dis': t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
 
+    print(f'Impact Energy: {impc_energy}')
     return veh1_imp, veh2_imp

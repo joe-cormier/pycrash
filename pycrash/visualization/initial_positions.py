@@ -1,4 +1,6 @@
 import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 import numpy as np
 
 width = 1000
