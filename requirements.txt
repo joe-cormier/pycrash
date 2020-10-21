@@ -6,6 +6,11 @@ scipy
 tabulate
 cookiecutter
 matplotlib # temporary - will change all to plotly
+wheel
+twine
 plotly
 PyQt5
 xlrd
+
+# jupyter notebook
+pip install notebook
