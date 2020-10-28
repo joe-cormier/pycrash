@@ -19,22 +19,22 @@ import os
 import sys
 
 # sys.path.append("/home/jmc/Documents/pycrash")
-sys.path.append("/home/joemcormier/pycrash/")
+#sys.path.append("/home/joemcormier/pycrash/")
+sys.path.append("D:\\OneDrive\\pycrash")
 
-# os.chdir("/home/joemcormier/pycrash/")
+
 print(os.getcwd())
 from pycrash.project import Project
 
-# os.chdir(current_dir)
 print(os.getcwd())
 
-project_name = 'validation sideswipe'
+project_name = 'validation sdof'
 project_inputs = {'name': project_name,
-                  'pdesc': 'validate sideswipe models',
-                  'project_path': "/home/joemcormier/pycrash/projects/",
+                  'pdesc': 'validate sdof model',
+                  'project_path': "D:\\OneDrive\\pycrash\\projects",
                   'sim_type': 'MV',
-                  'impact_type': 'SS',
-                  'note': 'validate sideswipe against published data'}
+                  'impact_type': 'SDOF',
+                  'note': 'validate sdof model using load cell barrier data'}
 
 proj = Project(project_inputs)
 
