@@ -4,7 +4,7 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     cor = sim_inputs['cor']
     cof = sim_inputs['cof']
     impact_norm_deg = sim_inputs['impact_norm_deg']
-    # heading angle of normal impact direction in global frame
+    # heading angle [rad] of tangent impact direction in global frame
     theta_c = (veh1.head_angle * np.pi / 180) + (impact_norm_deg * np.pi / 180) + (90 / 180 * np.pi)
     print(f'theta c: {theta_c * 180 / np.pi:0.2f} [deg]')
 
