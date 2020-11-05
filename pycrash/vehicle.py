@@ -11,6 +11,8 @@ import numpy as np
 import inspect
 import os
 import csv
+import plotly.io as pio
+pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 
 project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')

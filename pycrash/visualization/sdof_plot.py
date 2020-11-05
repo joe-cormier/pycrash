@@ -3,6 +3,9 @@ functions for plotting data related to SDOF models
 """
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import plotly.io as pio
+pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
+
 
 # plot velocity of each vehicle
 # can be a single model run or a list of runs
@@ -59,19 +62,19 @@ def plot_fdx(run_list, run_colors = False, fill_diff = False, show_legend = True
     fig.update_layout(
         legend = dict(orientation = "v", yanchor = 'top', y = 1, xanchor = 'left', x = 0.01),
         autosize = False,
-        width = 1000,
-        height = 550,
+        width = 1600,
+        height = 900,
         title = f'Single Degree of Freedom Model - Mutual Force - Displacement',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Mutual Crush (in)'),
-        font = dict(family = 'Arial', size = 14, color = 'black'))
+        font = dict(family = 'Arial', size = 24, color = 'black'))
 
     fig.update_layout(showlegend = show_legend)
     fig.update_yaxes(showgrid = False, showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, title_text = 'Force (lb)',
-                     rangemode = "tozero")
+                     rangemode = "tozero", tickfont=dict(family='Arial', size=24))
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", rangemode = "tozero",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(family='Arial', size=24))
     fig.show()
 
 def plot_vehicle_fdx(run_list, veh1_colors = False, veh2_colors = False, fill_diff = False, show_legend = True):
@@ -244,18 +247,18 @@ def plot_velocity(run_list, veh1_colors = False, veh2_colors = False, fill_diff 
     fig.update_layout(
         legend = dict(orientation = "h", yanchor = 'top', y = 1.1, xanchor = 'left', x = 0.01),
         autosize = False,
-        width = 1000,
-        height = 550,
+        width = 1600,
+        height = 900,
         title = f'Single Degree of Freedom Model - Vehicle Velocity',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
-        font = dict(family = 'Arial', size = 14, color = 'black'))
+        font = dict(family = 'Arial', size = 28, color = 'black'))
 
     fig.update_layout(showlegend = show_legend)
     fig.update_yaxes(showgrid = False, showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, title_text = 'Velocity (mph)')
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, title_text = 'Velocity (mph)', tickfont=dict(family='Arial', size=28))
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(family='Arial', size=28))
     fig.show()
 
 def plot_acceleration(run_list, veh1_colors = False, veh2_colors = False, fill_diff = False, show_legend = True):

@@ -1,4 +1,6 @@
 import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 width = 900
 aspect_ratio = 16 / 9

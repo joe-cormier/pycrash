@@ -1,8 +1,8 @@
 # Main Pycrash File
 import os
 #path_parent = os.getcwd()
-project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
-#project_dir = 'D:\\OneDrive\\pycrash\\projects\\validation - single vehicle motion'
+#project_dir = '/home/jmc/Documents/pycrash/projects/validation - single vehicle motion/'
+project_dir = 'D:\\OneDrive\\pycrash\\projects\\validation - single vehicle motion'
 
 import sys
 #sys.path.insert(0,'D:\\OneDrive\\pycrash')
@@ -18,8 +18,7 @@ from pycrash.visualization.cg_motion_compare import cg_motion
 import pandas as pd
 import numpy as np
 import math
-import plotly.io as pio
-pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
+import matplotlib.pyplot as plt
 from scipy import integrate
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
@@ -38,16 +37,22 @@ pc_crash_column_names = ['t', 'ax', 'ay', 'az', 'phi_deg', 'rf_fy', 'lf_fy',
                          'Vx', 'Vy', 'Vz', 'rf_fz', 'lf_fz', 'rr_fz', 'lr_fz',
                          'rf_alpha', 'lf_alpha', 'lr_alpha', 'rr_alpha']
 
-
+# 360 steer simulations:
 #pc_crash_file = '15-mph-steer-data.xlsx'
 #pc_crash_file = '30-mph-steer-data.xlsx'
-pc_crash_file = '60-mph-steer-data.xlsx'
+#pc_crash_file = '60-mph-steer-data.xlsx'
 #pc_crash_file = '15-mph-steer-no-cg-height-data.xlsx'
 #pc_crash_file = '15-mph-steer-rigid-suspension-data.xlsx'
 #pc_crash_file = '15-mph-no-ac-steer-no-cg-height-data.xlsx'
+
+# fish hood simulations:
+pc_crash_file = '35-mph-fishhook-data.xlsx'
 df = pd.read_excel(os.path.join(project_dir, 'data', 'external', pc_crash_file),
                             na_filter = False, header = None, names = pc_crash_column_names, skiprows = 2,
                             usecols = 'A:AD')
+
+df.plot(x='t', y='steer')
+plt.show()
 
 
 # convert velocities to fps
@@ -125,17 +130,11 @@ veh2.model = df
 
 
 veh1 = Vehicle('Veh1', vehicle_input_dict)
-t = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-brake = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-throttle = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-steer = [0, 0, -360, -360, -360, -360, -360, -360, -360, -360, -360, -360]
-#steer = [0, 0, 360, 360, 360, 360, 360, 360, 360, 360, 360, 360]
-# ".time_inputs()" is an internal function that interpolates time inputs
 veh1.time_inputs(t, throttle, brake, steer)
-veh1.vx_initial = 60
-veh1.hcg = 1.0  # vary cg height
+veh1.vx_initial = 35
+veh1.hcg = 0.2  # vary cg height
 
-simulation_name = '15_mph_steer'
+simulation_name = '35_mph_fishhook'
 print(f'Creating Simulation: {simulation_name}')
 run = SingleMotion(simulation_name, veh1)
 

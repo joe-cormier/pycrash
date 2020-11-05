@@ -1,5 +1,5 @@
 Pycrash Project Directory
 =========================
 
--  This directory structure and default files provides default data to pycrash for functionality
--  Notebooks and scripts will be updated to reflect changes to Pycrash functionality
+-  Place your Jupyter notebooks and python scirpts in the "notebooks" directory
+-  Pycrash will use the directory structure created here to find and save files associated with the analyses
