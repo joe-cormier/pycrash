@@ -3,6 +3,8 @@ plots used witin vehicle class
 """
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import plotly.io as pio
+pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 
 # TODO: create input for figure size - loads from "defaults" folder?
 figure_size = (800,450)

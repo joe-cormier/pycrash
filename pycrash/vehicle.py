@@ -2,17 +2,11 @@
 # TODO: option to save inputs and outputs to csv
 
 # %% modules
-from tabulate import tabulate
-from itertools import count
-from .visualization.vehicle import plot_impact_points, plot_impact_edge, plot_driver_inputs
-from .model_calcs.collision_plane import define_impact_plane, define_impact_edge
+from .visualization.vehicle import plot_driver_inputs
 import pandas as pd
 import numpy as np
-import inspect
 import os
 import csv
-import plotly.io as pio
-pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 
 project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')

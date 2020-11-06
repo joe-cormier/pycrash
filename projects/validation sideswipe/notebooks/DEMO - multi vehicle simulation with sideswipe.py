@@ -151,7 +151,7 @@ veh2.driver_input.head() # first 5 rows of driver input data
 # 2. impact_type = {'ss' (sideswipe), 'impc' (impulse momentum)}
 # optional - ignore_driver = False (default) - simulation will ignore driver inputs after impact and use entry at impact
 
-ss1 = KinematicsTwo('run1', 'SS', veh1, veh2)
+ss1 = KinematicsTwo('run1', 'SS', veh1, veh2, mutual_stiffness = 3000, vehicle_friction=0.3)
 
 # %% plot inition positions
 ss1.veh2.init_x_pos = 15
