@@ -28,13 +28,13 @@ from pycrash.project import Project
 
 print(os.getcwd())
 
-project_name = 'validation sdof'
+project_name = 'pycrash demo'
 project_inputs = {'name': project_name,
-                  'pdesc': 'validate sdof model',
+                  'pdesc': 'demonstrate pycrash functionality',
                   'project_path': "D:\\OneDrive\\pycrash\\projects",
                   'sim_type': 'MV',
                   'impact_type': 'SDOF',
-                  'note': 'validate sdof model using load cell barrier data'}
+                  'note': 'demonstrate pycrash functions'}
 
 proj = Project(project_inputs)
 

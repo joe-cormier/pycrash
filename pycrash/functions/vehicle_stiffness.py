@@ -1,6 +1,4 @@
-"""
-Derive vehicle stiffness values (A, B) from crash test data
-"""
+
 import math
 import numpy as np
 # frontal barrier test:
@@ -8,6 +6,11 @@ import numpy as np
 
 
 def crash_plot(test_data, veh):
+    """
+    Derive vehicle stiffness values (A, B) from crash test data
+    see Stuble for detailed explanation
+    Struble, D. (2014). Automotive Accident Reconstruction Practices and Principles. Boca Raton (FL), CRC Press.
+    """
     c_list = test_data['test_crush']
     if max(c_list) == 0:  # create orinate for zero crush
         beta = 1

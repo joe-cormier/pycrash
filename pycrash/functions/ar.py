@@ -49,11 +49,31 @@ def CrushForceAB(A, B, L, C):
 
     return L * (A + B * C)
 
-def StrikingDV(m1, m2, v1, v2, rest):
-    return m2 / (m1 + m2) * (1 + rest) * (v1 - v2)
+def StrikingDV(w1, w2, v1, v2, rest):
+    """
+    calculate striking vehicle delta-V [mph] given:
+    w1, w2 - vehicle weights [lb]
+    v1, v2 - striking vehicle speeds [mph]
+    rest - restitution
+    """
+    m1 = w1 / 32.2
+    m2 = w2 / 32.2
+    v1 = v1 * 1.46667
+    v2 = v2 * 1.46667
+    return (m2 / (m1 + m2) * (1 + rest) * (v1 - v2)) * 0.681818181818181
 
 def StruckDV(m1, m2, v1, v2, rest):
-    return m1 / (m1 + m2) * (1 + rest) * (v1 - v2)
+    """
+    calculate struck vehicle delta-V [mph] given:
+    w1, w2 - vehicle weights [lb]
+    v1, v2 - striking vehicle speeds [mph]
+    rest - restitution
+    """
+    m1 = w1 / 32.2
+    m2 = w2 / 32.2
+    v1 = v1 * 1.46667
+    v2 = v2 * 1.46667
+    return (m1 / (m1 + m2) * (1 + rest) * (v1 - v2)) * 0.681818181818181
 
 
 def EnergyDV(w1, w2, Edis, cor):
@@ -110,10 +130,12 @@ def BarrierCrushEnergy(W, s):
 
     return 0.5 * (W/32.2) * (s*1.46667)**2
 
-def cipriani(ClosingSpeed):
+def cipriani_rest(ClosingSpeed):
     """
     calculate restitution based on closing speed in mph
     based on regression performed by Cipriani
+    Cipriani, A., et al. (2002). "Low Speed Collinear Impact Severity: A Comparison Between Full Scale Testing and Analytical Prediction Tools with Restitution Analysis."
+    Society of Automotive Engineers 2002-01-0540.
     """
 
     A = 0.47477

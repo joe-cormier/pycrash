@@ -39,21 +39,21 @@ def plot_fdx(run_list, run_colors = False, fill_diff = False, show_legend = True
         fig.add_trace(go.Scatter(x = run.model.dx * -12, y = run.model.springF,
                                 mode = 'lines',
                                 name = f"{run.name} - Closing Speed: {run.veh1.vx_initial - run.veh2.vx_initial} mph",
-                                line = dict(color = color_list[i], width = 2, dash = line_type[i])
+                                line = dict(color = color_list[i], width = 2.5, dash = line_type[i])
                                 ))
 
     # fill spaces between first and last trace for each Vehicle
     if fill_diff:
         fig.add_trace(go.Scatter(x = plot_list[0].model.dx * -12, y = plot_list[0].model.springF,
                                 mode = 'lines',
-                                line = dict(color = color_list[0], width = 1, dash = line_type[0]),
+                                line = dict(color = color_list[0], width = 2.5, dash = line_type[0]),
                                 name = f"{run.name} - Closing Speed: {run.veh1.vx_initial - run.veh2.vx_initial} mph",
                                 fill = None,
                                 showlegend = False
                                 ))
         fig.add_trace(go.Scatter(x = plot_list[-1].model.dx * -12, y = plot_list[-1].model.springF,
                                 mode = 'lines',
-                                line = dict(color = color_list[-1], width = 1, dash = line_type[-1]),
+                                line = dict(color = color_list[-1], width = 2.5, dash = line_type[-1]),
                                 name = f"{run.name} - Closing Speed: {run.veh1.vx_initial - run.veh2.vx_initial} mph",
                                 fill = 'tonexty',
                                 showlegend = False
@@ -67,7 +67,7 @@ def plot_fdx(run_list, run_colors = False, fill_diff = False, show_legend = True
         title = f'Single Degree of Freedom Model - Mutual Force - Displacement',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Mutual Crush (in)'),
-        font = dict(family = 'Arial', size = 24, color = 'black'))
+        font = dict(family = 'Arial', size = 28, color = 'black'))
 
     fig.update_layout(showlegend = show_legend)
     fig.update_yaxes(showgrid = False, showline=True, linewidth=1, linecolor='black', ticks="outside",
@@ -112,19 +112,19 @@ def plot_vehicle_fdx(run_list, veh1_colors = False, veh2_colors = False, fill_di
             fig.add_trace(go.Scatter(x = run.model.veh1_dx * -12, y = run.model.springF,
                                     mode = 'lines',
                                     name = f"{run.name} - V1",
-                                    line = dict(color = veh1_color_list[i], width = 2, dash = line_type[i])
+                                    line = dict(color = veh1_color_list[i], width = 2.5, dash = line_type[i])
                                     ))
             if fill_diff:
                 fig.add_trace(go.Scatter(x = plot_list[0].model.veh1_dx * -12, y = plot_list[0].model.springF,
                                         mode = 'lines',
-                                        line = dict(color = veh1_color_list[0], width = 1, dash = line_type[0]),
+                                        line = dict(color = veh1_color_list[0], width = 2.5, dash = line_type[0]),
                                         name = f"{run.name} - V1",
                                         fill = None,
                                         showlegend = False
                                         ))
                 fig.add_trace(go.Scatter(x = plot_list[-1].model.veh1_dx * -12, y = plot_list[-1].model.springF,
                                         mode = 'lines',
-                                        line = dict(color = veh1_color_list[-1], width = 1, dash = line_type[-1]),
+                                        line = dict(color = veh1_color_list[-1], width = 2.5, dash = line_type[-1]),
                                         name = f"{run.name} - V1",
                                         fill = 'tonexty',
                                         showlegend = False
@@ -134,19 +134,19 @@ def plot_vehicle_fdx(run_list, veh1_colors = False, veh2_colors = False, fill_di
             fig.add_trace(go.Scatter(x = run.model.veh2_dx * -12, y = run.model.springF,
                                     mode = 'lines',
                                     name = f"{run.name} - V2",
-                                    line = dict(color = veh2_color_list[i], width = 2, dash = line_type[i])
+                                    line = dict(color = veh2_color_list[i], width = 2.5, dash = line_type[i])
                                     ))
             if fill_diff:
                 fig.add_trace(go.Scatter(x = plot_list[0].model.veh2_dx * -12, y = plot_list[0].model.springF,
                                         mode = 'lines',
-                                        line = dict(color = veh2_color_list[0], width = 1, dash = line_type[0]),
+                                        line = dict(color = veh2_color_list[0], width = 2.5, dash = line_type[0]),
                                         name = f"{run.name} - V2",
                                         fill = None,
                                         showlegend = False
                                         ))
                 fig.add_trace(go.Scatter(x = plot_list[-1].model.veh2_dx * -12, y = plot_list[-1].model.springF,
                                         mode = 'lines',
-                                        line = dict(color = veh2_color_list[-1], width = 1, dash = line_type[-1]),
+                                        line = dict(color = veh2_color_list[-1], width = 2.5, dash = line_type[-1]),
                                         name = f"{run.name} - V2",
                                         fill = 'tonexty',
                                         showlegend = False
@@ -155,12 +155,12 @@ def plot_vehicle_fdx(run_list, veh1_colors = False, veh2_colors = False, fill_di
     fig.update_layout(
         legend = dict(orientation = "v", yanchor = 'top', y = 1, xanchor = 'left', x = 0.01),
         autosize = False,
-        width = 1000,
-        height = 550,
+        width = 1600,
+        height = 900,
         title = f'Single Degree of Freedom Model - Vehicle Crush',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Crush (in)'),
-        font = dict(family = 'Arial', size = 14, color = 'black'))
+        font = dict(family = 'Arial', size = 28, color = 'black'))
 
     fig.update_layout(showlegend = show_legend)
     fig.update_yaxes(showgrid = False, showline=True, linewidth=1, linecolor='black', ticks="outside",
@@ -337,12 +337,12 @@ def plot_acceleration(run_list, veh1_colors = False, veh2_colors = False, fill_d
     fig.update_layout(
         legend = dict(orientation = "h", yanchor = 'top', y = 1.1, xanchor = 'left', x = 0.01),
         autosize = False,
-        width = 1000,
-        height = 550,
+        width = 1600,
+        height = 900,
         title = f'Single Degree of Freedom Model - Vehicle Acceleration',
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
-        font = dict(family = 'Arial', size = 14, color = 'black'))
+        font = dict(family = 'Arial', size = 28, color = 'black'))
 
     fig.update_layout(showlegend = show_legend)
     fig.update_yaxes(showgrid = False, showline=True, linewidth=1, linecolor='black', ticks="outside",

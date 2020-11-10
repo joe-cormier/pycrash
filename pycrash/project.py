@@ -176,11 +176,10 @@ def project_info(project_name):
     pulls project data to be used when reloading saved data
     TODO: may need to go up one directory to get to project/data/archive
     """
-    path_parent = os.path.dirname(os.getcwd())
     datafileName = ''.join([project_name, '.pkl'])
     out_names = []
     print("This saved project contains:")
-    with open(os.path.join(path_parent, project_name, "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(os.path.dirname(os.getcwd()), project_name, "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
     for key, value in ProjectData.items():
         print(f'Object of type "{value.type}" with name "{value.name}"')

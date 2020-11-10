@@ -13,19 +13,17 @@ from pycrash.functions.CFCFilter import cfcfilt
 
 
 test_num = 10146
-data_dir = 'C:\\Users\\jcormier.BIOCORE\\Desktop\\NHTSAData\\v10146ascii'
+data_dir = 'C:\\Users\\jcormier.BIOCORE\\Desktop\\NHTSAData\\v10146ascii'  # will be also used to save data
 format_file = f'v{test_num}.EV5'
 impact_velocity = 57.09  # test impact speed [kph]
 
-English_units = False
-if English_units:
+english_units = False
+if english_units:
     accel_convert = 32.2
     impact_velocity = impact_velocity * 0.911344  # convert kph to fps
 else:
     accel_convert = 9.81
     impact_velocity = impact_velocity * 0.277778  # convert kph to m/s
-
-
 
 # find lines with instrumentation info
 with open(os.path.join(data_dir, format_file)) as myFile:
@@ -89,8 +87,8 @@ for key, value in test_data.items():
             #df = pd.read_csv(os.path.join(data_dir, value["fileName"]), names=['time','data'], sep='\t')
             # load file with numpy
             data_array = np.loadtxt(os.path.join(data_dir, value["fileName"]), delimiter='\t')
-            all_time = list(data_array[:,0])
-            all_data = list(data_array[:,1])
+            all_time = list(data_array[:, 0])
+            all_data = list(data_array[:, 1])
             zero_time_index = all_time.index(0)
             time = all_time[zero_time_index:]
             data = all_data[zero_time_index:]
@@ -168,8 +166,7 @@ plt.show()
 
 
 # save
-report_dir = 'D:\\OneDrive\\BIOCORE Cases\\Majid\\JMC Work\\analysis'
-with open(os.path.join(report_dir, 'NHTSATestData.pkl'), 'wb') as handle:
+with open(os.path.join(data_dir, f'ProcessedNHTSATestData_{test_num}.pkl'), 'wb') as handle:
     pickle.dump(test_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 # %% Combined data by columns -
@@ -195,7 +192,7 @@ RowForcedf = pd.DataFrame.from_dict(rowForce)
 
 # merge force and displacement df
 Fdx = pd.merge(RowForcedf, AccelDF, how = 'left', on='time')
-Fdx.to_pickle(os.path.join(report_dir, 'Force_Displacement.pkl'))
+Fdx.to_pickle(os.path.join(data_dir, f'Force_DisplacementNHTSA_Test_{test_num}.pkl'))
 
 Fdx.plot(x='time', y = 'LEFT REAR SEAT CROSSMEMBER X', figsize=(12,7))
 plt.show()
