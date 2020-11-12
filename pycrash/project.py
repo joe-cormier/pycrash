@@ -76,8 +76,7 @@ class Project:
         # if it does, then a new project data file can be created at project/data/archive
         if not os.path.isdir(os.path.join(self.project_path, self.name)):
             os.chdir(self.project_path)
-            github_password = str(input("Enter Github password: "))
-            cookie_cutter_repo = f'https://joe-cormier:{github_password}@github.com/joe-cormier/pycrash.git'
+            cookie_cutter_repo = f'https://github.com/joe-cormier/pycrash.git'
             cookiecutter(cookie_cutter_repo, no_input=True, extra_context={'project_name': self.name})
         else:
             print(f'Project directory {os.path.join(self.project_path, self.name)} already exists')
@@ -174,7 +173,6 @@ class Project:
 def project_info(project_name):
     """
     pulls project data to be used when reloading saved data
-    TODO: may need to go up one directory to get to project/data/archive
     """
     datafileName = ''.join([project_name, '.pkl'])
     out_names = []
@@ -196,8 +194,6 @@ def load_project(project_name):
 
     Example prject with two vehicles:
     project, veh1, veh2 = load_project('ProjectName')
-
-    TODO: may need to go up one directory to get to project/data/archive
     """
     path_parent = os.path.dirname(os.getcwd())
     datafileName = ''.join([project_name, '.pkl'])

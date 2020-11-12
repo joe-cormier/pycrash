@@ -62,7 +62,7 @@ def StrikingDV(w1, w2, v1, v2, rest):
     v2 = v2 * 1.46667
     return (m2 / (m1 + m2) * (1 + rest) * (v1 - v2)) * 0.681818181818181
 
-def StruckDV(m1, m2, v1, v2, rest):
+def StruckDV(w1, w2, v1, v2, rest):
     """
     calculate struck vehicle delta-V [mph] given:
     w1, w2 - vehicle weights [lb]
