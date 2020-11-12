@@ -79,7 +79,7 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     dvn2 = -1 * pn / (veh2.weight/32.2)
     doz2 = (dn2 * pt - dt2 * pn) / veh2.izz
 
-    # tranform back to local vehicle coordinate system
+    # transform back to local vehicle coordinate system
     # delta-Vs
     dvx1 = (c1*dvt1 + s1*dvn1)
     dvy1 = (-1*s1*dvt1 + c1*dvn1)

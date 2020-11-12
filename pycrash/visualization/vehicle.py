@@ -7,8 +7,9 @@ import plotly.io as pio
 pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 
 # TODO: create input for figure size - loads from "defaults" folder?
-figure_size = (800,450)
-
+figure_size = (1900, 1200)
+font_size = 24
+tick_font_size = 22
 
 """
 generating impact point - striking vehicle
@@ -291,7 +292,7 @@ def plot_driver_inputs(self):
                             secondary_y = True)
 
     fig.update_layout(
-        legend = dict(orientation = "h", yanchor = 'top', y = 1.15, xanchor = 'left', x = 0.01),
+        legend = dict(orientation = "h", yanchor = 'top', y = 1.05, xanchor = 'left', x = 0.45),
         autosize=False,
         width=figure_size[0],
         height=figure_size[1],
@@ -299,13 +300,13 @@ def plot_driver_inputs(self):
         template = 'plotly_white',
         xaxis = dict(showgrid = False, title = 'Time (s)'),
         yaxis = dict(showgrid = False),
-        font = dict(family = 'Arial', size = 16, color = 'black'))
+        font = dict(family = 'Arial', size = font_size, color = 'black'))
 
     fig.update_yaxes(showgrid = False, title_text = 'Steer Angle (deg)', secondary_y = True)
     fig.update_yaxes(showgrid = False, title_text = 'Brake | Throttle (%)', secondary_y = False)
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.update_yaxes(autorange = 'reversed', showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
+    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
     fig.show()

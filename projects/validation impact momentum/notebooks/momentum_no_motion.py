@@ -1,3 +1,7 @@
+"""
+inputs for Brach paper validation - in progress
+"""
+
 import sys
 machine = 'ubuntu'
 if machine == 'ubuntu':

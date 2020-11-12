@@ -71,19 +71,19 @@ def plot_motion(veh, i, tire_path=True):
         if dx > dy:
             adj_x = aspect_ratio * dy / dx
             adj_y = 1
-            print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
+            #print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
             dx_min = round(dx_min * adj_x)
             dx_max = round(dx_max * adj_x)
-            print(f"dx_min = {dx_min}, dx_max = {dx_max}")
-            print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+            #print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+            #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
         else:
             adj_x = 1
             adj_y = (1 / aspect_ratio) * dx / dy
-            print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
+            #print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
             dy_min = round(dy_min * adj_y)
             dy_max = round(dy_max * adj_y)
-            print(f"dx_min = {dx_min}, dx_max = {dx_max}")
-            print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+            #print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+            #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
 
         fig.add_trace(go.Scatter(x = cgx, y = cgy,
                             mode = 'markers',
