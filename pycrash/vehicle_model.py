@@ -100,7 +100,7 @@ def vehicle_model(veh, sim_defaults):
             veh.model.Vy[i] = veh.model.Vy[i-1] + dt_motion * np.mean([veh.model.Ay[i-1], veh.model.Ay[i]])
 
         """
-        # move to separate calc
+
         """
         if veh.model.oz_rad[i] != 0:
             veh.model.turn_rX[i] = veh.model.Vy[i] / veh.model.oz_rad[i]    # turning radius in x direction
