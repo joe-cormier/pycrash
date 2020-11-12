@@ -17,7 +17,6 @@ pip install pycrash
 #### Impact Simulation
 ##### Single Degree of Freedom Model
   - basic 2D collision with user defined stiffness values and braking effects
-  - no pre and post vehicle motion model use for impact severity calculations
   - vehicle specific data is published for most vehicles by the [National Highway Traffic Safety Administration](https://www-nrd.nhtsa.dot.gov/database/veh/veh.htm)
   - use published stiffness data such as [Bonugli et al.](https://www.sae.org/publications/technical-papers/content/2017-01-1417/) or [Lee et al.](https://www.sae.org/publications/technical-papers/content/2014-01-0351/) as examples  
 ##### Impulse Momentum Planar Collision  
