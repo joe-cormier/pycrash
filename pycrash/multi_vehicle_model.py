@@ -36,10 +36,14 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
     last input for remainder of simulation
     kmutual must be defined by sideswipe simulations
     """
+    impact = False
+    impc_complete = False  # flag to allow impc model to run only once
+
+    print(f"Impact Type: {impact_type}")
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
 
-    impc_complete = False  # flag to allow impc model to run only once
+
 
     j = 0
 
@@ -68,6 +72,19 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             # get tire forces for t = 0
             veh = tire_forces(veh, i, sim_defaults)
 
+            # setting vehicle forces to zero if no impact
+            # impact may occur as a result of vehicle 2 motion in which case, the forces for t=i will be
+            # updated for each vehicle
+            if impact_type != 'SS':
+                veh.model.Fx[i] = 0
+                veh.model.Fy[i] = 0
+                veh.model.Mz[i] = 0
+            elif (impact_type == 'SS') & (impact == False):
+                veh.model.Fx[i] = 0
+                veh.model.Fy[i] = 0
+                veh.model.Mz[i] = 0
+
+            print(f"Model Fx: {veh.model.Fx[i]} at i: {i}")
             # local vehicle acceleration
             veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
                                                           veh.model.rf_fx[i],
@@ -140,15 +157,20 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
         if i == 0:
             crush_data = None
 
-        crush_data = detect(vehicle_list, i, crush_data)
-        # print(crush_data)
+        if impc_complete == False:
+            crush_data = detect(vehicle_list, i, crush_data)  # only neeed to detect impact if it hasn't occured yet in IMPC model
 
-        if (crush_data.impact[i]) & (impc_complete == False):
+        print(f"Impact Detect: {crush_data.impact[i]} at i: {i}")
+        if (crush_data.impact[i] == True) & (impc_complete == False):
+            impact = True
             print(f'Impact detected at t = {veh.model.t[i]} seconds')
             print(f'i: {i}')
             if impact_type == 'IMPC':
                 vehicle_list, impc_energy = impc(i, crush_data.impactp_veh2x[i], crush_data.impactp_veh2y[i], vehicle_list=vehicle_list,
                                                  sim_defaults=sim_defaults)  # run impc model - create inputs using vehicle class
+                veh.model.Fx[i] = 0
+                veh.model.Fy[i] = 0
+                veh.model.Mz[i] = 0
                 impc_complete = True  # <- only run IMPC model once
             elif impact_type == 'SS':
                 vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
@@ -157,10 +179,6 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 veh.model.Fx[i] = 0
                 veh.model.Fy[i] = 0
                 veh.model.Mz[i] = 0
-        else:
-            if impact_type == 'SS':
-                veh.model.Fx[i] = 0
-                veh.model.Fy[i] = 0
-                veh.model.Mz[i] = 0
+
 
     return vehicle_list, crush_data
