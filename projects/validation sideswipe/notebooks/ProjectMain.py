@@ -2,11 +2,6 @@
 import os
 path_parent = os.path.dirname(os.getcwd())
 
-import sys
-sys.path.append("D:\\OneDrive\\pycrash")
-#sys.path.append('/home/joemcormier/pycrash')
-#sys.path.insert(0,'/home/jmc/Documents/pycrash')
-
 import pycrash
 from pycrash.project import Project, project_info, load_project
 from pycrash.vehicle import Vehicle

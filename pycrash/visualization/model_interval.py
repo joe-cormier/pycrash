@@ -189,11 +189,11 @@ def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
             title = 'Vehicle Motion in Global Reference Frame',
             template = 'plotly_white',
             xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [dx_min, dx_max]),
-            yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', range = [dy_max, dy_min]),
+            yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', scaleanchor = 'x', scaleratio = 1/aspect_ratio),
             font = dict(family = 'Arial', size = font_size, color = 'black'))
 
         fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                          tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
-        fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+        fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                          tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
         fig.show()

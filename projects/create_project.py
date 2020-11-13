@@ -13,29 +13,22 @@ Directory Structure:
     |--visualization    <- Pycrash plots saved here
 """
 
-import os
-# current_dir = os.getcwd()
 
-import sys
-
-# sys.path.append("/home/jmc/Documents/pycrash")
-#sys.path.append("/home/joemcormier/pycrash/")
-sys.path.append("D:\\OneDrive\\pycrash")
-
-
-print(os.getcwd())
 from pycrash.project import Project
 
-print(os.getcwd())
+projects_dir = "C:\\directory where project will be created"
 
-project_name = 'pycrash demo'
+
+"""
+Change inputs below for project info:
+"""
+
+project_name = 'pycrash project'
 project_inputs = {'name': project_name,
-                  'pdesc': 'demonstrate pycrash functionality',
-                  'project_path': "D:\\OneDrive\\pycrash\\projects",
+                  'pdesc': 'project description',
+                  'project_path': projects_dir,
                   'sim_type': 'MV',
                   'impact_type': 'SDOF',
-                  'note': 'demonstrate pycrash functions'}
+                  'note': 'detail about project'}
 
 proj = Project(project_inputs)
-
-# TODO: create script to ask for user inputs

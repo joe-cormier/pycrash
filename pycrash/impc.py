@@ -2,7 +2,7 @@ import numpy as np
 
 def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
     cor = sim_inputs['cor']
-    cof = sim_inputs['cof']
+    cof = abs(sim_inputs['cof'])
     impact_norm_deg = sim_inputs['impact_norm_deg']
     # heading angle [rad] of tangent impact direction in global frame
     theta_c = (veh1.head_angle * np.pi / 180) + (impact_norm_deg * np.pi / 180) + (90 / 180 * np.pi)
@@ -47,7 +47,7 @@ def impc_calcs(veh1, veh2, poi_veh2x, poi_veh2y, sim_inputs):
 
     p_ratio = abs(pt/pn)   # equation 10
     alpha = 1
-
+    print(f'p-ratio: {p_ratio:0.2f}, cof: {cof}')
     if p_ratio > cof:
             print('Sliding Condition')
             pn_s = (1+cor) * vcn21 / (A22 - alpha * cof * A12)

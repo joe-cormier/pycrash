@@ -1,17 +1,7 @@
-# %% Initilizing
+"""
+Sideswipe model in progress
+"""
 import os
-path_parent = os.path.dirname(os.getcwd())
-os.chdir(path_parent)
-validation_dir = os.path.dirname(os.getcwd())
-os.chdir(validation_dir)
-projects_dir = os.path.dirname(os.getcwd())
-os.chdir(projects_dir)
-#pycrash_dir = os.path.dirname(os.getcwd())
-#os.chdir(pycrash_dir)
-os.getcwd()
-# %% allow reloading of modules
-%load_ext autoreload
-%autoreload 2
 # %% Import Modules
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import text
@@ -26,7 +16,6 @@ import numpy as np
 import pickle
 import json
 
-# %% import pycrash
 
 import pandas as pd
 import numpy as np
@@ -40,13 +29,6 @@ from IPython import get_ipython
 from IPython.display import display
 get_ipython().run_line_magic('matplotlib', 'inline')
 
-# %% Create Project
-# projects are used to store basic information about the project
-# - name, type of impact, type of simulation to be run, description, notes
-# the project will be used to save all associated aspects, vehicles, simulations etc.
-project_inputs = {'name':'Practice', 'pdesc':'single motion', 'sim_type':'SV', 'impact_type':'none',
-                  'note':'single vehicle motion demo'}
-proj = Project(project_inputs)
 
 # %% generate dataframe with driver inputs for vehicle 1 (striking vehicle)
 # note - think of a dataframe as a basic excel sheet (header row and data columns)
