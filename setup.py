@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pycrash",
-    version="0.0.14",
+    version="0.0.15",
     author="Joe Cormier",
     author_email="joemcormier@outlook.com",
     description="software tool for simulating vehicle motion and impacts based on \
