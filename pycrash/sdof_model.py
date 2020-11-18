@@ -167,8 +167,6 @@ class SDOF_Model():
             if self.ktype == "constantK":
                 self.model['veh2_dx'] = [row * self.k / self.veh2.k for row in self.model.dx]
 
-        # TODO: create attribute for vehicle inputs for saving / plotting run
-
     def input_dict(self):
         """
         return a dictionary to save / modify inputs
