@@ -163,9 +163,9 @@ def initial_position(vehicle_list):
         yaxis=dict(showgrid=True, title='Rightward (ft)'),
         font=dict(family='Arial', size=22, color='black'))
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", range=[-20, 20],
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", range=[-20, 20], constrain="domain",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside", range=[-20 * aspect_ratio, 20 * aspect_ratio],
+    fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside", scaleanchor = "x", scaleratio = 1,
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
 
     fig.show()
