@@ -5,7 +5,7 @@ numpy
 scipy
 tabulate
 cookiecutter
-matplotlib # temporary - will change all to plotly
+matplotlib
 wheel
 twine
 plotly
