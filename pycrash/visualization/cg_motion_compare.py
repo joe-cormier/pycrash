@@ -17,7 +17,7 @@ def cg_motion(model1, model2, name1, name2):
     dx = dx_max - dx_min
     dy = dy_max - dy_min
 
-    if dx > dy:
+    if dx < dy:
         adj_x = aspect_ratio * dy / dx
         adj_y = 1
         #print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")

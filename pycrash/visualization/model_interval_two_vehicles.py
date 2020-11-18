@@ -4,7 +4,8 @@ plotting functions for vehicle model data
 import plotly.graph_objects as go
 import numpy as np
 from plotly.subplots import make_subplots
-
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" folder?
 width = 1600

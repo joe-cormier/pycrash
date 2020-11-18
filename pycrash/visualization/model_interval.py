@@ -4,15 +4,16 @@ plotting functions for vehicle model data
 import plotly.graph_objects as go
 import numpy as np
 from plotly.subplots import make_subplots
-
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" folder?
-width = 1600
+font_size = 24
+tick_font_size = 24
+width = 1900
 aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
-font_size = 24
-tick_font_size = 22
 
 def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
         counter = np.arange(0, len(veh.p_gx.b_lfc), round(len(veh.p_gx.b_lfc)/num_itter))
@@ -164,7 +165,7 @@ def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
         dx = dx_max - dx_min
         dy = dy_max - dy_min
 
-        if dx > dy:
+        if dx < dy:
             adj_x = aspect_ratio * dy / dx
             adj_y = 1
             #print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
@@ -174,12 +175,9 @@ def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
             #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
         else:
             adj_x = 1
-            adj_y = (1 / aspect_ratio) * dx / dy
-            #print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
-            dy_min = round(dy_min * adj_y)
-            dy_max = round(dy_max * adj_y)
-            #print(f"dx_min = {dx_min}, dx_max = {dx_max}")
-            #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+            adj_y =  aspect_ratio * dx
+            dy_min = round(np.mean([dy_min, dy_max]) - adj_y / 2)
+            dy_max = round(np.mean([dy_min, dy_max]) + adj_y / 2)
 
         fig.update_layout(
             showlegend = False,
@@ -188,8 +186,8 @@ def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
             height = width / aspect_ratio,
             title = 'Vehicle Motion in Global Reference Frame',
             template = 'plotly_white',
-            xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [dx_min, dx_max]),
-            yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', scaleanchor = 'x', scaleratio = 1/aspect_ratio),
+            xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range=[dx_min, dx_max], constrain="domain"),
+            yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', scaleanchor = "x", scaleratio = 1),
             font = dict(family = 'Arial', size = font_size, color = 'black'))
 
         fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
