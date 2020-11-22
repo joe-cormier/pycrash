@@ -1,5 +1,5 @@
-Pycrash Project Directory
+Single Degree of Freedom Model
 =========================
 
--  This directory structure and default files provides default data to pycrash for functionality
--  Notebooks and scripts will be updated to reflect changes to Pycrash functionality
+-  The data and notebooks provided here give an example of how Pycrash can be used to simulate a collision under a SDOF model
+-  The Pycrash Demo notebooks shows how to analyze load cell barrier data used in the example
