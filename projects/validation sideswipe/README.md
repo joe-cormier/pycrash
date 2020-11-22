@@ -1,5 +1,4 @@
-Pycrash Project Directory
+Pycrash sideswipe simulation
 =========================
 
--  This directory structure and default files provides default data to pycrash for functionality
--  Notebooks and scripts will be updated to reflect changes to Pycrash functionality
+-  This functionality is under development
