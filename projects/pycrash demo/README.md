@@ -1,5 +1,5 @@
-Pycrash Project Directory
+Pycrash Demo
 =========================
 
--  Place your Jupyter notebooks and python scirpts in the "notebooks" directory
--  Pycrash will use the directory structure created here to find and save files associated with the analyses
+-  The notebooks contained here provide an overview of the basic functionality of Pycrash and how to perform analyses of load cell barrier data
+-  Standard reconstruction equations and methods are also shown here.  
