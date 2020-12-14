@@ -11,6 +11,7 @@ from copy import deepcopy
 from .multi_vehicle_model import multi_vehicle_model
 from pycrash.model_calcs.position_data import position_data_motion, position_data_static
 from .visualization.vehicle import plot_driver_inputs
+from .visualization.model_interval_two_vehicles import plot_motion_interval
 from .visualization.initial_positions import initial_position
 from .model_calcs.collision_plane import define_impact_plane, define_impact_edge
 import pandas as pd
@@ -214,70 +215,5 @@ class KinematicsTwo():
         self.veh1 = position_data_motion(self.veh1, striking=True)
         self.veh2 = position_data_motion(self.veh2)
 
-    def draw_simulation(self, i, tire_path=True):
-        # create point data in vehicle and global frame
-        """
-        Plot Vehicle in Global reference frame
-        """
-        fig = plt.figure(figsize=figure_size)
-
-        for veh in [self.veh1, self.veh2]:
-            bdy_x = (veh.p_gx.b_lfc[i], veh.p_gx.b_rfc[i], veh.p_gx.b_rrc[i], veh.p_gx.b_lrc[i], veh.p_gx.b_lfc[i])
-            bdy_y = (veh.p_gy.b_lfc[i], veh.p_gy.b_rfc[i], veh.p_gy.b_rrc[i], veh.p_gy.b_lrc[i], veh.p_gy.b_lfc[i])
-
-            lfw_x = (veh.p_gx.lfw_a[i], veh.p_gx.lfw_b[i], veh.p_gx.lfw_c[i], veh.p_gx.lfw_d[i], veh.p_gx.lfw_a[i])
-            lfw_y = (veh.p_gy.lfw_a[i], veh.p_gy.lfw_b[i], veh.p_gy.lfw_c[i], veh.p_gy.lfw_d[i], veh.p_gy.lfw_a[i])
-
-            rfw_x = (veh.p_gx.rfw_a[i], veh.p_gx.rfw_b[i], veh.p_gx.rfw_c[i], veh.p_gx.rfw_d[i], veh.p_gx.rfw_a[i])
-            rfw_y = (veh.p_gy.rfw_a[i], veh.p_gy.rfw_b[i], veh.p_gy.rfw_c[i], veh.p_gy.rfw_d[i], veh.p_gy.rfw_a[i])
-
-            rrw_x = (veh.p_gx.rrw_a[i], veh.p_gx.rrw_b[i], veh.p_gx.rrw_c[i], veh.p_gx.rrw_d[i], veh.p_gx.rrw_a[i])
-            rrw_y = (veh.p_gy.rrw_a[i], veh.p_gy.rrw_b[i], veh.p_gy.rrw_c[i], veh.p_gy.rrw_d[i], veh.p_gy.rrw_a[i])
-
-            lrw_x = (veh.p_gx.lrw_a[i], veh.p_gx.lrw_b[i], veh.p_gx.lrw_c[i], veh.p_gx.lrw_d[i], veh.p_gx.lrw_a[i])
-            lrw_y = (veh.p_gy.lrw_a[i], veh.p_gy.lrw_b[i], veh.p_gy.lrw_c[i], veh.p_gy.lrw_d[i], veh.p_gy.lrw_a[i])
-
-            plt.plot(bdy_x, bdy_y, 'k')
-            plt.scatter(veh.p_gx.lfw[i], veh.p_gy.lfw[i], c='b')  # left front wheel center
-            plt.plot(lfw_x, lfw_y, 'b')
-            plt.scatter(veh.p_gx.rfw[i], veh.p_gy.rfw[i], c='g')  # right front wheel center
-            plt.plot(rfw_x, rfw_y, 'g')
-            plt.scatter(veh.p_gx.rrw[i], veh.p_gy.rrw[i], c='m')  # right rear wheel center
-            plt.plot(rrw_x, rrw_y, 'm')
-            plt.scatter(veh.p_gx.lrw[i], veh.p_gy.lrw[i], c='orange')  # left rear wheel center
-            plt.plot(lrw_x, lrw_y, 'orange')
-            plt.scatter(veh.p_gx.cg[i], veh.p_gy.cg[i], s=100, c='k')  # vehicle CG
-
-            if (veh.striking):  # striking vehicle
-                plt.scatter(veh.p_gx.pimpact_x[i], veh.p_gy.pimpact_y[i], s=100, c='r')  # impact point
-            # velocity vector
-            plt.arrow(veh.p_gx.cg[i], veh.p_gy.cg[i], veh.p_gx.vel_v[i] - veh.p_gx.cg[i], veh.p_gy.vel_v[i] - veh.p_gy.cg[i], head_width=1, head_length=1, fc='r', ec='r')
-            # vehicle axes
-            plt.arrow(veh.p_gx.cg[i], veh.p_gy.cg[i], veh.p_gx.xaxis[i] - veh.p_gx.cg[i], veh.p_gy.xaxis[i] - veh.p_gy.cg[i], head_width=.5, head_length=0.5, fc='k', ec='k')
-            plt.arrow(veh.p_gx.cg[i], veh.p_gy.cg[i], veh.p_gx.yaxis[i] - veh.p_gx.cg[i], veh.p_gy.yaxis[i] - veh.p_gy.cg[i], head_width=.5, head_length=0.5, fc='b', ec='b')
-
-            # for loop up to i
-            if (tire_path):
-                for i in range(0, i):
-                    if veh.p_gx.loc[i, 'lf_lock'] == 0:
-                        plt.scatter(veh.p_gx.loc[i, 'lfw'], veh.p_gy.loc[i, 'lfw'], c='b', s=1, marker='.')
-                    elif veh.p_gx.loc[i, 'lf_lock'] == 1:
-                        plt.scatter(veh.p_gx.loc[i, 'lfw'], veh.p_gy.loc[i, 'lfw'], c='b', s=4, marker='s')
-
-                    if veh.p_gx.loc[i, 'rf_lock'] == 0:
-                        plt.scatter(veh.p_gx.loc[i, 'rfw'], veh.p_gy.loc[i, 'rfw'], c='g', s=1, marker='.')
-                    elif veh.p_gx.loc[i, 'rf_lock'] == 1:
-                        plt.scatter(veh.p_gx.loc[i, 'rfw'], veh.p_gy.loc[i, 'rfw'], c='g', s=4, marker='s')
-
-                    if veh.p_gx.loc[i, 'rr_lock'] == 0:
-                        plt.scatter(veh.p_gx.loc[i, 'rrw'], veh.p_gy.loc[i, 'rrw'], c='m', s=1, marker='.')
-                    elif veh.p_gx.loc[i, 'rr_lock'] == 1:
-                        plt.scatter(veh.p_gx.loc[i, 'rrw'], veh.p_gy.loc[i, 'rrw'], c='m', s=4, marker='s')
-
-                    if veh.p_gx.loc[i, 'lr_lock'] == 0:
-                        plt.scatter(veh.p_gx.loc[i, 'lrw'], veh.p_gy.loc[i, 'lrw'], c='orange', s=1, marker='.')
-                    elif veh.p_gx.loc[i, 'lr_lock'] == 1:
-                        plt.scatter(veh.p_gx.loc[i, 'lrw'], veh.p_gy.loc[i, 'lrw'], c='orange', s=4, marker='s')
-
-        plt.gca().invert_yaxis()
-        plt.show()
+    def draw_simulation(self, n_intervals, tire_path=True, show_vector=False):
+        plot_motion_interval([self.veh1, self.veh2], n_intervals, tire_path=True, show_vector=False)
