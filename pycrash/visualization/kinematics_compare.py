@@ -10,12 +10,12 @@ pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" folder?
 aspect_ratio = 16 / 9
-font_size = 24
-tick_font_size = 22
+font_size = 22
+tick_font_size = 18
 line_width = 2.5
 figure_size_wide = (1600, 1200)
-figure_size_tall = (1600, 1600)
-
+figure_size_tall = (1200, 1200)
+y_titlefontSize = 18  # <- font size for y axis plots with 4 rows
 
 def compare_kinematics(model1, model2, name1, name2):
     fig = make_subplots(rows=2, cols=1,
@@ -210,17 +210,83 @@ def compare_kinematics(model1, model2, name1, name2):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(showgrid=False, title_text='LF - Rightward Force (lb)', row=1, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RF - Rightward Force (lb)', row=2, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RR - Rightward Force (lb)', row=3, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='LR - Rightward Force (lb)', row=4, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.show()
+
+    """
+    forward tire forces
+    """
+    fig = make_subplots(rows=4, cols=1,
+                        shared_xaxes=True,
+                        vertical_spacing=0.05)
+
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.lf_fx,
+                             mode='lines',
+                             name=f'LF - {name1}',
+                             line=dict(color='rgb(0, 0, 255)', width=line_width)),
+                  row=1, col=1)
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.rf_fx,
+                             mode='lines',
+                             name=f'RF - {name1}',
+                             line=dict(color='rgb(0, 255, 0)', width=line_width)),
+                  row=2, col=1)
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.rr_fx,
+                             mode='lines',
+                             name=f'RR - {name1}',
+                             line=dict(color='rgb(153, 0, 204)', width=line_width)),
+                  row=3, col=1)
+
+    fig.add_trace(go.Scatter(x=model1.t, y=model1.lr_fx,
+                             mode='lines',
+                             name=f'LR - {name1}',
+                             line=dict(color='rgb(255, 102, 0)', width=line_width)),
+                  row=4, col=1)
+    fig.update_layout(
+        legend=dict(orientation="v", yanchor='top', y=1.1, xanchor='left', x=1.01),
+        autosize=False,
+        width=figure_size_tall[0],
+        height=figure_size_tall[1],
+        title='Tire Forward Forces',
+        template='plotly_white',
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=False),
+        font=dict(family='Arial', size=font_size, color='black'))
+
+    fig.update_xaxes(showgrid=False, title_text='Time (s)', row=4, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=1, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=2, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_xaxes(showgrid=False, title_text='', row=3, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+    fig.update_yaxes(showgrid=False, title_text='LF - Rightward Force (lb)', row=1, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
+    fig.update_yaxes(showgrid=False, title_text='RF - Rightward Force (lb)', row=2, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
+    fig.update_yaxes(showgrid=False, title_text='RR - Rightward Force (lb)', row=3, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
+    fig.update_yaxes(showgrid=False, title_text='LR - Rightward Force (lb)', row=4, col=1,
+                     showline=True, linewidth=1, linecolor='black', ticks="outside",
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
+    fig.show()
+
 
     fig = make_subplots(rows=4, cols=1,
                         shared_xaxes=True,
@@ -295,20 +361,22 @@ def compare_kinematics(model1, model2, name1, name2):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(showgrid=False, title_text='LF - Slip Angle (deg)', row=1, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RF - Slip Angle (deg)', row=2, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RR - Slip Angle (deg)', row=3, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='LR - Slip Angle (deg)', row=4, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.show()
 
+    """
     # acceleration
-    """"
+    """
+
     fig = make_subplots(rows=2, cols=1,
                         shared_xaxes=True,
                         vertical_spacing=0.07)
@@ -317,35 +385,35 @@ def compare_kinematics(model1, model2, name1, name2):
     fig.add_trace(go.Scatter(x=model1.t, y=model1.au / 32.2,
                              mode='lines',
                              name=f'{name1} - ax',
-                             line=dict(color='rgb(0, 255, 0)', width=2)),
+                             line=dict(color='rgb(0, 255, 0)', width=line_width)),
                   row=1, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.ax / 32.2,
                              mode='lines',
                              name=f'{name2} - ax',
-                             line=dict(color='rgb(0, 255, 0)', width=2, dash='dash')),
+                             line=dict(color='rgb(0, 255, 0)', width=line_width, dash='dash')),
                   row=1, col=1)
 
     fig.add_trace(go.Scatter(x=model1.t, y=model1.av / 32.2,
                              mode='lines',
                              name=f'{name1} - ay',
-                             line=dict(color='rgb(0, 0, 255)', width=2)),
+                             line=dict(color='rgb(0, 0, 255)', width=line_width)),
                   row=2, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.ay / 32.2,
                              mode='lines',
                              name=f'{name2} - ay',
-                             line=dict(color='rgb(0, 0, 255)', width=2, dash='dash')),
+                             line=dict(color='rgb(0, 0, 255)', width=line_width, dash='dash')),
                   row=2, col=1)
 
     fig.update_layout(
-        legend=dict(orientation="h", yanchor='top', y=1, xanchor='left', x=0.01),
+        legend=dict(orientation="h", yanchor='top', y=1.05, xanchor='left', x=0.1),
         autosize=False,
-        width=900,
-        height=900,
+        width=figure_size_tall[0],
+        height=figure_size_tall[1],
         title='Acceleration',
         template='plotly_white',
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=False),
-        font=dict(family='Arial', size=14, color='black'))
+        font=dict(family='Arial', size=font_size, color='black'))
 
     fig.update_xaxes(showgrid = False, title_text = '', row = 1, col = 1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
@@ -360,7 +428,7 @@ def compare_kinematics(model1, model2, name1, name2):
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.show()
-    """
+
 
     """
     vertical tire forces
@@ -411,7 +479,7 @@ def compare_kinematics(model1, model2, name1, name2):
         title='Vertical Tire Forces',
         template='plotly_white',
         xaxis=dict(showgrid=False),
-        yaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=False, titlefont=dict(size=14)),
         font=dict(family='Arial', size=font_size, color='black'))
 
     fig.update_xaxes(showgrid=False, title_text='Time (s)', row=4, col=1,
@@ -428,14 +496,14 @@ def compare_kinematics(model1, model2, name1, name2):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(showgrid=False, title_text='LF - Force (lb)', row=1, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RF - Force (lb)', row=2, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='RR - Force (lb)', row=3, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.update_yaxes(showgrid=False, title_text='LR - Force (lb)', row=4, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
-                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
+                     tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.show()

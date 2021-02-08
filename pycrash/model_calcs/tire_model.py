@@ -183,10 +183,10 @@ def tire_forces(veh, i, sim_defaults):
 
     # Calculate vehicle forces in vehicle frame
     # Left Front Tire #
-    veh.model.lf_fx[i] = lf_lonf * math.cos(veh.model.delta_rad[i]) - sign(lf_vx) * np.abs(lf_latf * math.sin(veh.model.delta_rad[i]))
+    veh.model.lf_fx[i] = lf_lonf * math.cos(veh.model.delta_rad[i]) - lf_latf * math.sin(veh.model.delta_rad[i])
     veh.model.lf_fy[i] = lf_lonf * math.sin(veh.model.delta_rad[i]) + lf_latf * math.cos(veh.model.delta_rad[i])
     # Right Front Tire #
-    veh.model.rf_fx[i] = rf_lonf * math.cos(veh.model.delta_rad[i]) - sign(rf_vx) * np.abs(rf_latf * math.sin(veh.model.delta_rad[i]))
+    veh.model.rf_fx[i] = rf_lonf * math.cos(veh.model.delta_rad[i]) - rf_latf * math.sin(veh.model.delta_rad[i])
     veh.model.rf_fy[i] = rf_lonf * math.sin(veh.model.delta_rad[i]) + rf_latf * math.cos(veh.model.delta_rad[i])
     # Right Rear Tire #
     veh.model.rr_fx[i] = rr_lonf

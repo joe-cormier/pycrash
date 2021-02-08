@@ -53,7 +53,8 @@ class KinematicsTwo():
         self.veh2 = deepcopy(veh2)
 
         if (impact_type not in ["SS", "IMPC"]):
-            print("Not a valid impact type, choose SS, IMPC or SDOF")
+            # TODO: add ability to use force-displacement data
+            print("Not a valid impact type, choose SS, IMPC")
             impact_type = input("Enter an impact type of SS or IMPC: ")
 
             if (impact_type not in ["SS", "IMPC"]):
@@ -88,8 +89,8 @@ class KinematicsTwo():
             self.sim_defaults = {'dt_motion': 0.01,
                                  'mu_max': 0.76,
                                  'alpha_max': 0.174533,  # 10 degrees
-                                 'vehicle_mu': 0.3,
-                                 'cor': 0.2}
+                                 'vehicle_mu': 0.6,
+                                 'cor': 0.1}
 
         # check for driver inputs - Vehicle 1
         if isinstance(self.veh1.driver_input, pd.DataFrame):
@@ -203,7 +204,7 @@ class KinematicsTwo():
         [self.veh1, self.veh2] = position_data_static([self.veh1, self.veh2])
         initial_position(self.veh1, self.veh2, i)
 
-    # run vehicle models iteratively to evaluate for impact
+    # run vehicle models
     def simulate(self, ignore_driver=False):
         if self.impact_type == 'SS':
             [self.veh1, self.veh2], self.crush_data = multi_vehicle_model(vehicle_list=[self.veh1, self.veh2], sim_defaults=self.sim_defaults,
@@ -211,7 +212,7 @@ class KinematicsTwo():
         else:
             [self.veh1, self.veh2], self.crush_data = multi_vehicle_model(vehicle_list=[self.veh1, self.veh2], sim_defaults=self.sim_defaults,
                                                                           impact_type=self.impact_type, ignore_driver=ignore_driver)
-
+        # get position data
         self.veh1 = position_data_motion(self.veh1, striking=True)
         self.veh2 = position_data_motion(self.veh2)
 

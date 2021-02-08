@@ -202,9 +202,9 @@ class Vehicle:
             t = [float(i) for i in t]
             df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
             df['t'] = t
-            inputdf['input_t'] = [round(num, 3) for num in time]
+            inputdf['input_t'] = [float(num) for num in time]
             df.t = df.t.round(3).astype(float)
-            df = pd.merge(df, inputdf, how = 'left', left_on = 't', right_on = 'input_t') # merge input data with time data at specified time step
+            df = pd.merge(df, inputdf, how = 'left', left_on = 't', right_on = 'input_t')  # merge input data with time data at specified time step
             df = df.interpolate(method = 'linear', axis = 0) # interpolate NaN values left after merging
             df.drop(columns = ['input_t', 't'], inplace = True)  # drop input time column
             df['t'] = t # reset time column due to interpolating

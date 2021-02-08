@@ -1,5 +1,5 @@
 """
-vehicle motion for mutliple vehicles
+vehicle motion for multiple vehicles
 """
 from .model_calcs.sideswipe import ss
 from .model_calcs.tire_model import tire_forces
@@ -157,8 +157,12 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
         if i == 0:
             crush_data = None
 
+        """
+        for multiple crashes, vehicles need to seperate before second impact is allowed
+        """
+
         if impc_complete == False:
-            crush_data = detect(vehicle_list, i, crush_data)  # only neeed to detect impact if it hasn't occured yet in IMPC model
+            crush_data = detect(vehicle_list, i, crush_data)  # only need to detect impact if it hasn't occured yet in IMPC model
 
         print(f"Impact Detect: {crush_data.impact[i]} at i: {i}")
         if (crush_data.impact[i] == True) & (impc_complete == False):
