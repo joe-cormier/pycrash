@@ -11,8 +11,7 @@ pip install pycrash
 
 #### Planar Vehicle Motion
 1. Single vehicle motion based on driver inputs (brake, throttle, steer)
-2. Multi-vehicle motion with impact detection
-  - currently two vehicles, impact response based on two different approaches.
+2. Multi-vehicle motion and multiple impacts per vehicle
 
 #### Impact Simulation
 ##### Single Degree of Freedom Model
