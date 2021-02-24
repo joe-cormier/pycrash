@@ -1,65 +1,38 @@
-"""
-requires initial position and kinematics of two vehicles
-make class that can call this in a loop.
-"""
-
-
 import pandas as pd
 import math
 import os
 
-def impc(i, poi_veh2x, poi_veh2y, vehicle_list, sim_defaults):
-    cor = sim_defaults['cor']
-    cof = sim_defaults['vehicle_mu']
-    dt_motion = sim_defaults['dt_motion']
-    veh1 = vehicle_list[0]
-    veh2 = vehicle_list[1]
+def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list, strikingVehicle, struckVehicle, impc_inputs, dt_motion):
+    cor = impc_inputs['cor']
+    cof = impc_inputs['vehicle_mu']
+    veh1 = vehicle_list[strikingVehicle]
+    veh2 = vehicle_list[struckVehicle]
+    print('<--- IMPC Model --->')
+    print(f"IMPC for impact: {impactNum} COR: {cor}, COF: {cof}")
+    print(f"Striking vehicle: {veh1.name}")
+    print(f"Struck vehicle: {veh2.name}")
+   # heading angle of tangent impact direction in global frame
+    theta_c = veh1.model.theta_rad[i] + (impPointEdge[impactNum]['impact_points'][2] * math.pi / 180) + (90 / 180 * math.pi)
+    print(f'theta c (deg): {theta_c*180/3.14159:0.1f}')
 
-    """
-    theta1 = veh1.model.theta_rad[i]   # vehicle 1 heading angle
-    dx1 = veh1.model.Dx[i]
-    dy1 = veh1.model.Dy[i]
-    w1 = veh1.weight
-    m1 = w1/32.2
-    i1 = veh1.izz
-    vx1 = veh1.model.Vx[i]
-    vy1 = veh1.model.Vy[i]
-    oz_rad1 = veh1.model.oz_rad[i]
-
-    # vehicle 2
-    theta2 = veh2.theta_rad[i] # vehicle 2 heading angle
-    dx2 = veh2.model.Dx[i]
-    dy2 = veh2.model.Dy[i]
-    w2 = veh2.weight
-    m2 = w2/32.2
-    i2 = veh2.izz
-    vx2 = veh2.model.Vx[i]
-    vy2 = veh2.model.Vy[i]
-    oz_rad2 = veh2.model.oz_rad[i]
-    """
-    # heading angle of normal impact direction in global frame
-    theta_c = veh1.model.theta_rad[i] + veh1.impact_norm_rad + (90 / 180 * 3.14159)
-    print(f'theta c (deg): {theta_c*180/3.14159}')
     # carpenter + welcher model
-
     # get cosine / sine results for coordinate transformation to the normal - tangent axis
-
     c1 = math.cos(veh1.model.theta_rad[i] - theta_c)
     s1 = math.sin(veh1.model.theta_rad[i] - theta_c)
     c2 = math.cos(veh2.model.theta_rad[i] - theta_c)
     s2 = math.sin(veh2.model.theta_rad[i] - theta_c)
 
-    print(f'dx1: {veh1.pimpact_x}, dy1: {veh1.pimpact_y}')
+    print(f"dx1: {impPointEdge[impactNum]['impact_points'][0]}, dy1: {impPointEdge[impactNum]['impact_points'][1]}")
     print(f'dx2: {poi_veh2x}, dy2: {poi_veh2y}')
 
     # translate distances to n-t frame
-    dt1 = c1*(veh1.pimpact_x) - s1*(veh1.pimpact_y)
-    dn1 = s1*(veh1.pimpact_x) + c1*(veh1.pimpact_y)
+    dt1 = c1*(impPointEdge[impactNum]['impact_points'][0]) - s1*(impPointEdge[impactNum]['impact_points'][1])
+    dn1 = s1*(impPointEdge[impactNum]['impact_points'][0]) + c1*(impPointEdge[impactNum]['impact_points'][1])
     dt2 = c2*(poi_veh2x) - s2*(poi_veh2y)
     dn2 = s2*(poi_veh2x) + c2*(poi_veh2y)
 
-    print(f'Vx1: {veh1.model.vx[i]}, Vy1: {veh1.model.vy[i]}')
-    print(f'Vx2: {veh2.model.vx[i]}, Vy2: {veh2.model.vy[i]}')
+    print(f'Vx1: {veh1.model.vx[i]:0.2f} fps, Vy1: {veh1.model.vy[i]:0.2f} fps')
+    print(f'Vx2: {veh2.model.vx[i]:0.2f} fps, Vy2: {veh2.model.vy[i]:0.2f} fps')
 
     # translate velocities to n-t frame
     vt1 = c1*veh1.model.vx[i] - s1*veh1.model.vy[i]
@@ -183,32 +156,32 @@ def impc(i, poi_veh2x, poi_veh2y, vehicle_list, sim_defaults):
 
     # assign vehicle kinematics to results from IMPC
     # ---- Vehicle 1 ---------- #
-    vehicle_list[0].model.vx[i] = vx1_
-    vehicle_list[0].model.vy[i] = vy1_
-    vehicle_list[0].model.oz_rad[i] = oz_rad1_
+    vehicle_list[strikingVehicle].model.vx[i] = vx1_
+    vehicle_list[strikingVehicle].model.vy[i] = vy1_
+    vehicle_list[strikingVehicle].model.oz_rad[i] = oz_rad1_
 
     # heading angle
-    vehicle_list[0].model.theta_rad[i] = vehicle_list[0].model.theta_rad[i - 1] + dt_motion * oz_rad1_
+    vehicle_list[strikingVehicle].model.theta_rad[i] = vehicle_list[strikingVehicle].model.theta_rad[i - 1] + dt_motion * oz_rad1_
 
-    # inertial frame coorindates - capital letters
-    vehicle_list[0].model.Vx[i] = vx1_ * math.cos(vehicle_list[0].model.theta_rad[i]) - vy1_ * math.sin(vehicle_list[0].model.theta_rad[i])
-    vehicle_list[0].model.Vy[i] = vx1_ * math.sin(vehicle_list[0].model.theta_rad[i]) + vy1_ * math.cos(vehicle_list[0].model.theta_rad[i])
+    # inertial frame coordinates - capital letters
+    vehicle_list[strikingVehicle].model.Vx[i] = vx1_ * math.cos(vehicle_list[strikingVehicle].model.theta_rad[i]) - vy1_ * math.sin(vehicle_list[strikingVehicle].model.theta_rad[i])
+    vehicle_list[strikingVehicle].model.Vy[i] = vx1_ * math.sin(vehicle_list[strikingVehicle].model.theta_rad[i]) + vy1_ * math.cos(vehicle_list[strikingVehicle].model.theta_rad[i])
 
     # ------------- Vehicle 2 ------------ #
-    vehicle_list[1].model.vx[i] = vx2_
-    vehicle_list[1].model.vy[i] = vy2_
-    vehicle_list[1].model.oz_rad[i] = oz_rad2_
+    vehicle_list[struckVehicle].model.vx[i] = vx2_
+    vehicle_list[struckVehicle].model.vy[i] = vy2_
+    vehicle_list[struckVehicle].model.oz_rad[i] = oz_rad2_
 
     # heading angle
-    vehicle_list[1].model.theta_rad[i] = vehicle_list[1].model.theta_rad[i - 1] + dt_motion * oz_rad2_
+    vehicle_list[struckVehicle].model.theta_rad[i] = vehicle_list[struckVehicle].model.theta_rad[i - 1] + dt_motion * oz_rad2_
 
-    # inertial frame coorindates - capital letters
-    vehicle_list[1].model.Vx[i] = vx2_ * math.cos(vehicle_list[1].model.theta_rad[i]) - vy2_ * math.sin(vehicle_list[1].model.theta_rad[i])
-    vehicle_list[1].model.Vy[i] = vx2_ * math.sin(vehicle_list[1].model.theta_rad[i]) + vy2_ * math.cos(vehicle_list[1].model.theta_rad[i])
-
+    # inertial frame coordinates - capital letters
+    vehicle_list[struckVehicle].model.Vx[i] = vx2_ * math.cos(vehicle_list[struckVehicle].model.theta_rad[i]) - vy2_ * math.sin(vehicle_list[struckVehicle].model.theta_rad[i])
+    vehicle_list[struckVehicle].model.Vy[i] = vx2_ * math.sin(vehicle_list[struckVehicle].model.theta_rad[i]) + vy2_ * math.cos(vehicle_list[struckVehicle].model.theta_rad[i])
 
     print(impc_energy)
-    print(f'Veh1 DVx: {dvx1*0.681818:0.2f}, Veh1 DVy: {dvy1*0.681818:0.2f} (mph)')
-    print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f}, Veh2 DVy: {dvy2 * 0.681818:0.2f} (mph)')
+    print(f'Veh1 DVx: {dvx1 * 0.681818:0.2f} mph, DVy: {dvy1 * 0.681818:0.2f} mph')
+    print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f} mph, DVy: {dvy2 * 0.681818:0.2f} mph')
 
     return vehicle_list, impc_energy
+""

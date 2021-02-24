@@ -7,7 +7,7 @@ column_list = ['b_lfc', 'b_rfc', 'b_rrc', 'b_lrc', 'lfw', 'lfw_a', 'lfw_b',
                 'rrw', 'rrw_a',	'rrw_b', 'rrw_c', 'rrw_d', 'lrw',  'lrw_a',
                 'lrw_b', 'lrw_c', 'lrw_d', 'cg', 'xaxis', 'yaxis', 'vel_v']
 
-def position_data_motion(veh, striking=False):
+def position_data_motion(veh):
     """
     set striking to True to return location of impact point in vehicle 1
     """
@@ -83,40 +83,40 @@ def position_data_motion(veh, striking=False):
     cgx = veh.model[['Dx']].copy()                          # CG location in inertial frame
     cgy = veh.model[['Dy']].copy()
 
-    veh.p_gx = veh.p_vx.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
-    veh.p_gy = veh.p_vy.copy()                                                    # time variant vehicle geometry for plotting motion in inertial frame
 
-    if (striking):  # impact point (veh1 - striking vehicle)
-        # create impact point dataframes with same length as vehicle position data
-        impactp_vx = pd.DataFrame({'pimpact_x': [veh.pimpact_x] * len(veh.model.t)})
-        impactp_vy = pd.DataFrame({'pimpact_y': [veh.pimpact_y] * len(veh.model.t)})
-        impactp_gx = impactp_vx.copy()
-        impactp_gy = impactp_vy.copy()
+
+    if veh.striking:  # impact point (veh1 - striking vehicle)
+        # add impact point locations in vehicle frame
+        i=0
+        for impPoint in veh.impact_points:
+            veh.p_vx[f'POI_{i}'] = impPoint[0]
+            veh.p_vy[f'POI_{i}'] = impPoint[1]
+
+            norm_length = veh.width
+            tang_length = veh.width / 2
+
+            veh.p_vx[f'impact_{i}_norm'] = impPoint[0] + norm_length * np.cos(impPoint[2] * np.pi / 180)
+            veh.p_vy[f'impact_{i}_norm'] = impPoint[1] + norm_length * np.sin(impPoint[2] * np.pi / 180)
+
+            veh.p_vx[f'impact_{i}_tang'] = impPoint[0] + tang_length * np.cos(impPoint[2] * np.pi / 180 + np.pi / 2)
+            veh.p_vy[f'impact_{i}_tang'] = impPoint[1] + tang_length * np.sin(impPoint[2] * np.pi / 180 + np.pi / 2)
+
+            i+=1
+
+    veh.p_gx = veh.p_vx.copy()                              # time variant vehicle geometry for plotting motion in inertial frame
+    veh.p_gy = veh.p_vy.copy()                              # time variant vehicle geometry for plotting motion in inertial frame
 
     for i in range(0, len(veh.p_gx)):
-
            for j in range(0, len(veh.p_vx.columns)):
               # coordinate transformation - rotating vehicle frame to draw vehicle
               veh.p_gx.iloc[i, j] = cgx.Dx[i] + veh.p_vx.iloc[i,j] * np.cos(veh.model.loc[i,'theta_rad']) - veh.p_vy.iloc[i,j] * np.sin(veh.model.loc[i,'theta_rad'])
               veh.p_gy.iloc[i, j] = cgy.Dy[i] + veh.p_vx.iloc[i,j] * np.sin(veh.model.loc[i,'theta_rad']) + veh.p_vy.iloc[i,j] * np.cos(veh.model.loc[i,'theta_rad'])
-
-              if (striking):
-                # impact point (veh1 - striking vehicle)
-                impactp_gx.pimpact_x[i] = cgx.Dx[i] + veh.pimpact_x * np.cos(veh.model.loc[i,'theta_rad']) - veh.pimpact_y * np.sin(veh.model.loc[i,'theta_rad'])
-                impactp_gy.pimpact_y[i] = cgy.Dy[i] + veh.pimpact_x * np.sin(veh.model.loc[i,'theta_rad']) + veh.pimpact_y * np.cos(veh.model.loc[i,'theta_rad']) # time variant vehicle geometry for plotting in vehicle frame
 
     # copy locked info from vehicle model
     veh.p_gx['lf_lock'] = veh.model.lf_lock.copy()
     veh.p_gx['rf_lock'] = veh.model.rf_lock.copy()
     veh.p_gx['rr_lock'] = veh.model.rr_lock.copy()
     veh.p_gx['lr_lock'] = veh.model.lr_lock.copy()
-
-    if (striking):
-        # join impact points with vehicle position data
-        veh.p_vx = pd.concat([veh.p_vx, impactp_vx], axis = 1)
-        veh.p_vy = pd.concat([veh.p_vy, impactp_vy], axis = 1)
-        veh.p_gx = pd.concat([veh.p_gx, impactp_gx], axis = 1)
-        veh.p_gy = pd.concat([veh.p_gy, impactp_gy], axis = 1)
 
     return veh
 
@@ -196,19 +196,27 @@ def position_data_static(vehicle_list):
             veh.Px[key] = veh.init_x_pos + veh.px[key]*np.cos(veh.head_angle * np.pi / 180) - veh.py[key]*np.sin(veh.head_angle * np.pi / 180)
             veh.Py[key] = veh.init_y_pos + veh.px[key]*np.sin(veh.head_angle * np.pi / 180) + veh.py[key]*np.cos(veh.head_angle * np.pi / 180)
 
-        if (veh.striking):
-        # impact point (veh1 - striking vehicle)
-            veh.pimpact_X = veh.init_x_pos + veh.pimpact_x * np.cos(veh.head_angle * np.pi / 180) - veh.pimpact_y * np.sin(veh.head_angle * np.pi / 180)
-            veh.pimpact_Y = veh.init_y_pos + veh.pimpact_x * np.sin(veh.head_angle * np.pi / 180) + veh.pimpact_y * np.cos(veh.head_angle * np.pi / 180)
+        if veh.striking:
+            # impact point (veh1 - striking vehicle)
+            veh.impact_points_global = []
+            veh.impact_norm_global = []
+            veh.impact_tang_global = []
 
-            norm_length = veh.width
-            tang_length = veh.width / 2
+            for impPoints in veh.impact_points:
+                """ create list of impact points in the global reference frame """
+                pimpact_X = veh.init_x_pos + impPoints[0] * np.cos(veh.head_angle * np.pi / 180) - impPoints[1] * np.sin(veh.head_angle * np.pi / 180)
+                pimpact_Y = veh.init_y_pos + impPoints[0] * np.sin(veh.head_angle * np.pi / 180) + impPoints[1] * np.cos(veh.head_angle * np.pi / 180)
 
-            veh.impact_norm_X = veh.pimpact_X + norm_length * np.cos(veh.impact_norm_rad)
-            veh.impact_norm_Y = veh.pimpact_Y + norm_length * np.sin(veh.impact_norm_rad)
+                veh.impact_points_global.append((pimpact_X, pimpact_Y))
 
-            veh.impact_tang_X = veh.pimpact_X + tang_length * np.cos(veh.impact_norm_rad + np.pi / 2)
-            veh.impact_tang_Y = veh.pimpact_Y + tang_length * np.sin(veh.impact_norm_rad + np.pi / 2)
+                norm_length = veh.width
+                tang_length = veh.width / 2
+
+                veh.impact_norm_global.append((pimpact_X + norm_length * np.cos(impPoints[2] * np.pi / 180),
+                                              pimpact_Y + norm_length * np.sin(impPoints[2] * np.pi / 180)))
+
+                veh.impact_tang_global.append((pimpact_X + tang_length * np.cos(impPoints[2] * np.pi / 180 + np.pi / 2),
+                                              pimpact_Y + tang_length * np.sin(impPoints[2] * np.pi / 180 + np.pi / 2)))
 
 
     return vehicle_list

@@ -4,7 +4,6 @@ vehicle motion for multiple vehicles
 from .model_calcs.sideswipe import ss
 from .model_calcs.tire_model import tire_forces
 from .model_calcs.impact_detect import detect
-from .vehicle_model import vehicle_model
 from .model_calcs.carpenter_momentum_calcs import impc
 import pandas as pd
 import numpy as np
@@ -42,8 +41,6 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
     print(f"Impact Type: {impact_type}")
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
-
-
 
     j = 0
 
@@ -162,7 +159,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
         """
 
         if impc_complete == False:
-            crush_data = detect(vehicle_list, i, crush_data)  # only need to detect impact if it hasn't occured yet in IMPC model
+            crush_data = detect(vehicle_list, i, crush_data)
 
         print(f"Impact Detect: {crush_data.impact[i]} at i: {i}")
         if (crush_data.impact[i] == True) & (impc_complete == False):

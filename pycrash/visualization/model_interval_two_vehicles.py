@@ -8,18 +8,31 @@ import plotly.io as pio
 pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" folder?
-width = 1600
+width = 2100
 aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 font_size = 24
 tick_font_size = 22
 
-def plot_motion_interval(veh_list, num_itter=10, tire_path=True, show_vector=False):
+def get_impactNum(i, impactIndex):
+    if i < max(impactIndex):
+        for key, value in impactIndex.items():
+            if i <= key:
+                return(value)
+    else:
+        return max(impactIndex.values())
+
+def plot_motion_interval(veh_list, impactIndex, num_itter=10, tire_path=True, show_vector=False):
     fig = go.Figure()
     for veh in veh_list:
         counter = np.arange(0, len(veh.p_gx.b_lfc), round(len(veh.p_gx.b_lfc)/num_itter))
         for i in counter:
+            if impactIndex:
+                plotImpactPoint = get_impactNum(i, impactIndex)
+                plotPOI = True
+            else:
+                plotPOI = False
             # Body and tire outlines
             bdy_x = (veh.p_gx.b_lfc[i], veh.p_gx.b_rfc[i], veh.p_gx.b_rrc[i], veh.p_gx.b_lrc[i], veh.p_gx.b_lfc[i])
             bdy_y = (veh.p_gy.b_lfc[i], veh.p_gy.b_rfc[i], veh.p_gy.b_rrc[i], veh.p_gy.b_lrc[i], veh.p_gy.b_lfc[i])
@@ -129,6 +142,7 @@ def plot_motion_interval(veh_list, num_itter=10, tire_path=True, show_vector=Fal
             # plotly requires at least two rows to plot, so if i == 0, it will be set to 1
             gx = veh.p_gx[0:i]
             gy = veh.p_gy[0:i]
+            #print(gx)
 
             if (tire_path):
                 fig.add_trace(go.Scatter(x = gx.lfw, y = gy.lfw,
@@ -154,6 +168,41 @@ def plot_motion_interval(veh_list, num_itter=10, tire_path=True, show_vector=Fal
                                     name = 'LR',
                                     marker = dict(color = 'rgb(255, 102, 0)', size = 2,
                                     symbol = list(map(setmarker, gx.lr_lock)))))
+
+            if veh.striking and plotPOI:
+                # plot each impact plane
+                fig.add_annotation(x=veh.p_gx[f'impact_{plotImpactPoint}_norm'][i],
+                                   y=veh.p_gy[f'impact_{plotImpactPoint}_norm'][i],
+                                   axref='x',
+                                   ayref='y',
+                                   text="",
+                                   showarrow=True,
+                                   ax=veh.p_gx[f'POI_{plotImpactPoint}'][i],
+                                   ay=veh.p_gy[f'POI_{plotImpactPoint}'][i],
+                                   arrowsize=2,
+                                   arrowhead=2,
+                                   arrowwidth=1.5,
+                                   arrowcolor='rgb(153, 0, 51)')
+                # tangential impact plane
+                fig.add_annotation(x=veh.p_gx[f'impact_{plotImpactPoint}_tang'][i],
+                                   y=veh.p_gy[f'impact_{plotImpactPoint}_tang'][i],
+                                   axref='x',
+                                   ayref='y',
+                                   text="",
+                                   showarrow=True,
+                                   ax=veh.p_gx[f'POI_{plotImpactPoint}'][i],
+                                   ay=veh.p_gy[f'POI_{plotImpactPoint}'][i],
+                                   arrowsize=1,
+                                   arrowhead=1,
+                                   arrowwidth=1,
+                                   arrowcolor='rgb(153, 0, 51)')
+
+                fig.add_trace(go.Scatter(x=[veh.p_gx[f'POI_{plotImpactPoint}'][i], veh.p_gx[f'POI_{plotImpactPoint}'][i]],
+                                         y=[veh.p_gy[f'POI_{plotImpactPoint}'][i], veh.p_gy[f'POI_{plotImpactPoint}'][i]],
+                                         mode='markers',
+                                         name=f'POI: {plotImpactPoint}',
+                                         marker=dict(color='rgb(153, 0, 51)', size=7),
+                                         ))
 
     # adjust axes to keep aspect aspect ratio
     """
@@ -194,13 +243,13 @@ def plot_motion_interval(veh_list, num_itter=10, tire_path=True, show_vector=Fal
         height = width / aspect_ratio,
         title = 'Vehicle Motion in Global Reference Frame',
         template = 'plotly_white',
-        xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [2*dx_min, 2*dx_max]),
-        yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', range = [15, -35]),
+        xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [2*dx_min, 2*dx_max], constrain="domain"),
+        yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', scaleanchor = "x", scaleratio = 1),
         font = dict(family = 'Arial', size = font_size, color = 'black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
+    fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
 
     fig.show()

@@ -119,38 +119,41 @@ def initial_position(vehicle_list):
                            arrowcolor='rgb(0, 0, 255)')
 
         if (veh.striking):
-            # normal impact plane
-            fig.add_annotation(x=veh.impact_norm_X,
-                               y=veh.impact_norm_Y,
-                               axref='x',
-                               ayref='y',
-                               text="",
-                               showarrow=True,
-                               ax=veh.pimpact_X,
-                               ay=veh.pimpact_Y,
-                               arrowsize=2,
-                               arrowhead=2,
-                               arrowwidth=1.5,
-                               arrowcolor='rgb(153, 0, 51)')
-            # tangential impact plane
-            fig.add_annotation(x=veh.impact_tang_X,
-                               y=veh.impact_tang_Y,
-                               axref='x',
-                               ayref='y',
-                               text="",
-                               showarrow=True,
-                               ax=veh.pimpact_X,
-                               ay=veh.pimpact_Y,
-                               arrowsize=1,
-                               arrowhead=1,
-                               arrowwidth=1,
-                               arrowcolor='rgb(153, 0, 51)')
+            # plot each impact plane
+            for i in range(len(veh.impact_points)):
+                # normal impact plane
+                fig.add_annotation(x=veh.impact_norm_global[i][0],
+                                   y=veh.impact_norm_global[i][1],
+                                   axref='x',
+                                   ayref='y',
+                                   text="",
+                                   showarrow=True,
+                                   ax=veh.impact_points[i][0],
+                                   ay=veh.impact_points[i][1],
+                                   arrowsize=2,
+                                   arrowhead=2,
+                                   arrowwidth=1.5,
+                                   arrowcolor='rgb(153, 0, 51)')
+                # tangential impact plane
+                fig.add_annotation(x=veh.impact_tang_global[i][0],
+                                   y=veh.impact_tang_global[i][1],
+                                   axref='x',
+                                   ayref='y',
+                                   text="",
+                                   showarrow=True,
+                                   ax=veh.impact_points[i][0],
+                                   ay=veh.impact_points[i][1],
+                                   arrowsize=1,
+                                   arrowhead=1,
+                                   arrowwidth=1,
+                                   arrowcolor='rgb(153, 0, 51)')
 
-            fig.add_trace(go.Scatter(x=[veh.pimpact_X, veh.pimpact_X], y=[veh.pimpact_Y, veh.pimpact_Y],
-                                     mode='markers',
-                                     name=f'POI - {veh.name}',
-                                     marker=dict(color='rgb(153, 0, 51)', size=7),
-                                     ))
+                fig.add_trace(go.Scatter(x=[veh.impact_points[i][0], veh.impact_points[i][0]],
+                                         y=[veh.impact_points[i][1], veh.impact_points[i][1]],
+                                         mode='markers',
+                                         name=f'POI: {i}',
+                                         marker=dict(color='rgb(153, 0, 51)', size=7),
+                                         ))
 
     fig.update_layout(
         showlegend=False,
@@ -163,7 +166,7 @@ def initial_position(vehicle_list):
         yaxis=dict(showgrid=True, title='Rightward (ft)'),
         font=dict(family='Arial', size=22, color='black'))
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", range=[-20, 20], constrain="domain",
+    fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside", constrain="domain",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside", scaleanchor = "x", scaleratio = 1,
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)

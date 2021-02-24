@@ -5,7 +5,7 @@ this will indicate the contact point and direction of the nornmal and tangential
 from pycrash.visualization.vehicle import plot_impact_points, plot_impact_edge
 import math
 
-def define_impact_plane(veh, iplane = True):
+def define_impact_plane(veh, iplane=True):
     """
     generates a point in vehicle 1 (striking) reference frame
     sideswipe collisions - px, py will determine the extent of vehcle engagement with respect
@@ -36,43 +36,46 @@ def define_impact_plane(veh, iplane = True):
 
     # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
     # option 5 = custom location
-    plot_impact_points(veh, iplane = False) # plot vehicle points
+    plot_impact_points(veh, iplane=False)  # plot vehicle points
 
-    impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99: "))
+    veh.impact_points = []  # list of impact points x, y and normal impact plane angle deg
+    veh.impact_norm = []    # list of points for plotting the impact plane
+    veh.impact_tang = []    # list of points for plotting the impact plane
 
-    if impact_option not in [1, 2, 3, 4, 99]:
-        print("Invalid impact point option - enter 1, 2, 3, 4 or 5")
-        impact_option = int(input("Choose option for impact location"))
-    elif impact_option != 99:
-        if impact_option == 1:
-            veh.pimpact_x = veh.lcgf + veh.f_hang
-            veh.pimpact_y = -1 * veh.width / 2
-        elif impact_option == 2:
-            veh.pimpact_x = veh.lcgf + veh.f_hang
-            veh.pimpact_y = veh.width / 2
-        elif impact_option == 3:
-            veh.pimpact_x = -1 * veh.lcgr - veh.r_hang
-            veh.pimpact_y = veh.width / 2
-        elif impact_option == 4:
-            veh.pimpact_x = -1 * veh.lcgr - veh.r_hang
-            veh.pimpact_y = -1* veh.width / 2
-    elif impact_option == 99:
-        veh.pimpact_x = float(input("Enter x-coordinate ( + forward) of impact point in vehicle frame (ft):"))
-        veh.pimpact_y = float(input("Enter y-coordinate ( + rightward) of impact point in vehicle frame (ft):"))
-        user_loc = True
+    """ create list of impact points - this will be a list of tuples"""
+    for i in range(0, veh.impactTotal):
+        impact_option = int(input("Choose option for impact point (1, 2, 3, 4, custom = 99: "))
 
-    if iplane:
-        veh.impact_norm_rad = float(input("Enter heading angle of normal impact plane:  ")) * math.pi / 180
-        norm_length = veh.width
-        tang_length = veh.width / 2
+        if impact_option not in [1, 2, 3, 4, 99]:
+            print("Invalid impact point option - enter 1, 2, 3, 4 or 5")
+            impact_option = int(input("Choose option for impact location"))
+        elif impact_option != 99:
+            if impact_option == 1:
+                veh.impact_points.append((veh.lcgf + veh.f_hang, -1 * veh.width / 2))
+            elif impact_option == 2:
+                veh.impact_points.append((veh.lcgf + veh.f_hang, veh.width / 2))
+            elif impact_option == 3:
+                veh.impact_points.append((-1 * veh.lcgr - veh.r_hang, veh.width / 2))
+            elif impact_option == 4:
+                veh.impact_points.append((-1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2))
+        elif impact_option == 99:
+            veh.impact_points.append((float(input("Enter x-coordinate ( + forward) of impact point in vehicle frame (ft):")),
+                                      float(input("Enter y-coordinate ( + rightward) of impact point in vehicle frame (ft):"))))
+            user_loc = True
 
-        veh.impact_norm_x = veh.pimpact_x + norm_length * math.cos(veh.impact_norm_rad)
-        veh.impact_norm_y = veh.pimpact_y + norm_length * math.sin(veh.impact_norm_rad)
+        if iplane:
+            veh.impact_points[i] += (float(input("Enter heading angle of normal impact plane (deg):  ")), )  # append to x,y cooridinates
+            norm_length = veh.width
+            tang_length = veh.width / 2
 
-        veh.impact_tang_x = veh.pimpact_x + tang_length * math.cos(veh.impact_norm_rad + math.pi / 2)
-        veh.impact_tang_y = veh.pimpact_y + tang_length * math.sin(veh.impact_norm_rad + math.pi / 2)
+            veh.impact_norm.append((veh.impact_points[i][0] + norm_length * math.cos(veh.impact_points[i][2] * math.pi / 180),
+                                  veh.impact_points[i][1] + norm_length * math.sin(veh.impact_points[i][2] * math.pi / 180)))
 
-    plot_impact_points(veh, user_loc) # plot vehicle points
+            veh.impact_tang.append((veh.impact_points[i][0] + tang_length * math.cos(veh.impact_points[i][2] * math.pi / 180 + math.pi / 2),
+                                  veh.impact_points[i][1] + tang_length * math.sin(veh.impact_points[i][2] * math.pi / 180 + math.pi / 2)))
+
+        print(veh.impact_points)
+        plot_impact_points(veh)  # plot vehicle points
 
     return veh
 
@@ -84,6 +87,7 @@ def define_impact_edge(veh, iplane = False):
     impact momentum model - impact edge will be used along with the impact plane to determine time
     of impact
     """
+
     veh.striking = False
 
     # test for required inputs
@@ -105,36 +109,34 @@ def define_impact_edge(veh, iplane = False):
     # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
     # option 5 = custom location
 
+
+    veh.edgeimpact_points = []   # store x,y values for edge points - moving clockwise
+    veh.edgeimpact = []    # defines location of edge
+
     plot_impact_edge(veh)
 
-    impact_option = int(input("Choose option for impact edge: "))
 
-    if impact_option not in [1, 2, 3, 4]:
-        raise ValueError("Invalid impact edge option - enter 1, 2, 3, 4")
-    else:
-        if impact_option == 1:
-            veh.edgeimpact = 1
-            veh.edgeimpact_x1 = veh.lcgf + veh.f_hang
-            veh.edgeimpact_y1 = -1 * veh.width / 2
-            veh.edgeimpact_x2 = veh.lcgf + veh.f_hang
-            veh.edgeimpact_y2 = veh.width / 2
-        elif impact_option == 2:
-            veh.edgeimpact = 2
-            veh.edgeimpact_x1 = veh.lcgf + veh.f_hang
-            veh.edgeimpact_y1 = veh.width / 2
-            veh.edgeimpact_x2 = -1 * veh.lcgr - veh.r_hang
-            veh.edgeimpact_y2 = veh.width / 2
-        elif impact_option == 3:
-            veh.edgeimpact = 3
-            veh.edgeimpact_x1 = -1 * veh.lcgr - veh.r_hang
-            veh.edgeimpact_y1 = veh.width / 2
-            veh.edgeimpact_x2 = -1 * veh.lcgr - veh.r_hang
-            veh.edgeimpact_y2 = -1* veh.width / 2
-        elif impact_option == 4:
-            veh.edgeimpact = 4
-            veh.edgeimpact_x1 = -1 * veh.lcgr - veh.r_hang
-            veh.edgeimpact_y1 = -1 * veh.width / 2
-            veh.edgeimpact_x2 = veh.lcgf + veh.f_hang
-            veh.edgeimpact_y2 = -1 * veh.width / 2
+    for i in range(0, veh.impactTotal):
+        impact_option = int(input("Choose impact edge for the corresponding impact point on striking vehicle: "))
+
+        if impact_option not in [0, 1, 2, 3]:
+            raise ValueError("Invalid impact edge option - enter 0, 1, 2, 3")
+        else:
+            if impact_option == 0:
+                veh.edgeimpact.append(0)
+                veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, -1 * veh.width / 2,
+                                              veh.lcgf + veh.f_hang, veh.width / 2))
+            elif impact_option == 1:
+                veh.edgeimpact.append(1)
+                veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, veh.width / 2,
+                                              -1 * veh.lcgr - veh.r_hang, veh.width / 2))
+            elif impact_option == 2:
+                veh.edgeimpact.append(2)
+                veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, veh.width / 2,
+                                              -1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2))
+            elif impact_option == 3:
+                veh.edgeimpact.append(3)
+                veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2,
+                                              veh.lcgf + veh.f_hang, -1 * veh.width / 2))
 
     return veh

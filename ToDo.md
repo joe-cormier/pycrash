@@ -1,7 +1,8 @@
 To Do
 =============================
 
-### Create issues
+- Create issues
+- create figure at time of impact (for each impact)
 
 
 ### Miscellaneous functions - create class functions

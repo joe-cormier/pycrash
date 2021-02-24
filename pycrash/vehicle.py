@@ -93,7 +93,8 @@ veh_inputs = ["year",
 "c",
 "vx_initial",
 "vy_initial",
-"omega_z"]
+"omega_z",
+"striking"]
 
 
 
@@ -187,7 +188,7 @@ class Vehicle:
 
         return vehicle_input_dict
 
-    def time_inputs(self, time, throttle, brake, steer):
+    def time_inputs(self, time, throttle, brake, steer, show_plot=True):
         """
         Driver inputs | time (s) | throttle (%) | braking (%) | steering (deg) |
         time step can be user defined, inputs will be interpolated to match dt for simulation
@@ -212,7 +213,8 @@ class Vehicle:
             df = df.reset_index(drop = True)
             self.driver_input = df
             print(f'Driver inputs applied to {self.name}')
-            plot_driver_inputs(self)
+            if show_plot:
+                plot_driver_inputs(self)
 
     def read_time_inputsCSV(self, filename):
         """

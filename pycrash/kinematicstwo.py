@@ -122,19 +122,27 @@ class KinematicsTwo():
             self.veh2.driver_input = pd.DataFrame.from_dict(driver_input_dict)
             print(f'Driver inputs for {self.veh2.name} set to zero for {end_time} seconds')
 
+        """ impact points and edge detection """
+        # TODO: convert sideswipe to lists of tuples like impc
         if self.impact_type == 'SS':
             if all(hasattr(self.veh1, attr) for attr in ["pimpact_x", "pimpact_y"]):
                 print(f'Predefined impact point for {self.veh1.name}: x={self.veh1.pimpact_x:.1f}, y={self.veh1.pimpact_y:.1f}')
+                if len(self.veh1.pimpact_x) != len(self.veh1.pimpact_x):
+                    print(f'Unequal lengths for x ({len(self.veh1.pimpact_x)}) and y ({len(self.veh1.pimpact_y)}) impact points')
+                else:
+                    self._impactPoints = len(self.veh1.pimpact_x)
             else:
-                print(f"Create impact point for {self.veh1.name} = striking vehicle")
+                print(f"Create impact point(s) for {self.veh1.name} = striking vehicle")
                 print("")
                 self.veh1 = define_impact_plane(veh1, iplane=False)
         else:
-            if all(hasattr(self.veh1, attr) for attr in ["pimpact_x", "pimpact_y", "impact_norm_rad"]):
-                print(f'Predefined impact point for {self.veh1.name}: x={self.veh1.pimpact_x:.1f}, y={self.veh1.pimpact_y:.1f}, impact plane angle: {self.veh1.impact_norm_rad * 180 / 3.14159:.1f}')
+            if all(hasattr(self.veh1, attr) for attr in 'impact_points'):  # ["pimpact_x", "pimpact_y", "impact_norm_rad"]
+                print(f'Predefined impact points for {self.veh1.name}: (x (ft), y (ft), impact plane angle (deg)) = {self.veh1.impact_points:.1f}')
             else:
+                self.veh1.num_impact_points = int(input('Enter number of impact points to define:'))
                 print(f"Create impact plane for {self.veh1.name} = striking vehicle")
                 print("")
+                self.veh1.impactNum = 0    # counter for the number of impacts in simulation
                 self.veh1 = define_impact_plane(veh1)
 
         if all(hasattr(self.veh2, attr) for attr in ["edgeimpact_x1", "edgeimpact_y1", "edgeimpact_x2", "edgeimpact_y2", "edgeimpact"]):
