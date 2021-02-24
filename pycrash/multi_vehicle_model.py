@@ -83,11 +83,12 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
 
             print(f"Model Fx: {veh.model.Fx[i]} at i: {i}")
             # local vehicle acceleration
-            veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
-                                                          veh.model.rf_fx[i],
-                                                          veh.model.rr_fx[i],
-                                                          veh.model.lr_fx[i],
-                                                          veh.model.Fx[i]])
+            #veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
+            #                                              veh.model.rf_fx[i],
+            #                                              veh.model.rr_fx[i],
+            #                                              veh.model.lr_fx[i],
+            #                                              veh.model.Fx[i]])
+            veh.model.au = 32.2 / veh.weight * veh.model[["lf_fx", "rf_fx", "rr_fx", "lr_fx", "Fx"]].sum(axis=1)
 
             veh.model.av[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fy[i],
                                                           veh.model.rf_fy[i],
@@ -118,13 +119,19 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
 
             if i > 0:
                 # vehicle acceleration in inertial frame
-                veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i - 1] * veh.model.vy[i - 1]
-                veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i - 1] * veh.model.vx[i - 1]
-                veh.model.ar[i] = math.sqrt(veh.model.ax[i] ** 2 + veh.model.ay[i] ** 2)
+                #veh.model.ax[i] = veh.model.au[i] + veh.model.oz_rad[i - 1] * veh.model.vy[i - 1]
+                #veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i - 1] * veh.model.vx[i - 1]
+                #veh.model.ar[i] = math.sqrt(veh.model.ax[i] ** 2 + veh.model.ay[i] ** 2)
+
+                veh.model.ax[1:] = veh.model.au[1:] + veh.model.oz_rad[:-1] * veh.model.vy[:-1]
+                veh.model.ay[1:] = veh.model.av[1:] - veh.model.oz_rad[:-1] * veh.model.vx[:-1]
+                veh.model.ar[1:] = np.sqrt(veh.model.ax[1:] ** 2 + veh.model.ay[1:] ** 2)
 
                 # vehicle velocities
-                veh.model.vx[i] = veh.model.vx[i - 1] + dt_motion * np.mean([veh.model.ax[i - 1], veh.model.ax[i]])
+                #veh.model.vx[i] = veh.model.vx[i - 1] + dt_motion * np.mean([veh.model.ax[i - 1], veh.model.ax[i]])
                 veh.model.vy[i] = veh.model.vy[i - 1] + dt_motion * np.mean([veh.model.ay[i - 1], veh.model.ay[i]])
+
+                veh.model.vx[1:] = veh.model.vx[:-1] + dt_motion * np.mean([veh.model.ax[:-1], veh.model.ax[1:]], axis=0)
 
                 # omega
                 veh.model.oz_rad[i] = veh.model.oz_rad[i - 1] + dt_motion * np.mean([veh.model.alphaz[i - 1], veh.model.alphaz[i]])
@@ -145,7 +152,10 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
             veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
-            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]  # move to seperate calc
+
+#            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]  # move to seperate calc
+            veh.model.alphaz_deg = np.degrees(veh.model.alphaz)  # move to seperate calc
+
             veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]  # move to seperate calc
             veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
             veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]  # move to seperate calc
