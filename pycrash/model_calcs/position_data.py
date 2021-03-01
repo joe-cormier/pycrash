@@ -109,8 +109,8 @@ def position_data_motion(veh):
     for i in range(0, len(veh.p_gx)):
            for j in range(0, len(veh.p_vx.columns)):
               # coordinate transformation - rotating vehicle frame to draw vehicle
-              veh.p_gx.iloc[i, j] = cgx.Dx[i] + veh.p_vx.iloc[i,j] * np.cos(veh.model.loc[i,'theta_rad']) - veh.p_vy.iloc[i,j] * np.sin(veh.model.loc[i,'theta_rad'])
-              veh.p_gy.iloc[i, j] = cgy.Dy[i] + veh.p_vx.iloc[i,j] * np.sin(veh.model.loc[i,'theta_rad']) + veh.p_vy.iloc[i,j] * np.cos(veh.model.loc[i,'theta_rad'])
+              veh.p_gx.iloc[i, j] = cgx.Dx[i] + veh.p_vx.iloc[i, j] * np.cos(veh.model.loc[i, 'theta_rad']) - veh.p_vy.iloc[i, j] * np.sin(veh.model.loc[i, 'theta_rad'])
+              veh.p_gy.iloc[i, j] = cgy.Dy[i] + veh.p_vx.iloc[i, j] * np.sin(veh.model.loc[i, 'theta_rad']) + veh.p_vy.iloc[i, j] * np.cos(veh.model.loc[i, 'theta_rad'])
 
     # copy locked info from vehicle model
     veh.p_gx['lf_lock'] = veh.model.lf_lock.copy()
@@ -178,7 +178,7 @@ def position_data_static(vehicle_list):
                   'rrw_b': veh.width / 2,
                   'rrw_c': veh.width / 2,
                   'rrw_d': veh.width / 2 - veh.tire_w,
-                  'lrw':   -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
+                  'lrw': -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
                   'lrw_a': -1 * veh.width / 2,
                   'lrw_b': -1 * veh.width / 2 + veh.tire_w,
                   'lrw_c': -1 * veh.width / 2 + veh.tire_w,

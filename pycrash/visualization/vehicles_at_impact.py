@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 import plotly.io as pio
 pio.renderers.default = "browser"
 
-# TODO: create input for figure size - loads from "defaults" folder?
+# TODO: create input for figure size - loads from "defaults" environmental variable?
 width = 2100
 aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
