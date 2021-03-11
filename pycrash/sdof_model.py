@@ -73,10 +73,10 @@ class SDOF_Model():
             print(f"Model will run until t = {self.tstop} seconds")
             self.ttype = 1                           # define t stop criteria
         elif (self.tstop == None):
-            print("No stop time provided - model will run until vehicle seperation")
+            print("No stop time provided - model will run until vehicle separation")
             self.ttype = 0                           # define t stop criteria
         else:
-            print('Something other than a number or "None" used for stop time - model will run until vehicle seperation')
+            print('Something other than a number or "None" used for stop time - model will run until vehicle separation')
             self.ttype = 0                           # define t stop criteria
 
         # collect vehicle specific inputs
@@ -199,6 +199,30 @@ class SDOF_Model():
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.xlabel('Mutual Crush (in)', fontsize=20)
+        plt.ylabel('Force (lb)', fontsize=20)
+        #plt.grid(which='both', axis='both')
+        #plt.legend(fontsize=14, frameon = False)
+        fig.show()
+
+    def plot_fdx_vehicle(self, vehNum):
+        """
+        Plot force - mutual crush from model result
+        """
+        if vehNum == 1:
+            vehicle_dx = self.model.veh1_dx * -12
+        else:
+            vehicle_dx = self.model.veh2_dx * -12
+        fig = plt.figure(figsize = (14,12))
+        plt.title('Vehicle Crush and Impact Force', fontsize=20)
+        plt.plot(vehicle_dx, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color = "k")
+        plt.xticks(fontsize=16)
+        plt.yticks(fontsize=16)
+        plt.xlim([0, round(-12 * min(self.model.dx) + 1)])
+        plt.ylim([0, round(max(self.model.springF)+100)])
+        ax = plt.gca()
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        plt.xlabel('Crush (in)', fontsize=20)
         plt.ylabel('Force (lb)', fontsize=20)
         #plt.grid(which='both', axis='both')
         #plt.legend(fontsize=14, frameon = False)

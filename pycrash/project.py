@@ -3,9 +3,6 @@ from cookiecutter.main import cookiecutter
 import os
 import pickle
 
-os.chdir(os.path.dirname(os.getcwd()))
-
-
 # TODO: when loading project, pull saved project data
 
 def yes_or_no(question):
@@ -58,7 +55,7 @@ class Project:
 
                 if self.impact_type not in ["SS", "IMPC", "SDOF"]:
                     print("Not a valid impact type, choose SS, IMPC or SDOF. Value set to SDOF")
-                    self.impact_type == None
+                    self.impact_type = None
             else:
                 self.impact_type = None
 

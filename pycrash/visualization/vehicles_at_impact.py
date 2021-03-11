@@ -8,7 +8,7 @@ import plotly.io as pio
 pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" environmental variable?
-width = 2100
+width = 900
 aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']

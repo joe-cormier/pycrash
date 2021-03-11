@@ -2,18 +2,18 @@ import pandas as pd
 import math
 import os
 
-def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list, strikingVehicle, struckVehicle, impc_inputs, dt_motion):
+def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
+         strikingVehicle, struckVehicle, impc_inputs, dt_motion, show_results=True):
     cor = impc_inputs['cor']
     cof = impc_inputs['vehicle_mu']
     veh1 = vehicle_list[strikingVehicle]
     veh2 = vehicle_list[struckVehicle]
     print('<--- IMPC Model --->')
-    print(f"IMPC for impact: {impactNum} COR: {cor}, COF: {cof}")
     print(f"Striking vehicle: {veh1.name}")
     print(f"Struck vehicle: {veh2.name}")
+
    # heading angle of tangent impact direction in global frame
     theta_c = veh1.model.theta_rad[i] + (impPointEdge[impactNum]['impact_points'][2] * math.pi / 180) + (90 / 180 * math.pi)
-    print(f'theta c (deg): {theta_c*180/3.14159:0.1f}')
 
     # carpenter + welcher model
     # get cosine / sine results for coordinate transformation to the normal - tangent axis
@@ -22,26 +22,17 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list, strikin
     c2 = math.cos(veh2.model.theta_rad[i] - theta_c)
     s2 = math.sin(veh2.model.theta_rad[i] - theta_c)
 
-    print(f"dx1: {impPointEdge[impactNum]['impact_points'][0]}, dy1: {impPointEdge[impactNum]['impact_points'][1]}")
-    print(f'dx2: {poi_veh2x}, dy2: {poi_veh2y}')
-
     # translate distances to n-t frame
     dt1 = c1*(impPointEdge[impactNum]['impact_points'][0]) - s1*(impPointEdge[impactNum]['impact_points'][1])
     dn1 = s1*(impPointEdge[impactNum]['impact_points'][0]) + c1*(impPointEdge[impactNum]['impact_points'][1])
     dt2 = c2*(poi_veh2x) - s2*(poi_veh2y)
     dn2 = s2*(poi_veh2x) + c2*(poi_veh2y)
 
-    print(f'Vx1: {veh1.model.vx[i]:0.2f} fps, Vy1: {veh1.model.vy[i]:0.2f} fps')
-    print(f'Vx2: {veh2.model.vx[i]:0.2f} fps, Vy2: {veh2.model.vy[i]:0.2f} fps')
-
     # translate velocities to n-t frame
     vt1 = c1*veh1.model.vx[i] - s1*veh1.model.vy[i]
     vn1 = s1*veh1.model.vx[i] + c1*veh1.model.vy[i]
     vt2 = c2*veh2.model.vx[i] - s2*veh2.model.vy[i]
     vn2 = s2*veh2.model.vx[i] + c2*veh2.model.vy[i]
-
-    print(f'Omega1: {veh1.model.oz_rad[i]}')
-    print(f'Omega2: {veh2.model.oz_rad[i]}')
 
     # pre-impact POI velocities (Equations 1)
     vct1 = vt1 - dn1*veh1.model.oz_rad[i]
@@ -150,9 +141,10 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list, strikin
     tn_total_dis = t_effects_dis + n_effects_dis
 
     # speeds in fps -
-    veh1.impc_result = {'vx_post': vx1_, 'vy_post': vy1_, 'oz_rad_post': oz_rad1_, 'dvx':dvx1, 'dvy': dvy1, 'dv':dveh1}
-    veh2.impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx':dvx2, 'dvy': dvy2, 'dv':dveh2}
-    impc_energy = {'t_effects_dis':t_effects_dis, 'n_effects_dis':n_effects_dis, 'tn_total_dis':tn_total_dis}
+    veh1_impc_result = {'vx_post': vx1_, 'vy_post': vy1_, 'oz_rad_post': oz_rad1_, 'dvx': dvx1, 'dvy': dvy1, 'dv': dveh1}
+    veh2_impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx': dvx2, 'dvy': dvy2, 'dv': dveh2}
+    impc_energy = {'t_effects_dis': t_effects_dis, 'n_effects_dis': n_effects_dis, 'tn_total_dis': tn_total_dis}
+    impc_results = {'veh1_impc_result': veh1_impc_result, 'veh2_impc_result': veh2_impc_result, 'impc_energy': impc_energy}
 
     # assign vehicle kinematics to results from IMPC
     # ---- Vehicle 1 ---------- #
@@ -179,9 +171,22 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list, strikin
     vehicle_list[struckVehicle].model.Vx[i] = vx2_ * math.cos(vehicle_list[struckVehicle].model.theta_rad[i]) - vy2_ * math.sin(vehicle_list[struckVehicle].model.theta_rad[i])
     vehicle_list[struckVehicle].model.Vy[i] = vx2_ * math.sin(vehicle_list[struckVehicle].model.theta_rad[i]) + vy2_ * math.cos(vehicle_list[struckVehicle].model.theta_rad[i])
 
-    print(impc_energy)
-    print(f'Veh1 DVx: {dvx1 * 0.681818:0.2f} mph, DVy: {dvy1 * 0.681818:0.2f} mph')
-    print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f} mph, DVy: {dvy2 * 0.681818:0.2f} mph')
+    if show_results:
+        print("---- IMPC Inputs ----")
+        print(f"IMPC for impact: {impactNum} COR: {cor}, COF: {cof}")
+        print(f'theta c (deg): {theta_c * 180 / 3.14159:0.1f}')
+        print(f"dx1: {impPointEdge[impactNum]['impact_points'][0]}, dy1: {impPointEdge[impactNum]['impact_points'][1]}")
+        print(f'dx2: {poi_veh2x}, dy2: {poi_veh2y}')
+        print(f'Vx1: {veh1.model.vx[i]:0.2f} fps, Vy1: {veh1.model.vy[i]:0.2f} fps')
+        print(f'Vx2: {veh2.model.vx[i]:0.2f} fps, Vy2: {veh2.model.vy[i]:0.2f} fps')
+        print(f'Omega1: {veh1.model.oz_rad[i]}')
+        print(f'Omega2: {veh2.model.oz_rad[i]}')
 
-    return vehicle_list, impc_energy
+        print("")
+        print("---- IMPC Results ---- ")
+        print(impc_energy)
+        print(f'Veh1 DVx: {dvx1 * 0.681818:0.2f} mph, DVy: {dvy1 * 0.681818:0.2f} mph')
+        print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f} mph, DVy: {dvy2 * 0.681818:0.2f} mph')
+
+    return vehicle_list, impc_results
 ""

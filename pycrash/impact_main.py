@@ -60,6 +60,8 @@ main file for controlling vehicle motion simulation and impact
 
 class Impact():
     def __init__(self, name, endTime, impact_type, vehicle_list, impact_order=None, impc_inputs=None, user_sim_defaults=None):
+        """ impact_order defines the [striking , struck] vehicle using a list of lists
+        impc_inputs is a dictionary of inputs for each impact of the form {0:{'vehicle_mu': 0.3, 'cor': 0.1}}"""
         self.name = name
         self.type = 'impact'
         self.vehicles = deepcopy(vehicle_list)
@@ -186,7 +188,7 @@ class Impact():
 
         """ dictionaries for storing impact related data """
         self._impactList = list(range(0, len(self.impact_order)))
-        self.impc_energy = dict.fromkeys(self._impactList)
+        self.impc_results = dict.fromkeys(self._impactList)
         self._impPointEdge = dict.fromkeys(self._impactList)
         self._impactIndex = {}  # index of each impact for plotting
 
@@ -229,7 +231,7 @@ class Impact():
             for key, value in self._impactIndex.items():
                 if value == impactNum:
                     plot_impact(self.vehicles, key-1, self._impactIndex, show_vector=True)
-                    print(f'Plotting impact {value} and index {key}')
+                    print(f'Plotting impact {value} at index {key}')
 
     """ plot kinematic data """
     def plot_model(self, vehNum):
@@ -237,10 +239,11 @@ class Impact():
 
     """ initiate impact simulation """
 
-    def simulate(self):
+    def simulate(self, show_results=True):
         """
         end_time <- default time of simulation (seconds), simulation will still stop if vehicle motion is zero
         """
+        self.show_results = show_results   # print results from impact simulation calculations
         separation = True   # vehicles are separated / not engaged
         impactsComplete = False  # all impacts have occurred
 
@@ -264,13 +267,14 @@ class Impact():
                 self.detect_data = detect(i, self.impactNum, self.vehicles, self._impPointEdge, strikingVehicle, struckVehicle, self.detect_data)
 
                 if self.detect_data.impact[i]:
+                    print('')
                     print(f"Impact #{self.impactNum} detected at i: {i}, t: {i * self.sim_defaults['dt_motion']}")
-
+                    print('')
                     """ apply momentum IMPC if impact only if vehicles are separated """
                     if (self.detect_data.impact[i] & separation):
                         if self.impact_type in ["IMPC", "impc"]:
 
-                            self.vehicles, self.impc_energy[self.impactNum] = impc(i,
+                            self.vehicles, self.impc_results[self.impactNum] = impc(i,
                                                                                    self.impactNum,
                                                                                    self.detect_data.impactp_veh2x[i],
                                                                                    self.detect_data.impactp_veh2y[i],
@@ -279,7 +283,8 @@ class Impact():
                                                                                    strikingVehicle,
                                                                                    struckVehicle,
                                                                                    self.impc_inputs[self.impactNum],
-                                                                                   self.sim_defaults['dt_motion'])  # run impc model
+                                                                                   self.sim_defaults['dt_motion'],
+                                                                                   self.show_results)  # run impc model
 
                         separation = False
                         self._impactIndex[i] = self.impactNum
@@ -288,7 +293,7 @@ class Impact():
                 else:
                     if (not separation) and (not self.detect_data.impact[i]):
                         # separation is false and impact is true - vehicles have now separated
-                        print(f'Vehicles have separated')
+                        print(f'Vehicles separated')
                         separation = True
 
             if self.impactNum == len(self.impact_order):

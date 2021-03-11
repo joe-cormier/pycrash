@@ -58,7 +58,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
     # initialize data columns
     columns = ['t', 'x1', 'x2', 'v1', 'v2', 'a1', 'a2', 'springF', 'dx', 'v1_brakeF', 'v2_brakeF']
-    spring_model = pd.DataFrame(columns = columns)
+    spring_model = pd.DataFrame(columns=columns)
 
     ##################################### SDOF Model ############################################
     # model will produce increasing mutual crush until a common velocity is reached, then mutual crush will decrease
@@ -77,7 +77,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
     print('Model Initiated ============>')
     while stop == 0:
         if v2_initial >= v1_initial:
-            print('Vehicles are seperating at onset: Stopping Model')
+            print('Vehicles are separating at onset: Stopping Model')
             stop = 1
             break
 
