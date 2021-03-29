@@ -228,6 +228,70 @@ class SDOF_Model():
         #plt.legend(fontsize=14, frameon = False)
         fig.show()
 
+    def crush_energy(self):
+        """ inegrate force-displacement data to get energy """
+
+        """ divide disp-force data """
+        disp_max_i = self.model.dx.idxmin()
+
+        # integrate f-dx
+        loading = self.model.iloc[0: disp_max_i].copy()
+        energy_absorbed = np.trapz(loading.springF, loading.dx)
+        unloading = self.model.iloc[disp_max_i: len(self.model)]
+        energy_returned = np.trapz(unloading.springF, unloading.dx)
+        cor = np.sqrt(np.abs(energy_returned) / np.abs(energy_absorbed))
+
+        print(f'Mutual crush energy for {self.name}:')
+        print(f'Energy absorbed: {energy_absorbed:0.1f} ft-lb')
+        print(f'Energy returned: {energy_returned:0.1f} ft-lb')
+        print(f'Coefficient of restitution: {cor:0.2f}')
+        print('')
+
+        out = {'mutual_energy_absorbed': energy_absorbed,
+                'mutual_energy_returned': energy_returned,
+                'cor': cor}
+
+        if self.k1known:
+            """ energy for vehicle 1 """
+            disp_max_i = self.model.veh1_dx.idxmin()
+            loading = self.model.iloc[0: disp_max_i].copy()
+            energy_absorbed = np.trapz(loading.springF, loading.veh1_dx)
+            unloading = self.model.iloc[disp_max_i: len(self.model)]
+            energy_returned = np.trapz(unloading.springF, unloading.veh1_dx)
+            cor = np.sqrt(np.abs(energy_returned) / np.abs(energy_absorbed))
+
+            print(f'Crush energy for vehicle {self.veh1.name}:')
+            print(f'Energy absorbed: {energy_absorbed:0.1f} ft-lb')
+            print(f'Energy returned: {energy_returned:0.1f} ft-lb')
+            print(f'Coefficient of restitution: {cor:0.2f}')
+            print('')
+
+            out['veh1_energy_absorbed'] = energy_absorbed
+            out['veh1_energy_returned'] = energy_returned
+            out['veh1_cor'] = cor
+
+        if self.k2known:
+            """ energy for vehicle 2 """
+            disp_max_i = self.model.veh2_dx.idxmin()
+            loading = self.model.iloc[0: disp_max_i].copy()
+            energy_absorbed = np.trapz(loading.springF, loading.veh2_dx)
+            unloading = self.model.iloc[disp_max_i: len(self.model)]
+            energy_returned = np.trapz(unloading.springF, unloading.veh2_dx)
+            cor = np.sqrt(np.abs(energy_returned) / np.abs(energy_absorbed))
+
+            print(f'Crush energy for vehicle {self.veh2.name}:')
+            print(f'Energy absorbed: {energy_absorbed:0.1f} ft-lb')
+            print(f'Energy returned: {energy_returned:0.1f} ft-lb')
+            print(f'Coefficient of restitution: {cor:0.2f}')
+            print('')
+
+            out['veh2_energy_absorbed'] = energy_absorbed
+            out['veh2_energy_returned'] = energy_returned
+            out['veh2_cor'] = cor
+
+        return out
+
+
     def get_results(self):
         print('')
         print(f'Simulation results for {self.veh1.name}:')

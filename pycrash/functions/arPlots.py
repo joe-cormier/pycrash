@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 pio.renderers.default = "plotly_mimetype"  # <- determines how plots are displayed using Plotly
-# pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
+# "browser"  # <- determines how plots are displayed using Plotly
 
 
 def plot_TotalFdx(df):
