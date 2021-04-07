@@ -26,7 +26,8 @@ dt_impact = default_dict['dt_impact']  # impact time step
 figure_size = (16, 9)
 xy_ratio = figure_size[0] / figure_size[1]
 
-# look for Environment data, load if present
+# TODO: add environmental data inputs (slope, bank, friction)
+""" 
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
     enviro = pd.read_csv(os.path.join(os.getcwd(), "data", "input", "environment.csv"))
     if len(enviro) == 0:
@@ -36,7 +37,7 @@ if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv"))
         print('TODO - process terrain data')
 else:
     print('No Environment File Provided')
-
+"""
 
 class KinematicsTwo():
     """

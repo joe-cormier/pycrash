@@ -1,0 +1,49 @@
+---
+title: "Report Template"
+author: "Author"
+date: "3/4/2021"
+output: html_document
+---
+
+https://blog.rstudio.com/2020/09/30/rstudio-v1-4-preview-visual-markdown-editing/
+
+
+```{r setup, include=FALSE}
+library(reticulate)
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+#use_python('<path to python / virtual environment>')
+use_python('/Users/joe/Documents/venv/bin/python3.9')
+```
+
+
+### Import Pycrash
+R markdown can run python scripts. Load Pycrash and the necessary modules. 
+```{python include=FALSE}
+import sys
+sys.path.insert(0, '/Users/joe/Documents/pycrash')
+import pycrash.functions.ar as ar
+```
+
+### Functions can be written as LaTeX
+This equation is taken from Rose et al. ():
+$$\Delta V_i=\frac{1}{M_i}\sqrt{\frac{M_1M_2}{M_1+M_2}2\frac{1+\epsilon}{1-\epsilon^{2}}E_d}$$
+
+
+```{python echo=TRUE, class.source="bg-success"}
+w1 = 3500         # <- vehicle 1 weight [lbs] (striking)
+w2 = 3500         # <- vehicle 2 weight [lbs] (struck)
+elow = 5500       # <- low range of dissipated energy
+ehigh = 10000     # <- high range of dissipated energy
+
+restitution = ar.cipriani_rest(15.7)    # <- solve for restitution using Cipriani et al. (2002) fit
+print(f'Restitution: {restitution:0.2f}')
+print(f'Low energy range - V1 delta-V: {ar.EnergyDV(w1, w2, elow, restitution)[0]:0.1f} mph, V2 delta-V: {ar.EnergyDV(w1, w2, elow, restitution)[1]:0.1f} mph')
+print(f'High energy range - V1 delta-V: {ar.EnergyDV(w1, w2, ehigh, restitution)[0]:0.1f} mph, V2 delta-V: {ar.EnergyDV(w1, w2, ehigh, restitution)[1]:0.1f} mph')
+```
+
+### Plot Output from Pycrash Simulation
+
+
+
+

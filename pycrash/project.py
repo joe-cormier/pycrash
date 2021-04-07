@@ -121,7 +121,6 @@ class Project:
         save project to filename along with vehicles of Class Vehicle
         will create a directory and subdirectory for data and reports if
         they don't exist
-        TODO: add functionality for 3+ vehicles and model runs
         """
         nvehicles = 0
         nsdof_models = 0
@@ -159,8 +158,7 @@ class Project:
                 ProjectData = pickle.load(handle)
                 # add new project to data file
                 ProjectData = project_objects
-        elif os.path.exists(os.path.join(self.project_path, self.name, "data", "archive", datafileName)) == False:
-            # create new file for saving project data
+        else:
             ProjectData = project_objects
 
         with open(os.path.join(self.project_path, self.name, "data", "archive", datafileName), 'wb') as handle:
@@ -174,7 +172,7 @@ def project_info(project_name):
     datafileName = ''.join([project_name, '.pkl'])
     out_names = []
     print("This saved project contains:")
-    with open(os.path.join(os.path.dirname(os.getcwd()), project_name, "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
     for key, value in ProjectData.items():
         print(f'Object of type "{value.type}" with name "{value.name}"')
@@ -182,7 +180,6 @@ def project_info(project_name):
 
     print(f'list objects in this order for loading project: {out_names}')
     print(f"Example: project_name, veh1, veh2 = load_project('project_name')")
-
 
 def load_project(project_name):
     """
@@ -192,18 +189,18 @@ def load_project(project_name):
     Example prject with two vehicles:
     project, veh1, veh2 = load_project('ProjectName')
     """
-    path_parent = os.path.dirname(os.getcwd())
+
     datafileName = ''.join([project_name, '.pkl'])
 
     out_data = []
-    with open(os.path.join(path_parent, project_name, "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
         value_iterator = iter(ProjectData.values())
         first_value = next(value_iterator)
-
+        print(f'Attributes in project: {len(ProjectData.values())}')
     if len(ProjectData) == 1:
         return first_value
     else:
-        for value in value_iterator:
+        for key, value in ProjectData.items():
             out_data.append(value)
         return out_data

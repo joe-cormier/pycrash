@@ -7,12 +7,11 @@ from .visualization.vehicle import plot_driver_inputs
 from .visualization.kinematics import plot_model
 from .visualization.model import plot_motion
 from .visualization.tire_details import tire_details, vertical_forces
-import os
 
-# TODO: create inputs for plots
 figure_size = (16, 9)
 
-# look for Environment data, load if present
+# TODO: add environmental data inputs (slope, bank, friction)
+""" 
 if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
     enviro = pd.read_csv(os.path.join(os.getcwd(), "data", "input", "environment.csv"))
     if len(enviro) == 0:
@@ -22,7 +21,7 @@ if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv"))
         print('TODO - process terrain data')
 else:
     print('No Environment File Provided')
-
+"""
 
 class SingleMotion:
     """
@@ -49,6 +48,7 @@ class SingleMotion:
         self.dt_motion = sim_defaults['dt_motion']  # iteration time step
         self.alpha_max = sim_defaults['alpha_max']  # maximum tire slip angle (rad)
 
+
         print(f"Maximum allowable friction: {self.mu_max}")
         print(f"Time step for vehicle motion (s) : {self.dt_motion}")
         print(f"Maximum tire slip angle (deg): {self.alpha_max * 180 / 3.14159:0.2f}")
@@ -56,6 +56,8 @@ class SingleMotion:
         self.name = name
         self.type = 'singlemotion'  # class type for saving files
         self.veh = deepcopy(veh)
+        self.veh.striking = False  # single vehicle motion will not have contact
+
         # check for driver inputs
         if isinstance(self.veh.driver_input, pd.DataFrame):
             print(f"Driver input for {self.veh.name} of shape = {self.veh.driver_input.shape}")
