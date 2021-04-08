@@ -7,7 +7,7 @@ attrs==20.3.0
 Babel==2.9.0
 backcall==0.2.0
 binaryornot==0.4.4
-bleach==3.2.1
+bleach>=3.3.0
 Brotli==1.0.9
 certifi==2020.12.5
 cffi==1.14.4
@@ -35,7 +35,7 @@ ipywidgets==7.6.3
 itsdangerous==1.1.0
 jdcal==1.4.1
 jedi==0.17.2
-Jinja2==2.11.2
+jinja2>=2.11.3
 jinja2-time==0.2.0
 joblib==1.0.0
 json5==0.9.5
@@ -69,15 +69,15 @@ pandocfilters==1.4.3
 parso==0.7.1
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.0.1
+Pillow>=8.1.1
 plotly==4.14.0
 poyo==0.5.0
 prometheus-client==0.9.0
 prompt-toolkit==3.0.8
 ptyprocess==0.6.0
 pycparser==2.20
-pycrash==0.0.16
-Pygments==2.7.3
+pycrash>=0.0.17
+Pygments>=2.7.4
 pyparsing==2.4.7
 pyrsistent==0.17.3
 python-dateutil==2.8.1
