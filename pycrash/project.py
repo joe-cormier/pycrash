@@ -165,14 +165,21 @@ class Project:
             pickle.dump(ProjectData, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-def project_info(project_name):
+def project_info(project_name, proj_dir=False):
     """
     pulls project data to be used when reloading saved data
+    will default to the project > data > archive folder
     """
     datafileName = ''.join([project_name, '.pkl'])
+
+    if proj_dir:
+        projectPath = proj_dir
+    else:
+        projectPath = os.path.join(os.getcwd(), "data", "archive")
+
     out_names = []
     print("This saved project contains:")
-    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(projectPath, datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
     for key, value in ProjectData.items():
         print(f'Object of type "{value.type}" with name "{value.name}"')
@@ -181,19 +188,24 @@ def project_info(project_name):
     print(f'list objects in this order for loading project: {out_names}')
     print(f"Example: project_name, veh1, veh2 = load_project('project_name')")
 
-def load_project(project_name):
+def load_project(project_name, proj_dir=False):
     """
     load saved project data using information from "project_info"
     requires multiple variables for input:
 
-    Example prject with two vehicles:
+    Example project with two vehicles:
     project, veh1, veh2 = load_project('ProjectName')
     """
 
     datafileName = ''.join([project_name, '.pkl'])
 
+    if proj_dir:
+        projectPath = proj_dir
+    else:
+        projectPath = os.path.join(os.getcwd(), "data", "archive")
+
     out_data = []
-    with open(os.path.join(os.getcwd(), "data", "archive", datafileName), 'rb') as handle:
+    with open(os.path.join(projectPath, datafileName), 'rb') as handle:
         ProjectData = pickle.load(handle)
         value_iterator = iter(ProjectData.values())
         first_value = next(value_iterator)
