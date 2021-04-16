@@ -21,7 +21,7 @@ use_python('/Users/joe/Documents/venv/bin/python3.9')
 R markdown can run python scripts. Load Pycrash and the necessary modules. 
 ```{python include=FALSE}
 import sys
-sys.path.insert(0, '/Users/joe/Documents/pycrash')
+#sys.path.insert(0, '/Users/joe/Documents/pycrash')
 import pycrash.functions.ar as ar
 ```
 
@@ -46,15 +46,17 @@ print(f'High energy range - V1 delta-V: {ar.EnergyDV(w1, w2, ehigh, restitution)
 
 Driver inputs used in single vehicle motion simulation at 30 mph and 360 degree steer: 
 ```{python, include=FALSE}
+from pycrash.project import load_project
+from pycrash.visualization.vehicle import plot_driver_inputs
 import pandas as pd
 import os
 
-report_dir = "/Users/joe/Documents/pycrash/projects/validation - single vehicle motion/reports/"
-steering_inputs = 'driver_input.pkl'
-model_output = 'single_motion_model_run1.pkl'
+# load project data
+project_dir = "/Users/joe/Documents/pycrash/projects/validation - single vehicle motion/data/archive"
+proj, veh1, veh2, run = load_project('validation - single vehicle motion', proj_dir=project_dir)
+del veh2
 
-driver_inputs = pd.read_pickle(os.path.join(report_dir, steering_inputs))
-model = pd.read_pickle(os.path.join(report_dir, model_output))
+plot_driver_inputs(veh1)
 
 ```
 

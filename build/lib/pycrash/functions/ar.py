@@ -36,7 +36,7 @@ def CrushEnergyAB(A, B, L, C):
     C - average crush depth  [in]
     """
 
-    return L * (A*C + (B * C**2 / 2) + (A**2 / (2*B)))
+    return L * (A*C + (B * C**2 / 2)  + (A**2 / (2*B)))
 
 def CrushForceAB(A, B, L, C):
     """

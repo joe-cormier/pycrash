@@ -203,7 +203,6 @@ class Impact():
 
             # dictionary of impact points and edges for each impact - starts at zero
             self._impPointEdge[counter] = {'impact_points': self.vehicles[imp[0]].impact_points[impactsPerVehicle[imp[0]]],
-                                           'edgeimpact_loc': self.vehicles[imp[1]].edgeimpact[impactsPerVehicle[imp[1]]],
                                            'edgeimpact_points': self.vehicles[imp[1]].edgeimpact_points[impactsPerVehicle[imp[1]]]}  # impact points and edge for each impact
             impactsPerVehicle[imp[0]] += 1
             impactsPerVehicle[imp[1]] += 1
@@ -263,13 +262,15 @@ class Impact():
                 struckVehicle = self.impact_order[self.impactNum][1]    # index of struck vehicle
 
                 # separate crush data for each impact - create dictionary for each impact
+                #print(f'Looking for impact {self.impactNum} between vehicles: {self.impact_order[self.impactNum]}')
+                #print(f'vehicles are separated: {separation}')
                 self.detect_data = detect(i, self.impactNum, self.vehicles, self._impPointEdge, strikingVehicle, struckVehicle, self.detect_data)
 
                 if self.detect_data.impact[i]:
                     print('')
                     print(f"Impact #{self.impactNum} detected at i: {i}, t: {i * self.sim_defaults['dt_motion']}")
                     print('')
-                    """ apply momentum IMPC if impact & only if vehicles are separated """
+                    """ apply momentum IMPC if impact only if vehicles are separated """
                     if (self.detect_data.impact[i] & separation):
                         if self.impact_type in ["IMPC", "impc"]:
 

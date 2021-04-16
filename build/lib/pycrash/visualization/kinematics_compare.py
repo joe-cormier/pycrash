@@ -8,7 +8,7 @@ import plotly.io as pio
 pio.renderers.default = "browser"
 
 
-# TODO: create input for figure size
+# TODO: create input for figure size - loads from "defaults" folder?
 aspect_ratio = 16 / 9
 font_size = 22
 tick_font_size = 18

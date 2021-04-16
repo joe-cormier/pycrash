@@ -94,7 +94,7 @@ def compare_kinematics(model1, model2, name1, name2):
 
     fig.add_trace(go.Scatter(x=model1.t, y=model1.vy / 1.46667,
                              mode='lines',
-                             name=f'{name1} - vx',
+                             name=f'{name1} - vy',
                              line=dict(color='rgb(0, 0, 255)', width=2)),
                   row=1, col=1)
     fig.add_trace(go.Scatter(x=model2.t, y=model2.vy / 1.46667,
