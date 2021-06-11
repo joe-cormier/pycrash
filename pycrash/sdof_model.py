@@ -21,7 +21,7 @@ class SDOF_Model():
     for force at a given displacement
     """
 
-    def __init__(self, veh1, veh2, AB_offset = 0, model_inputs=None):
+    def __init__(self, veh1, veh2, AB_offset = 0, model_inputs=None, print_output=True):
         self.type = "sdof"        # class type
         # create independent copy of vehicle class instances
         self.veh1 = deepcopy(veh1)
@@ -214,7 +214,7 @@ class SDOF_Model():
             vehicle_dx = self.model.veh2_dx * -12
         fig = plt.figure(figsize = (14,12))
         plt.title('Vehicle Crush and Impact Force', fontsize=20)
-        plt.plot(vehicle_dx, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color = "k")
+        plt.plot(vehicle_dx, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color="k")
         plt.xticks(fontsize=16)
         plt.yticks(fontsize=16)
         plt.xlim([0, round(-12 * min(self.model.dx) + 1)])
