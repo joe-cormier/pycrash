@@ -114,9 +114,11 @@ def formFactorin(crush_list_in):
 
     c = crush_list_in
     cbar = c
-    cbar[0] = cbar[0] / 2
-    cbar[5] = cbar[5] / 2
-    cbar = np.sum(cbar) / 5
+    cbar[1] = cbar[1] * 2
+    cbar[2] = cbar[2] * 2
+    cbar[3] = cbar[3] * 2
+    cbar[4] = cbar[4] * 2
+   cbar = np.sum(cbar) / 10
     A = 1 / (15 * cbar**2)
     B = c[0]**2 + c[0]*c[1] + 2*c[1]**2 + c[1]*c[2] + 2*c[2]**2 + c[2]*c[3] + 2*c[3]**2 + \
         c[3]*c[4] + 2*c[4]**2 + c[4]*c[5] + c[5]**2
