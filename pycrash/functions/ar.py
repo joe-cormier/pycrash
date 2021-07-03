@@ -92,38 +92,34 @@ def EnergyDV(w1, w2, Edis, cor):
     dv2 = (1/m2) * np.sqrt(A * 2 * B * Edis)
     return [dv1*0.681818181818181, dv2*0.681818181818181]
 
-def formFactor(crush_list_mm):
-    """
-    crush_list is a list of 6 crush measurements [mm]
-    """
-
-    c = crush_list_mm * 0.0393701
-    cbar = c
-    cbar[0] = cbar[0] / 2
-    cbar[5] = cbar[5] / 2
-    cbar = np.sum(cbar) / 5
-    A = 1 / (15 * cbar**2)
-    B = c[0]**2 + c[0]*c[1] + 2*c[1]**2 + c[1]*c[2] + 2*c[2]**2 + c[2]*c[3] + 2*c[3]**2 + \
-        c[3]*c[4] + 2*c[4]**2 + c[4]*c[5] + c[5]**2
-    return A * B
-
 def formFactorin(crush_list_in):
     """
     crush_list is a list of 6 crush measurements [in]
     """
-
-    c = crush_list_in
-    cbar = c
-    cbar[1] = cbar[1] * 2
-    cbar[2] = cbar[2] * 2
-    cbar[3] = cbar[3] * 2
-    cbar[4] = cbar[4] * 2
-   cbar = np.sum(cbar) / 10
+    cbar = [0] * len(crush_list_in)
+    cbar[0] = crush_list_in[0]
+    cbar[1] = crush_list_in[1] * 2
+    cbar[2] = crush_list_in[2] * 2
+    cbar[3] = crush_list_in[3] * 2
+    cbar[4] = crush_list_in[4] * 2
+    cbar[5] = crush_list_in[5]
+    cbar = np.sum(cbar) / 10
     A = 1 / (15 * cbar**2)
-    B = c[0]**2 + c[0]*c[1] + 2*c[1]**2 + c[1]*c[2] + 2*c[2]**2 + c[2]*c[3] + 2*c[3]**2 + \
-        c[3]*c[4] + 2*c[4]**2 + c[4]*c[5] + c[5]**2
+    B = crush_list_in[0]**2 + crush_list_in[0]*crush_list_in[1] + 2*crush_list_in[1]**2 + crush_list_in[1]*crush_list_in[2]\
+        + 2*crush_list_in[2]**2 + crush_list_in[2]*crush_list_in[3] + 2*crush_list_in[3]**2 + \
+        crush_list_in[3]*crush_list_in[4] + 2*crush_list_in[4]**2 + crush_list_in[4]*crush_list_in[5] + crush_list_in[5]**2
     return A * B
 
+def FrickeEfromAB(A, B, L, crush_list, theta=0):
+    G = A**2 / (2 * B)
+    print(f'G: {G}')
+    print(f'Angle Correction = {(1+np.tan(theta)**2)}')
+    one = (5 * G) + A/2 * (crush_list[0] + 2 * crush_list[1] + 2 * crush_list[2] + 2 * crush_list[3] + 2 * crush_list[4] + crush_list[5])
+    two = (B / 6) * (crush_list[0]**2 + 2*crush_list[1]**2 + 2*crush_list[2]**2 + 2*crush_list[3]**2 + 2*crush_list[4]**2 + crush_list[5]**2 +
+                     crush_list[0] * crush_list[1] + crush_list[1] * crush_list[2] + crush_list[2] * crush_list[3] + crush_list[3] * crush_list[4] +
+                     crush_list[4] * crush_list[5])
+    return (L / 5) * (one + two) * (1+np.tan(theta)**2)
+    
 def BarrierCrushEnergy(W, s):
     """
     W [lb] = weight of test vehicle
