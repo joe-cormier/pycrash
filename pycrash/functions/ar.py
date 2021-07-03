@@ -125,7 +125,6 @@ def BarrierCrushEnergy(W, s):
     W [lb] = weight of test vehicle
     s [mph] = barrier impact speed
     """
-
     return 0.5 * (W/32.2) * (s*1.46667)**2
 
 def cipriani_rest(ClosingSpeed):
