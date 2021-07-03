@@ -4,7 +4,6 @@ import plotly.io as pio
 pio.renderers.default = "plotly_mimetype"  # <- determines how plots are displayed using Plotly
 # "browser"  # <- determines how plots are displayed using Plotly
 
-
 def plot_TotalFdx(df):
     """ dataframe with at least two columns
     Disp - vehicle displacment in feet
