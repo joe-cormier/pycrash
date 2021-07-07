@@ -93,6 +93,7 @@ def EnergyDV(w1, w2, Edis, cor):
     return [dv1*0.681818181818181, dv2*0.681818181818181]
 
 def formFactorin(crush_list_in):
+    print('Hello World')
     """
     crush_list is a list of 6 crush measurements [in]
     """
