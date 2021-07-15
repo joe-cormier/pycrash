@@ -13,7 +13,7 @@ input_dir = os.path.join(project_dir, 'data', 'input')
 
 # load defaults
 sim_defaults = {'dt_motion': 0.01,
-                'mu_max': 0.76,
+                'mu_max': 0.8,
                 'alpha_max': 0.174533}
 
 mu_max = sim_defaults['mu_max']    # maximum available friction
@@ -59,7 +59,9 @@ input_query = ["Model year",
 "Crush depth c [in]",
 "Initial forward velocity Vx (mph)",
 "Initial lateral velocity Vy (mph)",
-"Initial Yaw Rate (deg/s)"]
+"Initial Yaw Rate (deg/s)",
+"Striking Vehicle? (True/False)",
+"notes"]
 
 veh_inputs = ["year",
 "make",
@@ -94,7 +96,8 @@ veh_inputs = ["year",
 "vx_initial",
 "vy_initial",
 "omega_z",
-"striking"]
+"striking",
+"notes"]
 
 
 
@@ -117,7 +120,7 @@ class Vehicle:
         if input_dict != None:
             for key, value in input_dict.items():
                 if key in veh_inputs:
-                    if key in ['make', 'model', 'vin']:
+                    if key in ['make', 'model', 'vin', 'notes']:
                         setattr(self, key, str(value))
                     else:
                         setattr(self, key, float(value))
@@ -125,7 +128,7 @@ class Vehicle:
                     print(f"Input entry {key} unknown, setting to {value}")
                     setattr(self, key, float(value))
 
-            print(f'Vehicle inputs for {self.name} applied succesfully')
+            print(f'Vehicle inputs for {self.name} applied successfully')
 
     def manual_specs(self):  # loop through lists above to create inputs
         for i in range(len(input_query)):

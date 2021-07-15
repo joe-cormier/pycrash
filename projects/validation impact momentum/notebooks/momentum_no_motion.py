@@ -1,18 +1,10 @@
 """
-inputs for Brach paper validation - in progress
+inputs for Brach paper validation
 """
 
 import sys
-machine = 'ubuntu'
-if machine == 'ubuntu':
-    sys.path.insert(0, '/home/jmc/Documents/pycrash/')
-    sys.path.insert(0, '/home/jmc/Documents/pycrash/projects/validation impact momentum/src/')
-    report_dir = '/home/jmc/Documents/pycrash/projects/validation impact momentum/reports/'
-    input_dir = '/home/jmc/Documents/pycrash/projects/validation impact momentum/data/input'
-elif machine == 'biocore':
-    sys.path.insert(0, 'D:\\OneDrive\\pycrash\\')
-    sys.path.insert(0, 'D:\\OneDrive\\pycrash\\projects\\validation impact momentum\\src')
-    report_dir = 'D:\\OneDrive\\pycrash\\projects\\validation impact momentum\\reports\\'
+sys.path.insert(0, '/< path to pycrash >/')
+
 
 import numpy as np
 import pickle

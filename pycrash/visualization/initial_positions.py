@@ -170,8 +170,8 @@ def initial_position(vehicle_list):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside", scaleanchor = "x", scaleratio = 1,
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-
-    fig.show()
+    fig.write_html('temp.html', auto_open=True)
+    #fig.show()
 
     # Table of initial conditions
 

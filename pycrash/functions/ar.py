@@ -1,7 +1,6 @@
 # various equations for reconstruction
 import numpy as np
 
-
 def b1values(bo, L, C, W):
     """
     calculate b1 given bo, damage length (L), damage depth (C) and vehicle weight (W)
@@ -35,7 +34,6 @@ def CrushEnergyAB(A, B, L, C):
     L - crush length [in]
     C - average crush depth  [in]
     """
-
     return L * (A*C + (B * C**2 / 2) + (A**2 / (2*B)))
 
 def CrushForceAB(A, B, L, C):
@@ -46,7 +44,6 @@ def CrushForceAB(A, B, L, C):
     L crush length [in]
     C crush depth [in]
     """
-
     return L * (A + B * C)
 
 def StrikingDV(w1, w2, v1, v2, rest):
@@ -83,7 +80,6 @@ def EnergyDV(w1, w2, Edis, cor):
     Edis = dissipated energy [ft-lb]
     cor = coefficient of restitution
     """
-
     m1 = w1 / 32.2
     m2 = w2 / 32.2
     A = (m1 * m2) / (m1 + m2)
@@ -93,7 +89,6 @@ def EnergyDV(w1, w2, Edis, cor):
     return [dv1*0.681818181818181, dv2*0.681818181818181]
 
 def formFactorin(crush_list_in):
-    print('Hello World')
     """
     crush_list is a list of 6 crush measurements [in]
     """

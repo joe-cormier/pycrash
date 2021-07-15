@@ -251,5 +251,5 @@ def plot_motion_interval(veh_list, impactIndex, num_itter=10, tire_path=True, sh
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
-
-    fig.show()
+    fig.write_html('temp_motion.html', auto_open=True)
+    #fig.show()

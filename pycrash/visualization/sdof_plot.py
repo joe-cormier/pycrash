@@ -173,7 +173,7 @@ def plot_vehicle_fdx(run_list, veh1_colors=False, veh2_colors=False, fill_diff=F
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False,
                      rangemode="tozero")
-    fig.show()
+    pltly_off.plot(fig)
 
 
 def plot_velocity(run_list, veh1_colors=False, veh2_colors=False, fill_diff=False, show_legend=True):
@@ -265,7 +265,7 @@ def plot_velocity(run_list, veh1_colors=False, veh2_colors=False, fill_diff=Fals
                      tickfont=dict(family='Arial', size=28))
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(family='Arial', size=28))
-    fig.show()
+    pltly_off.plot(fig)
 
 
 def plot_acceleration(run_list, veh1_colors=False, veh2_colors=False, fill_diff=False, show_legend=True):
@@ -356,4 +356,4 @@ def plot_acceleration(run_list, veh1_colors=False, veh2_colors=False, fill_diff=
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, title_text='Acceleration (g)')
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.show()
+    pltly_off.plot(fig)

@@ -109,7 +109,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
 
         # velocity vector in inertial frame
         # TODO: use numpy arctan2?
-        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])  # move to seperate calc
+        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])  # move to separate calc
 
     # vehicle position
     veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
