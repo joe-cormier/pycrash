@@ -3,7 +3,7 @@ import math
 import numpy as np
 # frontal barrier test:
 # generating constant stiffness crash plot
-import ar as ar
+import pycrash.functions.ar as ar
 
 def crash_plot(test_data, veh):
     """
