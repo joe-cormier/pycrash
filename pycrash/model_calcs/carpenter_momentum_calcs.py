@@ -172,6 +172,7 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
     vehicle_list[struckVehicle].model.Vy[i] = vx2_ * math.sin(vehicle_list[struckVehicle].model.theta_rad[i]) + vy2_ * math.cos(vehicle_list[struckVehicle].model.theta_rad[i])
 
     if show_results:
+        print('')
         print("---- IMPC Inputs ----")
         print(f"IMPC for impact: {impactNum} COR: {cor}, COF: {cof}")
         print(f'theta c (deg): {theta_c * 180 / 3.14159:0.1f}')

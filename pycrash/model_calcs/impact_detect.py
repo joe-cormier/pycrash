@@ -51,7 +51,7 @@ def detect(i, impactNum, vehicle_list, impPointEdge, strikingVehicle, struckVehi
         if (crush_data.normal_crush[i] <= 0) & (impactp_veh2y <= impPointEdge[impactNum]['edgeimpact_points'][1]) & (impactp_veh2y >= impPointEdge[impactNum]['edgeimpact_points'][3]):
             crush_data.impact[i] = True
     elif impPointEdge[impactNum]['edgeimpact_loc'] == 3:
-        crush_data.normal_crush[i] = np.abs(impactp_veh2y) - impPointEdge[impactNum]['edgeimpact_points'][1]
+        crush_data.normal_crush[i] = np.abs(impactp_veh2y) + impPointEdge[impactNum]['edgeimpact_points'][1]
         crush_data.edge_loc[i] = impactp_veh2x - impPointEdge[impactNum]['edgeimpact_points'][0]
         if (crush_data.normal_crush[i] < 0) & (impactp_veh2x >= impPointEdge[impactNum]['edgeimpact_points'][0]) & (impactp_veh2x <= impPointEdge[impactNum]['edgeimpact_points'][2]):
             crush_data.impact[i] = True

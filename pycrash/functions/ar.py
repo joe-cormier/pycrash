@@ -107,6 +107,10 @@ def formFactorin(crush_list_in):
     return A * B
 
 def FrickeEfromAB(A, B, L, crush_list, theta=0):
+    """
+    crush_list in inches
+
+    """
     G = A**2 / (2 * B)
     print(f'G: {G}')
     print(f'Angle Correction = {(1+np.tan(theta)**2)}')

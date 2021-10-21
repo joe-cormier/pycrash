@@ -3,11 +3,11 @@ import pandas as pd
 import numpy as np
 import csv
 import os
-dt_impact = 0.001
+dt_impact = 0.0001
 mu_max = 0.9
 
 """
-Performs interative calculations for the SDOF impact simulation
+Performs iterative calculations for the SDOF impact simulation
 """
 # TODO: update to take user defined inputs
 
@@ -18,9 +18,9 @@ def BrakeCheck(brake_applied, springF, v):
         return brake_applied * -1 * sign(v)
     if brake_applied == 0:    # no brake applied - brake force will be zero
         return 0
-    elif abs(springF) > brake_applied: # spring force is greater than brake force full brake force applied
+    elif abs(springF) > brake_applied:  # spring force is greater than brake force full brake force applied
         return brake_applied * -1
-    elif abs(springF) < brake_applied: # spring force is less than braking force so accel will = 0
+    elif abs(springF) < brake_applied:  # spring force is less than braking force so accel will = 0
             return springF * -1
 
 def sign(x):
@@ -157,13 +157,13 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
             # calculate brake force based on applied braking and spring force
             # v1 brake force will always oppose v1 velocity
             v1_brakeF = v1_brakeFApp * -1 * sign(v1)
-            v2_brakeF = BrakeCheck(v2_brakeFApp, springF, v2) # applied brake will oppose velocity if vehicle is in motion
+            v2_brakeF = BrakeCheck(v2_brakeFApp, springF, v2)   # applied brake will oppose velocity if vehicle is in motion
 
-            # calculate vehicle accleration [ft/s/s]
+            # calculate vehicle acceleration [ft/s/s]
             a1 = 32.2 / W1 * (v1_brakeF - springF)
             a2 = 32.2 / W2 * (v2_brakeF + springF)
 
-            if (closing == 0) & (dx >= dxperm) & (t >= tstop): # vehicles are seperating and dx is less than permanent crush
+            if (closing == 0) & (dx >= dxperm) & (t >= tstop):  # vehicles are seperating and dx is less than permanent crush
                 stop = 1
                 print("")
                 print(f'========> Stopped t (s) = {t:.3f}')

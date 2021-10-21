@@ -15,6 +15,7 @@ roll_rate = 6    # semi-firm 7 = semi soft, 3 = extremely firm (corvette) (degre
 rc_cg = 18/12    # passenger car - roll center to cg height (h1)  (ft)
 roll_h = 6/12    # roll center height
 """
+
 def sign(x):
     # returns the sign of a number
     if x > 0:
@@ -87,12 +88,15 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
-        lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        #lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lf_lonf = sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
         lf_latf = math.sin(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) <= mu_max * veh.model.lf_fz[i]:
         veh.model.lf_lock[i] = 0
         lf_lonf = lf_app
         lf_latf = lf_latf
+
+    #print(f'math.cos(veh.model.lf_alpha[i]): {math.cos(veh.model.lf_alpha[i])}, lf_fz: {veh.model.lf_fz[i]}, lock: {veh.model.lf_lock[i]}')
 
     # ------------------------ Right Front Tire ----------------------------------- #
     # local velocity
@@ -117,7 +121,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) > mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 1
-        rf_lonf = -1 * sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
+        #rf_lonf = -1 * sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
+        rf_lonf = sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
         rf_latf = math.sin(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
     elif math.sqrt(rf_app ** 2 + rf_latf ** 2) <= mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 0
@@ -147,7 +152,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) > mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 1
-        rr_lonf = -1 * sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
+        #rr_lonf = -1 * sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
+        rr_lonf = sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
         rr_latf = math.sin(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) <= mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 0
@@ -174,7 +180,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) > mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        lr_lonf = -1 * sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
+        #lr_lonf = -1 * sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
+        lr_lonf = sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
         lr_latf = math.sin(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) <= mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 0

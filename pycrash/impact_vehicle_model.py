@@ -80,7 +80,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
         veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i] * veh.model.vx[i]
         veh.model.ar[i] = np.sqrt(veh.model.ax[i] ** 2 + veh.model.ay[i] ** 2)
 
-        # inertial frame coorindates - capital letters
+        # inertial frame coordinates - capital letters
         veh.model.Ax[i] = veh.model.au[i] * np.cos(veh.model.theta_rad[i]) - veh.model.av[i] * np.sin(veh.model.theta_rad[i])
         veh.model.Ay[i] = veh.model.au[i] * np.sin(veh.model.theta_rad[i]) + veh.model.av[i] * np.cos(veh.model.theta_rad[i])
 
@@ -100,7 +100,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
         # heading angle
         veh.model.theta_rad[i] = veh.model.theta_rad[i - 1] + dt_motion * np.mean([veh.model.oz_rad[i], veh.model.oz_rad[i - 1]])
 
-        # inertial frame coorindates - capital letters
+        # inertial frame coordinates - capital letters
         veh.model.Ax[i] = veh.model.au[i] * np.cos(veh.model.theta_rad[i]) - veh.model.av[i] * np.sin(veh.model.theta_rad[i])
         veh.model.Ay[i] = veh.model.au[i] * np.sin(veh.model.theta_rad[i]) + veh.model.av[i] * np.cos(veh.model.theta_rad[i])
 
@@ -108,7 +108,6 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
         veh.model.Vy[i] = veh.model.Vy[i - 1] + dt_motion * np.mean([veh.model.Ay[i - 1], veh.model.Ay[i]])
 
         # velocity vector in inertial frame
-        # TODO: use numpy arctan2?
         veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])  # move to separate calc
 
     # vehicle position
