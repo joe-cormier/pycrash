@@ -1,3 +1,5 @@
+import os
+
 import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
@@ -170,8 +172,8 @@ def initial_position(vehicle_list):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside", scaleanchor = "x", scaleratio = 1,
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.write_html('temp.html', auto_open=True)
-    #fig.show()
+    fig.write_html(os.path.join(os.getcwd(), 'initialPosition.html'), auto_open=True)
+
 
     # Table of initial conditions
 

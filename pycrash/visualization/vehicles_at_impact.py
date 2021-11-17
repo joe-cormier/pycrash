@@ -2,9 +2,8 @@
 plotting functions for vehicle model data
 """
 import plotly.graph_objects as go
-import numpy as np
-from plotly.subplots import make_subplots
 import plotly.io as pio
+import os
 pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" environmental variable?
@@ -198,13 +197,7 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
                                      marker=dict(color='rgb(153, 0, 51)', size=7),
                                      ))
 
-    # adjust axes to keep aspect aspect ratio
-    """
-    dx_max = veh.p_gx.cg.max() + 15
-    dx_min = veh.p_gx.cg.min() - 15
-    dy_max = veh.p_gy.cg.max() + 15
-    dy_min = veh.p_gy.cg.min() - 15
-    """
+
     dx_max = 15
     dx_min = -15
     dy_max = 10
@@ -246,4 +239,4 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
 
-    fig.show()
+    fig.write_html(os.path.join(os.getcwd(), f'vehicles_at_impactNum_{plotImpactPoint}.html'), auto_open=True)

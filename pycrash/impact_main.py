@@ -248,7 +248,7 @@ class Impact():
         separation = True   # vehicles are separated / not engaged
         impactsComplete = False  # all impacts have occurred
 
-        for i in range(0, 1 + int(self.endTime / self.sim_defaults['dt_motion'])):
+        for i in list(np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion'])))):
             #print(i)
             for veh in self.vehicles:
                 """ calculate current position of each vehicle """

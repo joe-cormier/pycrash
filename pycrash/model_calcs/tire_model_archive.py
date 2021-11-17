@@ -25,14 +25,6 @@ def sign(x):
     elif x == 0:
         return 0
 
-def oppSign(x):
-    # returns the sign opposite of a number
-    if x > 0:
-        return -1
-    elif x < 0:
-        return 1
-    elif x == 0:
-        return 0
 
 def tire_forces(veh, i, sim_defaults):
     """
@@ -80,12 +72,12 @@ def tire_forces(veh, i, sim_defaults):
     lf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
 
     veh.model.lf_lock[i] = 0  # locked status of Left Front Wheel - initially set to unlocked
-    veh.model.lf_alpha[i] = np.arctan2(lf_vy, lf_vx) + lf_steer_angle   # tire slip angle (rad)
+    veh.model.lf_alpha[i] = -1 * np.arctan2(lf_vy, lf_vx) + lf_steer_angle   # tire slip angle (rad)
 
     if math.fabs(veh.model.lf_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
-        lf_latf = oppSign(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]     # lateral force if alpha is greater than maximum slip angle - input
+        lf_latf = sign(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
     else:
-        lf_latf = sign(veh.model.lf_alpha[i]) * (veh.model.lf_alpha[i] / alpha_max) * mu_max * veh.model.lf_fz[i]     # lateral force for slip angle less than maximum allowed - input
+        lf_latf = (veh.model.lf_alpha[i] / alpha_max) * mu_max * veh.model.lf_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     if veh.fwd == 1:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(lf_vx)))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency
@@ -97,8 +89,8 @@ def tire_forces(veh, i, sim_defaults):
     if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
         #lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_lonf = oppSign(lf_vx) * np.abs(math.cos(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_latf = oppSign(lf_vy) * np.abs(math.sin(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]
+        lf_lonf = sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lf_latf = math.sin(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) <= mu_max * veh.model.lf_fz[i]:
         veh.model.lf_lock[i] = 0
         lf_lonf = lf_app
@@ -112,12 +104,12 @@ def tire_forces(veh, i, sim_defaults):
     rf_vy = veh.model.vy[j] + veh.model.oz_rad[j] * veh.lcgf
 
     veh.model.rf_lock[i] = 0  # locked status - initially set to unlocked
-    veh.model.rf_alpha[i] = np.arctan2(rf_vy, rf_vx) + rf_steer_angle  # tire slip angle (rad)
+    veh.model.rf_alpha[i] = -1 * np.arctan2(rf_vy, rf_vx) + rf_steer_angle  # tire slip angle (rad)
 
     if math.fabs(veh.model.rf_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
-        rf_latf = oppSign(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
+        rf_latf = sign(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
     else:
-        rf_latf = sign(veh.model.rf_alpha[i]) * (veh.model.rf_alpha[i] / alpha_max) * mu_max * veh.model.rf_fz[i]  # lateral force for slip angle less than maximum allowed - input
+        rf_latf = (veh.model.rf_alpha[i] / alpha_max) * mu_max * veh.model.rf_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
@@ -129,8 +121,9 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) > mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 1
-        rf_lonf = oppSign(rf_vx) * np.abs(math.cos(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rf_latf = oppSign(rf_vy) * np.abs(math.sin(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]
+        #rf_lonf = -1 * sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
+        rf_lonf = sign(rf_vx) * math.cos(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
+        rf_latf = math.sin(veh.model.rf_alpha[i]) * mu_max * veh.model.rf_fz[i]
     elif math.sqrt(rf_app ** 2 + rf_latf ** 2) <= mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 0
         rf_lonf = rf_app
@@ -142,12 +135,12 @@ def tire_forces(veh, i, sim_defaults):
     rr_vy = veh.model.vy[j] - veh.model.oz_rad[j] * veh.lcgr
 
     veh.model.rr_lock[i] = 0  # locked status - initially set to unlocked
-    veh.model.rr_alpha[i] = np.arctan2(rr_vy, rr_vx)  # tire slip angle (rad)
+    veh.model.rr_alpha[i] = -1 * np.arctan2(rr_vy, rr_vx)  # tire slip angle (rad)
 
     if math.fabs(veh.model.rr_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
-        rr_latf = oppSign(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
+        rr_latf = sign(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
     else:
-        rr_latf = sign(veh.model.rr_alpha[i]) * (veh.model.rr_alpha[i] / alpha_max) * mu_max * veh.model.rr_fz[i]  # lateral force for slip angle less than maximum allowed - input
+        rr_latf = (veh.model.rr_alpha[i] / alpha_max) * mu_max * veh.model.rr_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     # longitudinal Force Applied = f(Vehicle drive tires)
     if veh.fwd == 1:
@@ -159,8 +152,9 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) > mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 1
-        rr_lonf = oppSign(rr_vx) * np.abs(math.cos(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rr_latf = oppSign(rr_vy) * np.abs(math.sin(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]
+        #rr_lonf = -1 * sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
+        rr_lonf = sign(rr_vx) * math.cos(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
+        rr_latf = math.sin(veh.model.rr_alpha[i]) * mu_max * veh.model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) <= mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 0
         rr_lonf = rr_app
@@ -170,12 +164,12 @@ def tire_forces(veh, i, sim_defaults):
     lr_vx = veh.model.vx[j] + veh.model.oz_rad[j] * (veh.track / 2)
     lr_vy = veh.model.vy[j] - veh.model.oz_rad[j] * veh.lcgr
     veh.model.lr_lock[i] = 0  # locked status - initially set to unlocked
-    veh.model.lr_alpha[i] = np.arctan2(lr_vy, lr_vx)  # tire slip angle (rad)
+    veh.model.lr_alpha[i] = -1 * np.arctan2(lr_vy, lr_vx)  # tire slip angle (rad)
 
     if math.fabs(veh.model.lr_alpha[i]) > alpha_max:  # following Steffan 1996 SAE No. 960886
-        lr_latf = oppSign(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
+        lr_latf = sign(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]  # lateral force if alpha is greater than maximum slip angle - input
     else:
-        lr_latf = sign(veh.model.lr_alpha[i]) * (veh.model.lr_alpha[i] / alpha_max) * mu_max * veh.model.lr_fz[i]  # lateral force for slip angle less than maximum allowed - input
+        lr_latf = (veh.model.lr_alpha[i] / alpha_max) * mu_max * veh.model.lr_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     if veh.fwd == 1:
         lr_app = -1 * veh.model.lr_fz[i] * (mu_max * veh.driver_input.brake[i] * sign(lr_vx))  # front wheel drive, rear wheel will not apply accelerative force
@@ -186,8 +180,9 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) > mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        lr_lonf = oppSign(lr_vx) * np.abs(math.cos(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lr_latf = oppSign(lr_vy) * np.abs(math.sin(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]
+        #lr_lonf = -1 * sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
+        lr_lonf = sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
+        lr_latf = math.sin(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) <= mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 0
         lr_lonf = lr_app

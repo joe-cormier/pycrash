@@ -86,6 +86,7 @@ def EnergyDV(w1, w2, Edis, cor):
     B = (1 + cor) / (1 - cor)
     dv1 = (1/m1) * np.sqrt(A * 2 * B * Edis)
     dv2 = (1/m2) * np.sqrt(A * 2 * B * Edis)
+    print(f'Delta-V in mph | v1: {dv1*0.681818181818181:0.2f}, v2: {dv2*0.681818181818181:0.2f}')
     return [dv1*0.681818181818181, dv2*0.681818181818181]
 
 def formFactorin(crush_list_in):
@@ -109,7 +110,6 @@ def formFactorin(crush_list_in):
 def FrickeEfromAB(A, B, L, crush_list, theta=0):
     """
     crush_list in inches
-
     """
     G = A**2 / (2 * B)
     print(f'G: {G}')

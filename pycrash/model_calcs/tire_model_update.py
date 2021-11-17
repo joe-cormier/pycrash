@@ -97,8 +97,8 @@ def tire_forces(veh, i, sim_defaults):
     if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
         #lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_lonf = oppSign(lf_vx) * np.abs(math.cos(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_latf = oppSign(lf_vy) * np.abs(math.sin(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]
+        lf_lonf = oppSign(lf_vx) * math.cos(np.abs(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lf_latf = oppSign(lf_vy) * math.sin(np.abs(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) <= mu_max * veh.model.lf_fz[i]:
         veh.model.lf_lock[i] = 0
         lf_lonf = lf_app
@@ -129,8 +129,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) > mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 1
-        rf_lonf = oppSign(rf_vx) * np.abs(math.cos(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rf_latf = oppSign(rf_vy) * np.abs(math.sin(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]
+        rf_lonf = oppSign(rf_vx) * math.cos(np.abs(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        rf_latf = oppSign(rf_vy) * math.sin(np.abs(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]
     elif math.sqrt(rf_app ** 2 + rf_latf ** 2) <= mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 0
         rf_lonf = rf_app
@@ -159,8 +159,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) > mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 1
-        rr_lonf = oppSign(rr_vx) * np.abs(math.cos(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rr_latf = oppSign(rr_vy) * np.abs(math.sin(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]
+        rr_lonf = oppSign(rr_vx) * math.cos(np.abs(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        rr_latf = oppSign(rr_vy) * math.sin(np.abs(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) <= mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 0
         rr_lonf = rr_app
@@ -186,8 +186,8 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) > mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        lr_lonf = oppSign(lr_vx) * np.abs(math.cos(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lr_latf = oppSign(lr_vy) * np.abs(math.sin(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]
+        lr_lonf = oppSign(lr_vx) * math.cos(np.abs(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lr_latf = oppSign(lr_vy) * math.sin(np.abs(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) <= mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 0
         lr_lonf = lr_app
