@@ -11,7 +11,7 @@ wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255
 
 
 # plot initial positions and any motion data to show vehicle paths
-def initial_position(vehicle_list, imageDict=False):
+def initial_position(vehicle_list):
     # plot initial positions
     # grid grid based on initial position of vehicle
     # scale x,y axes accordingly
@@ -156,21 +156,6 @@ def initial_position(vehicle_list, imageDict=False):
                                          name=f'POI: {i}',
                                          marker=dict(color='rgb(153, 0, 51)', size=7),
                                          ))
-                # add background image
-                if imageDict:
-                    fig.add_layout_image(
-                        dict(
-                            source=imageDict['image'],
-                            xref="x",
-                            yref="y",
-                            x=imageDict['xOffset'],
-                            y=imageDict['yOffset'],
-                            sizex=imageDict['image'].size[0] / imageDict['pixelsPerFoot'],
-                            sizey=imageDict['image'].size[1] / imageDict['pixelsPerFoot'],
-                            # sizing="fill",
-                            opacity=imageDict['opacity'],
-                            layer="below")
-                    )
 
     fig.update_layout(
         showlegend=False,

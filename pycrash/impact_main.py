@@ -216,15 +216,14 @@ class Impact():
 
     """ plot initial positions: include impact planes """
     # plot initial position
-
-    def show_initial_position(self):
-        initial_position(position_data_static(self.vehicles))
+    def show_initial_position(self, imageDict=False):
+        initial_position(position_data_static(self.vehicles), imageDict)
 
     """ plot vehicle motion """
-    def plot_vehicle_motion(self, n_intervals, tire_path=True, show_vector=False):
+    def plot_vehicle_motion(self, n_intervals, imageDict=False, tire_path=True, show_vector=False):
         # TODO: adjust what impact point to plot
         plotImpactPoint = 0     # starts at 1
-        plot_motion_interval(self.vehicles, self._impactIndex, n_intervals,
+        plot_motion_interval(self.vehicles, self._impactIndex, n_intervals, imageDict,
                              tire_path=tire_path, show_vector=show_vector)
 
     """ plot vehicles at impact """

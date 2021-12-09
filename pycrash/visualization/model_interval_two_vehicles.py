@@ -27,7 +27,7 @@ def get_impactNum(i, impactIndex):
         return max(impactIndex.values())
 
 
-def plot_motion_interval(veh_list, impactIndex, num_itter=10, tire_path=True, show_vector=False):
+def plot_motion_interval(veh_list, impactIndex, num_itter=10, imageDict=False, tire_path=True, show_vector=False):
     fig = go.Figure()
     for veh in veh_list:
         counter = np.arange(0, len(veh.p_gx.b_lfc), round(len(veh.p_gx.b_lfc) / num_itter))
@@ -135,6 +135,21 @@ def plot_motion_interval(veh_list, impactIndex, num_itter=10, tire_path=True, sh
                                arrowhead=1,
                                arrowwidth=1.5,
                                arrowcolor='rgb(0, 0, 255)')
+            # add background image
+            if imageDict:
+                fig.add_layout_image(
+                    dict(
+                        source=imageDict['image'],
+                        xref="x",
+                        yref="y",
+                        x=imageDict['xOffset'],
+                        y=imageDict['yOffset'],
+                        sizex=imageDict['image'].size[0] / imageDict['pixelsPerFoot'],
+                        sizey=imageDict['image'].size[1] / imageDict['pixelsPerFoot'],
+                        # sizing="fill",
+                        opacity=imageDict['opacity'],
+                        layer="below")
+                )
 
             # tire center plot depends on lock condition
             def setmarker(x):

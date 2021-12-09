@@ -57,7 +57,7 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
 
     if p_ratio > cof:
             print('Sliding Condition')
-            pn_s = (1+cor) * vcn21 / (A22 - alpha * cof * A12)
+            pn_s = (1+cor) * vcn21 / (A22 - cof * A12)
             pt_s = alpha * cof * pn_s
 
             if pt * pt_s > 0:           # test for sliding direction
@@ -65,10 +65,12 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
                 pn = pn_s
             else:
                 alpha = -1
-                pn = (1+cor) * vcn21 / (A22 - alpha * cof * A12)   # sliding in wrong direction, alpha = -1
+                pn = (1+cor) * vcn21 / (A22 + cof * A12)   # sliding in wrong direction, alpha = -1
                 pt = alpha * cof * pn
     else:
-        print ('No Sliding')                                                      # no sliding, original pt, pn are correct
+        print('No Sliding')                                                      # no sliding, original pt, pn are correct
+
+    print(f'alpha: {alpha}')
 
     if pn * dn1 < 0:
         print('Compression')

@@ -155,7 +155,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             crush_data = None
 
         """
-        for multiple crashes, vehicles need to seperate before second impact is allowed
+        for multiple crashes, vehicles need to separate before second impact is allowed
         """
 
         if impc_complete == False:
