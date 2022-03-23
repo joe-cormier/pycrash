@@ -137,7 +137,7 @@ class Impact():
         # TODO: convert sideswipe to lists of tuples like impc
             # sideswipe will not have iplane=True
         """ IMPC model - impact points and edge detection """
-        # TODO: test for totalIMpacts = number of impact points / edges
+        # TODO: test for total Impacts = number of impact points / edges
         if self.impact_type in ['IMPC', 'impc']:
             for veh in self.vehicles:
                 if veh.striking:
@@ -221,7 +221,6 @@ class Impact():
 
     """ plot vehicle motion """
     def plot_vehicle_motion(self, n_intervals, imageDict=False, tire_path=True, show_vector=False):
-        # TODO: adjust what impact point to plot
         plotImpactPoint = 0     # starts at 1
         plot_motion_interval(self.vehicles, self._impactIndex, n_intervals, imageDict,
                              tire_path=tire_path, show_vector=show_vector)
@@ -297,12 +296,12 @@ class Impact():
             if self.impactNum == len(self.impact_order):
                 impactsComplete = True
 
-        """ convert and position data for plots """
+        """ convert and calculate position data for plots """
         for veh in self.vehicles:
             veh.model.alphaz_deg = [row * 180 / np.pi for row in veh.model.alphaz]  # move to seperate calc
-            veh.model.oz_deg = [row * 180 / np.pi for row in veh.model.oz_rad]  # move to seperate calc
-            veh.model.theta_deg = [row * 180 / np.pi for row in veh.model.theta_rad]  # move to seperate calc
-            veh.model.beta_deg = [row * 180 / np.pi for row in veh.model.beta_rad]  # move to seperate calc
+            veh.model.oz_deg = [row * 180 / np.pi for row in veh.model.oz_rad]  # move to separate calc
+            veh.model.theta_deg = [row * 180 / np.pi for row in veh.model.theta_rad]  # move to separate calc
+            veh.model.beta_deg = [row * 180 / np.pi for row in veh.model.beta_rad]  # move to separate calc
             # get position data
             veh = position_data_motion(veh)
 

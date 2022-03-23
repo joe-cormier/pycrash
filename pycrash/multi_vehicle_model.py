@@ -112,7 +112,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 veh.model.ay[i] = veh.model.av[i] - veh.model.oz_rad[i] * veh.model.vx[i]
                 veh.model.ar[i] = math.sqrt(veh.model.ax[i] ** 2 + veh.model.ay[i] ** 2)
 
-                # inertial frame coorindates - capital letters
+                # inertial frame coordinates - capital letters
                 veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
                 veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
@@ -140,7 +140,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 veh.model.Vy[i] = veh.model.Vy[i - 1] + dt_motion * np.mean([veh.model.Ay[i - 1], veh.model.Ay[i]])
 
                 # velocity vector in inertial frame
-                veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])  # move to seperate calc
+                veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])  # move to separate calc
 
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)

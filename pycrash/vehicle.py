@@ -12,7 +12,7 @@ project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')
 
 # load defaults
-sim_defaults = {'dt_motion': 0.001,
+sim_defaults = {'dt_motion': 0.01,
                 'mu_max': 0.8,
                 'alpha_max': 0.174533}
 
@@ -122,6 +122,8 @@ class Vehicle:
                 if key in veh_inputs:
                     if key in ['make', 'model', 'vin', 'notes']:
                         setattr(self, key, str(value))
+                    elif key in ['fwd', 'rwd', 'awd']:
+                        setattr(self, key, bool(value))
                     else:
                         setattr(self, key, float(value))
                 else:
@@ -201,19 +203,19 @@ class Vehicle:
             print('Input data for time has zero length')
             print('No driver input applied to vehicle')
         else:
-            inputdf = pd.DataFrame(list(zip(throttle, brake, steer)), columns = ['throttle', 'brake', 'steer'])
-            t = list(np.arange(0, max(time) + dt_motion, dt_motion)) # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
+            inputdf = pd.DataFrame(list(zip(throttle, brake, steer)), columns=['throttle', 'brake', 'steer'])
+            t = list(np.arange(0, max(time) + dt_motion, dt_motion))    # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
             t = [float(i) for i in t]
             df = pd.DataFrame()                                                           # create dataframe for vehicle input with interpolated values
             df['t'] = t
             inputdf['input_t'] = [float(num) for num in time]
             df.t = df.t.round(3).astype(float)
-            df = pd.merge(df, inputdf, how = 'left', left_on = 't', right_on = 'input_t')  # merge input data with time data at specified time step
-            df = df.interpolate(method = 'linear', axis = 0) # interpolate NaN values left after merging
+            df = pd.merge(df, inputdf, how='left', left_on='t', right_on='input_t')   # merge input data with time data at specified time step
+            df = df.interpolate(method='linear', axis=0)    # interpolate NaN values left after merging
             df.drop(columns = ['input_t', 't'], inplace = True)  # drop input time column
-            df['t'] = t # reset time column due to interpolating
-            df['t'] = df.t.round(3) # reset signficant digits
-            df = df.reset_index(drop = True)
+            df['t'] = t    # reset time column due to interpolating
+            df['t'] = df.t.round(3)    # reset significant digits
+            df = df.reset_index(drop=True)
             self.driver_input = df
             print(f'Driver inputs applied to {self.name}')
             if show_plot:

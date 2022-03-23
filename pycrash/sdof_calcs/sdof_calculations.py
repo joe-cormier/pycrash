@@ -141,7 +141,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
             dx_past = spring_model.loc[i-1, 'dx']
             # check for closing / seperating status
             if closing == 1:
-                if abs(dx_past) > abs(dx):  # if mutual crush decreased at current time step, vehicles are seperating
+                if abs(dx_past) > abs(dx):  # if mutual crush decreased at current time step, vehicles are separating
                     closing = 0
                     Fmax = spring_model.loc[i-1, 'springF']
                     dxmax = dx_past

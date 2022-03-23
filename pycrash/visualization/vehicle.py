@@ -4,7 +4,7 @@ plots used within vehicle class
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.io as pio
-
+import os
 pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
 
 # TODO: create input for figure size - loads from "defaults" folder?
@@ -310,4 +310,4 @@ def plot_driver_inputs(self):
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
     fig.update_yaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
-    fig.show()
+    fig.write_html(os.path.join(os.getcwd(), f'{self.name}_driver_inputs.html'), auto_open=True)
