@@ -44,13 +44,13 @@ def CrushForceAB(A, B, L, C):
     L crush length [in]
     C crush depth [in]
     """
-    return L * (A + B * C)
+    return L * (A + (B * C))
 
 def StrikingDV(w1, w2, v1, v2, rest):
     """
     calculate striking vehicle delta-V [mph] given:
     w1, w2 - vehicle weights [lb]
-    v1, v2 - striking vehicle speeds [mph]
+    v1, v2 - striking / struck vehicle speeds [mph]
     rest - restitution
     """
     m1 = w1 / 32.2
@@ -63,7 +63,7 @@ def StruckDV(w1, w2, v1, v2, rest):
     """
     calculate struck vehicle delta-V [mph] given:
     w1, w2 - vehicle weights [lb]
-    v1, v2 - striking vehicle speeds [mph]
+    v1, v2 - striking / struck vehicle speeds [mph]
     rest - restitution
     """
     m1 = w1 / 32.2

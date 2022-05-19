@@ -87,18 +87,18 @@ def tire_forces(veh, i, sim_defaults):
     else:
         lf_latf = sign(veh.model.lf_alpha[i]) * (veh.model.lf_alpha[i] / alpha_max) * mu_max * veh.model.lf_fz[i]     # lateral force for slip angle less than maximum allowed - input
 
-    if veh.fwd == 1:
+    if veh.fwd:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(lf_vx)))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency
-    elif veh.rwd == 1:
+    elif veh.rwd:
         lf_app = -1 * veh.model.lf_fz[i] * (mu_max * veh.driver_input.brake[i] * sign(lf_vx))  # rear wheel drive, front wheel will not apply throttle force
-    elif veh.awd == 1:
+    elif veh.awd:
         lf_app = veh.model.lf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(lf_vx)))
 
-    if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):  # Equation 3 - is the force applied greater than available from friction at tire?
+    if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):    # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
         #lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_lonf = oppSign(lf_vx) * math.cos(np.abs(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lf_latf = oppSign(lf_vy) * math.sin(np.abs(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]
+        lf_lonf = oppSign(lf_vx) * np.abs(math.cos(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lf_latf = oppSign(lf_vy) * np.abs(math.sin(veh.model.lf_alpha[i])) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) <= mu_max * veh.model.lf_fz[i]:
         veh.model.lf_lock[i] = 0
         lf_lonf = lf_app
@@ -120,17 +120,16 @@ def tire_forces(veh, i, sim_defaults):
         rf_latf = sign(veh.model.rf_alpha[i]) * (veh.model.rf_alpha[i] / alpha_max) * mu_max * veh.model.rf_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     # longitudinal Force Applied = f(Vehicle drive tires)
-    if veh.fwd == 1:
+    if veh.fwd:
         rf_app = veh.model.rf_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(rf_vx)))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency
-    elif veh.rwd == 1:
+    elif veh.rwd:
         rf_app = -1 * veh.model.rf_fz[i] * (mu_max * veh.driver_input.brake[i] * sign(rf_vx))  # rear wheel drive, front wheel will not apply accelerative force
-    elif veh.awd == 1:
+    elif veh.awd:
         rf_app = veh.model.rf_fz[i] * (mu_max * (veh.driver_input.throttle[i]) - veh.driver_input.brake[i] * sign(rf_vx))
-
     if math.sqrt(rf_app ** 2 + rf_latf ** 2) > mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 1
-        rf_lonf = oppSign(rf_vx) * math.cos(np.abs(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rf_latf = oppSign(rf_vy) * math.sin(np.abs(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]
+        rf_lonf = oppSign(rf_vx) * np.abs(math.cos(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        rf_latf = oppSign(rf_vy) * np.abs(math.sin(veh.model.rf_alpha[i])) * mu_max * veh.model.rf_fz[i]
     elif math.sqrt(rf_app ** 2 + rf_latf ** 2) <= mu_max * veh.model.rf_fz[i]:
         veh.model.rf_lock[i] = 0
         rf_lonf = rf_app
@@ -150,17 +149,17 @@ def tire_forces(veh, i, sim_defaults):
         rr_latf = sign(veh.model.rr_alpha[i]) * (veh.model.rr_alpha[i] / alpha_max) * mu_max * veh.model.rr_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
     # longitudinal Force Applied = f(Vehicle drive tires)
-    if veh.fwd == 1:
+    if veh.fwd:
         rr_app = -1 * veh.model.rr_fz[i] * (mu_max * veh.driver_input.brake[i] * sign(rr_vx))  # front wheel drive, rear wheel will not apply accelerative force
-    elif veh.rwd == 1:
+    elif veh.rwd:
         rr_app = veh.model.rr_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(rr_vx)))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
-    elif veh.awd == 1:
+    elif veh.awd:
         rr_app = veh.model.rr_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(rr_vx)))
 
     if math.sqrt(rr_app ** 2 + rr_latf ** 2) > mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 1
-        rr_lonf = oppSign(rr_vx) * math.cos(np.abs(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        rr_latf = oppSign(rr_vy) * math.sin(np.abs(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]
+        rr_lonf = oppSign(rr_vx) * np.abs(math.cos(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        rr_latf = oppSign(rr_vy) * np.abs(math.sin(veh.model.rr_alpha[i])) * mu_max * veh.model.rr_fz[i]
     elif math.sqrt(rr_app ** 2 + rr_latf ** 2) <= mu_max * veh.model.rr_fz[i]:
         veh.model.rr_lock[i] = 0
         rr_lonf = rr_app
@@ -177,21 +176,22 @@ def tire_forces(veh, i, sim_defaults):
     else:
         lr_latf = sign(veh.model.lr_alpha[i]) * (veh.model.lr_alpha[i] / alpha_max) * mu_max * veh.model.lr_fz[i]  # lateral force for slip angle less than maximum allowed - input
 
-    if veh.fwd == 1:
+    if veh.fwd:
         lr_app = -1 * veh.model.lr_fz[i] * (mu_max * veh.driver_input.brake[i] * sign(lr_vx))  # front wheel drive, rear wheel will not apply accelerative force
-    elif veh.rwd == 1:
+    elif veh.rwd:
         lr_app = veh.model.lr_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(lr_vx)))  # longitudinal force applied throttle and braking are expressed as % of total friction, will not occur at same time, so add for efficiency   (cons['mu_max'] * (veh.driver_input.throttle[i] - veh.driver_input.brake[i]) / 2)
-    elif veh.awd == 1:
+    elif veh.awd:
         lr_app = veh.model.lr_fz[i] * (mu_max * (veh.driver_input.throttle[i] - veh.driver_input.brake[i] * sign(lr_vx)))
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) > mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        lr_lonf = oppSign(lr_vx) * math.cos(np.abs(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]  # force will be applied in the direction opposite of vehicle motion
-        lr_latf = oppSign(lr_vy) * math.sin(np.abs(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]
+        lr_lonf = oppSign(lr_vx) * np.abs(math.cos(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]  # force will be applied in the direction opposite of vehicle motion
+        lr_latf = oppSign(lr_vy) * np.abs(math.sin(veh.model.lr_alpha[i])) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) <= mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 0
         lr_lonf = lr_app
         lr_latf = lr_latf
+
 
     # Calculate vehicle forces in vehicle frame
     # Left Front Tire #

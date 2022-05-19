@@ -163,31 +163,6 @@ def plot_motion_interval(veh_list, impactIndex, num_itter=10, imageDict=False, t
             gy = veh.p_gy[0:i]
             # print(gx)
 
-            if (tire_path):
-                fig.add_trace(go.Scatter(x=gx.lfw, y=gy.lfw,
-                                         mode='markers',
-                                         name='LF',
-                                         marker=dict(color='rgb(0, 0, 255)', size=2,
-                                                     symbol=list(map(setmarker, gx.lf_lock)))))
-
-                fig.add_trace(go.Scatter(x=gx.rfw, y=gy.rfw,
-                                         mode='markers',
-                                         name='RF',
-                                         marker=dict(color='rgb(0, 255, 0)', size=2,
-                                                     symbol=list(map(setmarker, gx.rf_lock)))))
-
-                fig.add_trace(go.Scatter(x=gx.rrw, y=gy.rrw,
-                                         mode='markers',
-                                         name='RR',
-                                         marker=dict(color='rgb(153, 0, 204)', size=2,
-                                                     symbol=list(map(setmarker, gx.rr_lock)))))
-
-                fig.add_trace(go.Scatter(x=gx.lrw, y=gy.lrw,
-                                         mode='markers',
-                                         name='LR',
-                                         marker=dict(color='rgb(255, 102, 0)', size=2,
-                                                     symbol=list(map(setmarker, gx.lr_lock)))))
-
             if veh.striking and plotPOI:
                 # plot each impact plane
                 fig.add_annotation(x=veh.p_gx[f'impact_{plotImpactPoint}_norm'][i],
@@ -223,6 +198,31 @@ def plot_motion_interval(veh_list, impactIndex, num_itter=10, imageDict=False, t
                                name=f'POI: {plotImpactPoint}',
                                marker=dict(color='rgb(153, 0, 51)', size=7),
                                ))
+
+    if (tire_path):
+        fig.add_trace(go.Scatter(x=gx.lfw, y=gy.lfw,
+                                 mode='markers',
+                                 name='LF',
+                                 marker=dict(color='rgb(0, 0, 255)', size=2,
+                                             symbol=list(map(setmarker, gx.lf_lock)))))
+
+        fig.add_trace(go.Scatter(x=gx.rfw, y=gy.rfw,
+                                 mode='markers',
+                                 name='RF',
+                                 marker=dict(color='rgb(0, 255, 0)', size=2,
+                                             symbol=list(map(setmarker, gx.rf_lock)))))
+
+        fig.add_trace(go.Scatter(x=gx.rrw, y=gy.rrw,
+                                 mode='markers',
+                                 name='RR',
+                                 marker=dict(color='rgb(153, 0, 204)', size=2,
+                                             symbol=list(map(setmarker, gx.rr_lock)))))
+
+        fig.add_trace(go.Scatter(x=gx.lrw, y=gy.lrw,
+                                 mode='markers',
+                                 name='LR',
+                                 marker=dict(color='rgb(255, 102, 0)', size=2,
+                                             symbol=list(map(setmarker, gx.lr_lock)))))
 
     dx_max = 15
     dx_min = -15

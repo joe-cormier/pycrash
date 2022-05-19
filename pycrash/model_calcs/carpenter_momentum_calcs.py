@@ -180,6 +180,7 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
         print(f'theta c (deg): {theta_c * 180 / 3.14159:0.1f}')
         print(f"dx1: {impPointEdge[impactNum]['impact_points'][0]}, dy1: {impPointEdge[impactNum]['impact_points'][1]}")
         print(f'dx2: {poi_veh2x}, dy2: {poi_veh2y}')
+        print('Post Impact:')
         print(f'Vx1: {veh1.model.vx[i]:0.2f} fps, Vy1: {veh1.model.vy[i]:0.2f} fps')
         print(f'Vx2: {veh2.model.vx[i]:0.2f} fps, Vy2: {veh2.model.vy[i]:0.2f} fps')
         print(f'Omega1: {veh1.model.oz_rad[i]}')

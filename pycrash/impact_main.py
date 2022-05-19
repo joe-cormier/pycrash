@@ -283,6 +283,8 @@ class Impact():
                                                                                    self.sim_defaults['dt_motion'],
                                                                                    self.show_results)  # run impc model
 
+
+
                         separation = False
                         self._impactIndex[i] = self.impactNum
                         self.impactNum += 1
