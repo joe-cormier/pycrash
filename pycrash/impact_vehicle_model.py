@@ -30,6 +30,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
     #print(round(i * dt_motion, 4))
     #print(veh.model.t[i])
     # get tire forces for t = 0
+
     veh = tire_forces(veh, i, sim_defaults)
 
     # setting vehicle forces to zero if no impact
@@ -39,6 +40,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
     veh.model.Fx[i] = 0
     veh.model.Fy[i] = 0
     veh.model.Mz[i] = 0
+
     """
     if impact_type != 'SS':
         veh.model.Fx[i] = 0

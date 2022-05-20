@@ -193,4 +193,3 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
         print(f'Veh2 DVx: {dvx2 * 0.681818:0.2f} mph, DVy: {dvy2 * 0.681818:0.2f} mph')
 
     return vehicle_list, impc_results
-""

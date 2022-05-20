@@ -6,7 +6,7 @@ import math
 
 def detect(i, impactNum, vehicle_list, impPointEdge, strikingVehicle, struckVehicle, crush_data):
     """
-    detects impacts in sequence using impact loaction and contant plane lists
+    detects impacts in sequence using impact location and contact plane lists
     """
     #print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
     # current location of impact point - vehicle 1

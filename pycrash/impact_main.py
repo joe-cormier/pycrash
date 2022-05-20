@@ -281,15 +281,13 @@ class Impact():
                                                                                    self.impc_inputs[self.impactNum],
                                                                                    self.sim_defaults['dt_motion'],
                                                                                    self.show_results)  # run impc model
-
-                        elif self.impact_type == 'sideswipe':       # <- run sideswipe model
-                            print('Running Sideswipe Model')
-                            # sideswipe model function here
-
                         separation = False
                         self._impactIndex[i] = self.impactNum
                         self.impactNum += 1
 
+                    if (self.detect_data.impact[i] & self.impact_type == 'sideswipe'):       # <- run sideswipe model
+                        print('Running Sideswipe Model')
+                        # sideswipe model function here
 
 
                 else:

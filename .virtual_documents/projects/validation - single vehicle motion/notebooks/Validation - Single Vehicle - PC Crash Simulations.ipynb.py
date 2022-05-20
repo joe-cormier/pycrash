@@ -45,7 +45,7 @@ print('List of tests for analysis:')
 test_file_list
 
 
-test_do = 3 # <- cho|ose test number from list to process
+test_do = 1 # <- cho|ose test number from list to process
 print(f'Test to be processed: {test_file_list[test_do]}')
 
 
