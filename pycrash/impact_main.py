@@ -284,6 +284,7 @@ class Impact():
 
                         elif self.impact_type == 'sideswipe':       # <- run sideswipe model
                             print('Running Sideswipe Model')
+                            # sideswipe model function here
 
                         separation = False
                         self._impactIndex[i] = self.impactNum
