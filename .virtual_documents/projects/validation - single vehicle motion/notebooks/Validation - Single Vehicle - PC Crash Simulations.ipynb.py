@@ -45,7 +45,7 @@ print('List of tests for analysis:')
 test_file_list
 
 
-test_do = 1 # <- cho|ose test number from list to process
+test_do = 3 # <- cho|ose test number from list to process
 print(f'Test to be processed: {test_file_list[test_do]}')
 
 
@@ -54,7 +54,7 @@ df = pd.read_excel(os.path.join(os.getcwd(), 'data', 'external', test_file_list[
                             usecols = 'A:AD')
 
 
-df.steer = [x * -1 for x in df.steer]  # reverse steer - PC-Crash is positive ccw
+#df.steer = [x * -1 for x in df.steer]  # reverse steer - PC-Crash is positive ccw
 
 # convert velocities to fps
 df.Vx = [x * 1.46667 for x in df.Vx]

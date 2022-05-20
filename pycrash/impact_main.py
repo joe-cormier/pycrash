@@ -237,7 +237,6 @@ class Impact():
         plot_model(self.vehicles[vehNum])
 
     """ initiate impact simulation """
-
     def simulate(self, show_results=True):
         """
         end_time <- default time of simulation (seconds), simulation will still stop if vehicle motion is zero
@@ -269,7 +268,7 @@ class Impact():
                     print('')
                     """ apply momentum IMPC if impact & only if vehicles are separated """
                     if (self.detect_data.impact[i] & separation):
-                        if self.impact_type in ["IMPC", "impc"]:
+                        if self.impact_type in ["IMPC", "impc"]:        # <- run Carpenter IMPC
 
                             self.vehicles, self.impc_results[self.impactNum] = impc(i,
                                                                                    self.impactNum,
@@ -283,11 +282,14 @@ class Impact():
                                                                                    self.sim_defaults['dt_motion'],
                                                                                    self.show_results)  # run impc model
 
-
+                        elif self.impact_type == 'sideswipe':       # <- run sideswipe model
+                            print('Running Sideswipe Model')
 
                         separation = False
                         self._impactIndex[i] = self.impactNum
                         self.impactNum += 1
+
+
 
                 else:
                     if (not separation) and (not self.detect_data.impact[i]):
