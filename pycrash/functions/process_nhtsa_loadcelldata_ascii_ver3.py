@@ -206,4 +206,4 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
     AccelDF.to_pickle(os.path.join(path, f'Processed_Acceleration_NHTSATestData_{test_num}.pkl'))
     test_data_accel.to_pickle(os.path.join(path, f'ProcessedNHTSATestData_{test_num}.pkl'))
 
-    print("Processing Complete - Files Saved to Path Provided")
+    print(f"Processing Complete - Files Saved to {path}")

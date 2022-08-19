@@ -7,6 +7,7 @@ import inspect
 import csv
 import os
 
+
 class SDOF_Model():
     """
     Inputs can be provided using a predefined dictionary "model_inputs"
@@ -21,18 +22,19 @@ class SDOF_Model():
     for force at a given displacement
     """
 
-    def __init__(self, veh1, veh2, AB_offset = 0, model_inputs=None, print_output=True):
-        self.type = "sdof"        # class type
+    def __init__(self, veh1, veh2, AB_offset=0, model_inputs=None, print_output=True):
+        self.type = "sdof"  # class type
         # create independent copy of vehicle class instances
         self.veh1 = deepcopy(veh1)
         self.veh2 = deepcopy(veh2)
-        self.AB_offset = AB_offset     # <- [inches] adjust model crush to account for force required to initiate crush (offset = -A/B)
+        self.AB_offset = AB_offset  # <- [inches] adjust model crush to account for force required to initiate crush (offset = -A/B)
         # manually create inputs if not provided
         if (model_inputs == None):
             self.name = input('Enter name of SDOF model run:')
             self.cor = float(input('Provide a coefficient of restitution:'))
             self.k = input('Provide a single value or dataframe for mutual stiffness [lb/ft]:')
-            self.tstop = float(input('Enter cut-off time (tstop (s)) to stop simulation or "None" to run simulation up to seperation:'))
+            self.tstop = float(input(
+                'Enter cut-off time (tstop (s)) to stop simulation or "None" to run simulation up to seperation:'))
         else:
             self.name = model_inputs['name']
             self.cor = model_inputs['cor']
@@ -45,39 +47,40 @@ class SDOF_Model():
         print(f"Coefficient of Restitution = {self.cor}")
         if (isinstance(self.k, int)) or (isinstance(self.k, float)):
             print(f"Constant Mutual Stiffness = {self.k} lb/ft ")
-            self.ktype = 'constantK'               # define stiffness type for model
+            self.ktype = 'constantK'  # define stiffness type for model
             if hasattr(self.veh1, 'k'):
-                self.k1known = True   # if k1 is known, then veh1 crush can be calculated
+                self.k1known = True  # if k1 is known, then veh1 crush can be calculated
             else:
                 self.k1known = False
 
             if hasattr(self.veh2, 'k'):
                 self.k2known = True
             else:
-                self.k2known = False # if k2 is known, then veh2 crush can be calculated
+                self.k2known = False  # if k2 is known, then veh2 crush can be calculated
 
         elif isinstance(self.k, pd.DataFrame):
             print(f"Stiffness Function Dataframe [disp (ft) | force (lb)] of shape = {self.k.shape}")
-            self.ktype = 'tableK'                   # define stiffness type for model
+            self.ktype = 'tableK'  # define stiffness type for model
             if hasattr(self.veh1, 'k'):
-                self.k1known = True   # if k1 is known, then veh1 crush can be calculated
+                self.k1known = True  # if k1 is known, then veh1 crush can be calculated
             else:
                 self.k1known = False
 
             if hasattr(self.veh2, 'k'):
                 self.k2known = True
             else:
-                self.k2known = False # if k2 is known, then veh2 crush can be calculated
+                self.k2known = False  # if k2 is known, then veh2 crush can be calculated
 
         if (isinstance(self.tstop, int)) or (isinstance(self.tstop, float)):
             print(f"Model will run until t = {self.tstop} seconds")
-            self.ttype = 1                           # define t stop criteria
+            self.ttype = 1  # define t stop criteria
         elif (self.tstop == None):
             print("No stop time provided - model will run until vehicle separation")
-            self.ttype = 0                           # define t stop criteria
+            self.ttype = 0  # define t stop criteria
         else:
-            print('Something other than a number or "None" used for stop time - model will run until vehicle separation')
-            self.ttype = 0                           # define t stop criteria
+            print(
+                'Something other than a number or "None" used for stop time - model will run until vehicle separation')
+            self.ttype = 0  # define t stop criteria
 
         # collect vehicle specific inputs
 
@@ -88,7 +91,7 @@ class SDOF_Model():
         print("")
         try:
             if (isinstance(self.veh1.brake, int)) or (isinstance(self.veh1.brake, float)):
-                print(f"{self.veh1.name} braking at {self.veh1.brake*100}%")
+                print(f"{self.veh1.name} braking at {self.veh1.brake * 100}%")
             else:
                 print(f"{self.veh1.name} does not have a valid 'brake' entry")
                 print(f"{self.veh1.name} - braking  set to 0 %")
@@ -113,7 +116,7 @@ class SDOF_Model():
         print("")
         try:
             if (isinstance(self.veh2.brake, int)) or (isinstance(self.veh2.brake, float)):
-                print(f"{self.veh2.name} braking at {self.veh2.brake*100}%")
+                print(f"{self.veh2.name} braking at {self.veh2.brake * 100}%")
             else:
                 print(f"{self.veh2.name} does not have a valid 'brake' entry")
                 print(f"{self.veh2.name} - braking  set to 0 %")
@@ -138,18 +141,18 @@ class SDOF_Model():
         print("|----------- Input Complete ------------|")
         print("")
 
-    #  Run SDOF Model
-        self.model = SingleDOFmodel(W1 = self.veh1.weight,
-                                    v1_initial = self.veh1.vx_initial,
-                                    v1_brake = self.veh1.brake,
-                                    W2 = self.veh2.weight,
-                                    v2_initial = self.veh2.vx_initial,
-                                    v2_brake = self.veh2.brake,
-                                    k = self.k,
-                                    cor = self.cor,
-                                    tstop = self.tstop,
-                                    ktype = self.ktype,
-                                    ttype = self.ttype
+        #  Run SDOF Model
+        self.model = SingleDOFmodel(W1=self.veh1.weight,
+                                    v1_initial=self.veh1.vx_initial,
+                                    v1_brake=self.veh1.brake,
+                                    W2=self.veh2.weight,
+                                    v2_initial=self.veh2.vx_initial,
+                                    v2_brake=self.veh2.brake,
+                                    k=self.k,
+                                    cor=self.cor,
+                                    tstop=self.tstop,
+                                    ktype=self.ktype,
+                                    ttype=self.ttype
                                     )
         if (self.AB_offset != 0):
             """The offset corrects for the force required to initiate permanent crush based on the A/B assumptions
@@ -171,10 +174,10 @@ class SDOF_Model():
         """
         return a dictionary to save / modify inputs
         """
-        return {"name":self.name,
-                "k":self.k,
-                "cor":self.cor,
-                "tstop":self.__ttype
+        return {"name": self.name,
+                "k": self.k,
+                "cor": self.cor,
+                "tstop": self.__ttype
                 }
 
     def show(self):
@@ -188,20 +191,20 @@ class SDOF_Model():
         """
         Plot force - mutual crush from model result
         """
-        fig = plt.figure(figsize = (14,12))
+        fig = plt.figure(figsize=(14, 12))
         plt.title('Mutual Crush and Impact Force', fontsize=20)
-        plt.plot(self.model.dx * -12, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color = "k")
+        plt.plot(self.model.dx * -12, self.model.springF, label=f'V1={self.veh1.vx_initial} mph', color="k")
         plt.xticks(fontsize=16)
         plt.yticks(fontsize=16)
         plt.xlim([0, round(-12 * min(self.model.dx) + 1)])
-        plt.ylim([0, round(max(self.model.springF)+100)])
+        plt.ylim([0, round(max(self.model.springF) + 100)])
         ax = plt.gca()
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.xlabel('Mutual Crush (in)', fontsize=20)
         plt.ylabel('Force (lb)', fontsize=20)
-        #plt.grid(which='both', axis='both')
-        #plt.legend(fontsize=14, frameon = False)
+        # plt.grid(which='both', axis='both')
+        # plt.legend(fontsize=14, frameon = False)
         fig.show()
 
     def plot_fdx_vehicle(self, vehNum):
@@ -212,20 +215,20 @@ class SDOF_Model():
             vehicle_dx = self.model.veh1_dx * -12
         else:
             vehicle_dx = self.model.veh2_dx * -12
-        fig = plt.figure(figsize = (14,12))
+        fig = plt.figure(figsize=(14, 12))
         plt.title('Vehicle Crush and Impact Force', fontsize=20)
-        plt.plot(vehicle_dx, self.model.springF, label = f'V1={self.veh1.vx_initial} mph', color="k")
+        plt.plot(vehicle_dx, self.model.springF, label=f'V1={self.veh1.vx_initial} mph', color="k")
         plt.xticks(fontsize=16)
         plt.yticks(fontsize=16)
         plt.xlim([0, round(-12 * min(self.model.dx) + 1)])
-        plt.ylim([0, round(max(self.model.springF)+100)])
+        plt.ylim([0, round(max(self.model.springF) + 100)])
         ax = plt.gca()
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
         plt.xlabel('Crush (in)', fontsize=20)
         plt.ylabel('Force (lb)', fontsize=20)
-        #plt.grid(which='both', axis='both')
-        #plt.legend(fontsize=14, frameon = False)
+        # plt.grid(which='both', axis='both')
+        # plt.legend(fontsize=14, frameon = False)
         fig.show()
 
     def crush_energy(self):
@@ -248,8 +251,8 @@ class SDOF_Model():
         print('')
 
         out = {'mutual_energy_absorbed': energy_absorbed,
-                'mutual_energy_returned': energy_returned,
-                'cor': cor}
+               'mutual_energy_returned': energy_returned,
+               'cor': cor}
 
         if self.k1known:
             """ energy for vehicle 1 """
@@ -291,18 +294,17 @@ class SDOF_Model():
 
         return out
 
-
     def get_results(self):
         print('')
         print(f'Simulation results for {self.veh1.name}:')
-        print(f'delta-V: {(self.model.v1.iloc[0]-self.model.v1.iloc[-1]) / 1.46667:0.2f} mph')
-        print(f'Peak acceleration: {min(self.model.a1) /32.2:0.1f} g')
+        print(f'delta-V: {(self.model.v1.iloc[0] - self.model.v1.iloc[-1]) / 1.46667:0.2f} mph')
+        print(f'Peak acceleration: {min(self.model.a1) / 32.2:0.1f} g')
         if self.k1known:
             print(f'Residual crush: {self.model.veh1_dx.iloc[-1] * 12:0.2f} inches')
 
         print('')
         print(f'Simulation results for {self.veh2.name}:')
-        print(f'delta-V: {(self.model.v2.iloc[-1]-self.model.v2.iloc[0]) / 1.46667:0.2f} mph')
+        print(f'delta-V: {(self.model.v2.iloc[-1] - self.model.v2.iloc[0]) / 1.46667:0.2f} mph')
         print(f'Peak acceleration: {max(self.model.a2) / 32.2:0.1f} g')
         if self.k2known:
             print(f'Residual crush: {self.model.veh2_dx.iloc[-1] * 12:0.2f} inches')

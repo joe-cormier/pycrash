@@ -15,10 +15,10 @@ def SpringFdx(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
     if closing == 1:
         return np.interp(-1*dx, input_k_disp, input_k_force)
 
-    if (closing == 0) & ((dx - dxperm) < 0): # seperating and dx has not reached dxperm
+    if (closing == 0) & ((dx - dxperm) < 0):  # separating and dx has not reached dxperm
         return kreturn * abs(dx - dxperm)
 
-    if (closing == 0) & ((dx - dxperm) >= 0): # seperating and dx is less than dxperm
+    if (closing == 0) & ((dx - dxperm) >= 0):  # separating and dx is less than dxperm
         return 0
 
 # calculate force based on current mutual crush
@@ -35,8 +35,8 @@ def SpringForce(dx, closing, k, input_k_disp, input_k_force, kreturn, dxperm):
     if closing == 1:
         return k * abs(dx)
 
-    if (closing == 0) & ((dx - dxperm) < 0): # closing and dx has not reached dxperm
+    if (closing == 0) & ((dx - dxperm) < 0):  # closing and dx has not reached dxperm
         return kreturn * abs(dx - dxperm)
 
-    if (closing == 0) & ((dx - dxperm) >= 0): # closing and dx is less than dxperm
+    if (closing == 0) & ((dx - dxperm) >= 0):  # closing and dx is less than dxperm
         return 0

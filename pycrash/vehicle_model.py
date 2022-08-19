@@ -111,11 +111,11 @@ def vehicle_model(veh, sim_defaults):
             veh.model.turn_rY[i] = 0   # should actually be inf or undefined
             veh.model.turn_rR[i] = 0   # should actually be inf or undefined
 
-        veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)    # move to seperate calc
+        veh.model.Vr[i] = math.sqrt(veh.model.Vx[i]**2 + veh.model.Vy[i]**2)    # move to separate calc
         veh.model.Ar[i] = math.sqrt(veh.model.Ax[i]**2 + veh.model.Ay[i]**2)
 
         # velocity vector in inertial frame
-        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to seperate calc
+        veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to separate calc
 
     # vehicle position
     veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
@@ -123,9 +123,9 @@ def vehicle_model(veh, sim_defaults):
 
     # converting to degrees
     # TODO: remove for speed
-    veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to seperate calc
-    veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to seperate calc
-    veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
-    veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to seperate calc
+    veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]    # move to separate calc
+    veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]        # move to separate calc
+    veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to separate calc
+    veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to separate calc
 
     return veh

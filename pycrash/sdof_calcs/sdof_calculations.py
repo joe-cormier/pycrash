@@ -37,7 +37,7 @@ def sign(x):
 def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
                     tstop, ktype, ttype):
 
-    _tstop = 0 # default limit for ttype == 0 will use tstop otherwise
+    _tstop = 0 # default limit for ttype == 0 will use t-stop otherwise
 
     if (ttype == 0):
         tstop = _tstop
@@ -113,7 +113,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
             # store initial data in dataframe
             data = [t, x1, x2, v1, v2, a1, a2, springF, dx, v1_brakeF, v2_brakeF]
-            spring_model = spring_model.append(pd.Series(data, index = columns), ignore_index=True)
+            spring_model = spring_model.append(pd.Series(data, index=columns), ignore_index=True)
 
 
         # this section will calculate forces based on closing or seperating phase
@@ -147,7 +147,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
                     dxmax = dx_past
                     dxperm = dxmax * (1 - cor**2)  # permanent crush
                     kreturn = Fmax / abs(dxmax - dxperm)  # return stiffness
-                    print('===== Seperation ===========>')
+                    print('===== Separation ===========>')
                     print(f'Time (s) = {t}')
                     print(f'Peak Mutual Crush (in) = {dx_past *-12:.2f}')
                     print(f'Peak Force (lb) = {Fmax:.2f}')
@@ -171,7 +171,7 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
             # store initial data in dataframe
             data = [t, x1, x2, v1, v2, a1, a2, springF, dx, v1_brakeF, v2_brakeF]
-            spring_model = spring_model.append(pd.Series(data, index = columns), ignore_index=True)
+            spring_model = spring_model.append(pd.Series(data, index=columns), ignore_index=True)
 
         i += 1
 
