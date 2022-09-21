@@ -105,7 +105,9 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
                 test_data[key]['colName'] = f'{value["row"]}_{value["col"]}'
                 test_data[key]['time'] = time
                 test_data[key]['rawforce'] = [x * force_convert for x in data]
-                test_data[key]['force'] = cfcfilt(60, [x * force_convert for x in data], time[1] - time[0])
+                force_bias = [x * force_convert for x in all_data[zero_time_index-5:zero_time_index]]
+                filt_force = cfcfilt(60, [x * force_convert for x in data], time[1] - time[0])
+                test_data[key]['force'] = [x - np.mean(force_bias) for x in filt_force]
                 print(test_data[key].keys())
                 timeData = time
         elif value['type'] == 'Accel':
