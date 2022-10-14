@@ -61,10 +61,10 @@ def tire_forces(veh, i, sim_defaults):
 
     # Forward / Rearward weight shift due to braking or acceleration
     veh_m = veh.weight / 32.2
-    veh.model.lf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb + veh_m * veh.model.av[j] * veh.hcg / veh.track)
-    veh.model.rf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb - veh_m * veh.model.av[j] * veh.hcg / veh.track)
-    veh.model.rr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb - veh_m * veh.model.av[j] * veh.hcg / veh.track)
-    veh.model.lr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb + veh_m * veh.model.av[j] * veh.hcg / veh.track)
+    veh.model.lf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb) + veh_m * veh.model.av[j] * veh.hcg / veh.track
+    veh.model.rf_fz[i] = 0.5 * ((-veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgr) / veh.wb) - veh_m * veh.model.av[j] * veh.hcg / veh.track
+    veh.model.rr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb) - veh_m * veh.model.av[j] * veh.hcg / veh.track
+    veh.model.lr_fz[i] = 0.5 * ((veh_m * veh.model.au[j] * veh.hcg + veh.weight * veh.lcgf) / veh.wb) + veh_m * veh.model.av[j] * veh.hcg / veh.track
 
     # ------------------------ Left Front Tire ----------------------------------- #
     # local velocity
@@ -88,7 +88,6 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lf_app ** 2 + lf_latf ** 2) > (mu_max * veh.model.lf_fz[i]):  # Equation 3 - is the force applied greater than available from friction at tire?
         veh.model.lf_lock[i] = 1
-        #lf_lonf = -1 * sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
         lf_lonf = sign(lf_vx) * math.cos(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]  # force will be applied in the direction opposite of vehicle motion
         lf_latf = math.sin(veh.model.lf_alpha[i]) * mu_max * veh.model.lf_fz[i]
     elif math.sqrt(lf_app ** 2 + lf_latf ** 2) <= mu_max * veh.model.lf_fz[i]:
@@ -180,7 +179,6 @@ def tire_forces(veh, i, sim_defaults):
 
     if math.sqrt(lr_app ** 2 + lr_latf ** 2) > mu_max * veh.model.lr_fz[i]:
         veh.model.lr_lock[i] = 1
-        #lr_lonf = -1 * sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
         lr_lonf = sign(lr_vx) * math.cos(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
         lr_latf = math.sin(veh.model.lr_alpha[i]) * mu_max * veh.model.lr_fz[i]
     elif math.sqrt(lr_app ** 2 + lr_latf ** 2) <= mu_max * veh.model.lr_fz[i]:

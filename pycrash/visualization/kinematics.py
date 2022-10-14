@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.io as pio
 
-pio.renderers.default = "browser"  # <- determines how plots are displayed using Plotly
+pio.renderers.default = "browser"
 
 figure_size = (1200, 700)
 font_size = 18

@@ -250,7 +250,6 @@ class Impact():
             for veh in self.vehicles:
                 """ calculate current position of each vehicle """
                 if veh.type != 'Barrier':
-                    #print(f'Simulating Vehicle: {veh.name}')
                     veh = multi_vehicle_model(veh, i, self.sim_defaults, self.impact_type)
 
             if not impactsComplete:
@@ -285,10 +284,9 @@ class Impact():
                         self._impactIndex[i] = self.impactNum
                         self.impactNum += 1
 
-                    if (self.detect_data.impact[i] & self.impact_type == 'sideswipe'):       # <- run sideswipe model
-                        print('Running Sideswipe Model')
-                        # sideswipe model function here
-
+                        #if (self.detect_data.impact[i] & self.impact_type == 'sideswipe'):       # <- run sideswipe model
+                        #    print('Running Sideswipe Model')
+                            # sideswipe model function here
 
                 else:
                     if (not separation) and (not self.detect_data.impact[i]):

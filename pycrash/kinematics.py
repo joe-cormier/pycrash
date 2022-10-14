@@ -40,7 +40,7 @@ class SingleMotion:
             # TODO: create check for user sim_defaults_input
             sim_defaults = user_sim_defaults
         else:
-            sim_defaults = {'dt_motion': 0.01,
+            sim_defaults = {'dt_motion': 0.001,
                             'mu_max': 0.76,
                             'alpha_max': 0.174533}
 

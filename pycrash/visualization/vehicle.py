@@ -276,12 +276,12 @@ plot driver inputs
 def plot_driver_inputs(self):
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-    fig.add_trace(go.Scatter(x=self.driver_input.t, y=self.driver_input.throttle * 100,
+    fig.add_trace(go.Scatter(x=self.driver_input.t, y=self.driver_input.throttle,
                              mode='lines',
                              name='throttle',
                              line=dict(color='rgb(0, 255, 0)', width=2)),
                   secondary_y=False)
-    fig.add_trace(go.Scatter(x=self.driver_input.t, y=self.driver_input.brake * 100,
+    fig.add_trace(go.Scatter(x=self.driver_input.t, y=self.driver_input.brake,
                              mode='lines',
                              name='brake',
                              line=dict(color='rgb(255, 0, 0)', width=2)),
@@ -304,7 +304,7 @@ def plot_driver_inputs(self):
         font=dict(family='Arial', size=font_size, color='black'))
 
     fig.update_yaxes(showgrid=False, title_text='Steer Angle (deg)', secondary_y=True)
-    fig.update_yaxes(showgrid=False, title_text='Brake | Throttle (%)', secondary_y=False)
+    fig.update_yaxes(showgrid=False, title_text='Brake | Throttle', secondary_y=False)
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
