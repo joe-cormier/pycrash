@@ -105,6 +105,6 @@ traitlets==5.0.5
 urllib3>=1.26.4
 wcwidth==0.2.5
 webencodings==0.5.1
-Werkzeug==1.0.1
+Werkzeug==2.2.3
 widgetsnbextension==3.5.1
 xlrd==2.0.1
