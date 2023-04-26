@@ -222,14 +222,14 @@ class Impact():
     """ plot vehicle motion """
     def plot_vehicle_motion(self, n_intervals, imageDict=False, tire_path=True, show_vector=False):
         plotImpactPoint = 0     # starts at 1
-        plot_motion_interval(self.vehicles, self._impactIndex, n_intervals, imageDict,
+        plot_motion_interval(self.name, self.vehicles, self._impactIndex, n_intervals, imageDict,
                              tire_path=tire_path, show_vector=show_vector)
 
     """ plot vehicles at impact """
     def plot_impact(self, impactNum):
             for key, value in self._impactIndex.items():
                 if value == impactNum:
-                    plot_impact(self.vehicles, key-1, self._impactIndex, show_vector=True)
+                    plot_impact(self.name, self.vehicles, key-1, self._impactIndex, show_vector=True)
                     print(f'Plotting impact {value} at index {key}')
 
     """ plot kinematic data """

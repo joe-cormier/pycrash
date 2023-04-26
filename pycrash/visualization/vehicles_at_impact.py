@@ -4,6 +4,7 @@ plotting functions for vehicle model data
 import plotly.graph_objects as go
 import plotly.io as pio
 import os
+
 pio.renderers.default = "browser"
 
 # TODO: create input for figure size - loads from "defaults" environmental variable?
@@ -14,15 +15,17 @@ wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255
 font_size = 24
 tick_font_size = 22
 
+
 def get_impactNum(i, impactIndex):
     if i < max(impactIndex):
         for key, value in impactIndex.items():
             if i <= key:
-                return(value)
+                return (value)
     else:
         return max(impactIndex.values())
 
-def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
+
+def plot_impact(plot_name, veh_list, i, impactIndex, tire_path=True, show_vector=False):
     fig = go.Figure()
     plotImpactPoint = get_impactNum(i, impactIndex)
     for veh in veh_list:
@@ -43,87 +46,87 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
         lrw_y = (veh.p_gy.lrw_a[i], veh.p_gy.lrw_b[i], veh.p_gy.lrw_c[i], veh.p_gy.lrw_d[i], veh.p_gy.lrw_a[i])
 
         # body outline
-        fig.add_trace(go.Scatter(x = bdy_x, y = bdy_y,
-                            mode = 'lines',
-                            name = 'body',
-                            line = dict(color = 'rgb(0, 0, 0)', width = 2)))
+        fig.add_trace(go.Scatter(x=bdy_x, y=bdy_y,
+                                 mode='lines',
+                                 name='body',
+                                 line=dict(color='rgb(0, 0, 0)', width=2)))
         # wheel outline
-        fig.add_trace(go.Scatter(x = lfw_x, y = lfw_y,
-                            mode = 'lines',
-                            name = 'LF',
-                            line = dict(color = 'rgb(0, 0, 255)', width = 1)))
-        fig.add_trace(go.Scatter(x = rfw_x, y = rfw_y,
-                            mode = 'lines',
-                            name = 'RF',
-                            line = dict(color = 'rgb(0, 255, 0)', width = 1)))
-        fig.add_trace(go.Scatter(x = rrw_x, y = rrw_y,
-                            mode = 'lines',
-                            name = 'RR',
-                            line = dict(color = 'rgb(153, 0, 204)', width = 1)))
-        fig.add_trace(go.Scatter(x = lrw_x, y = lrw_y,
-                            mode = 'lines',
-                            name = 'LR',
-                            line = dict(color = 'rgb(255, 102, 0)', width = 1)))
+        fig.add_trace(go.Scatter(x=lfw_x, y=lfw_y,
+                                 mode='lines',
+                                 name='LF',
+                                 line=dict(color='rgb(0, 0, 255)', width=1)))
+        fig.add_trace(go.Scatter(x=rfw_x, y=rfw_y,
+                                 mode='lines',
+                                 name='RF',
+                                 line=dict(color='rgb(0, 255, 0)', width=1)))
+        fig.add_trace(go.Scatter(x=rrw_x, y=rrw_y,
+                                 mode='lines',
+                                 name='RR',
+                                 line=dict(color='rgb(153, 0, 204)', width=1)))
+        fig.add_trace(go.Scatter(x=lrw_x, y=lrw_y,
+                                 mode='lines',
+                                 name='LR',
+                                 line=dict(color='rgb(255, 102, 0)', width=1)))
         # CG
         cgx = [veh.p_gx.cg[i], veh.p_gx.cg[i]]
         cgy = [veh.p_gy.cg[i], veh.p_gy.cg[i]]
         time = [veh.model.t[i], veh.model.t[i]]
 
-        fig.add_trace(go.Scatter(x = cgx, y = cgy,
-                            mode = 'markers',
-                            name = 'CG',
-                            marker = dict(color = 'rgb(0, 0, 0)', size = 10),
-                            customdata = time,
-                            hovertemplate = '<b>x</b>:%{x:.1f}<br>' + '<b>Y</b>: %{y:.1f}<br>' + '<b>time</b>: %{customdata:.3f}'))
+        fig.add_trace(go.Scatter(x=cgx, y=cgy,
+                                 mode='markers',
+                                 name='CG',
+                                 marker=dict(color='rgb(0, 0, 0)', size=10),
+                                 customdata=time,
+                                 hovertemplate='<b>x</b>:%{x:.1f}<br>' + '<b>Y</b>: %{y:.1f}<br>' + '<b>time</b>: %{customdata:.3f}'))
 
         # velocity vector
         if show_vector:
-            fig.add_annotation(x = veh.p_gx.vel_v[i],
-                               y = veh.p_gy.vel_v[i],
-                               ax = veh.p_gx.cg[i],
-                               ay = veh.p_gy.cg[i],
-                               axref = 'x',
-                               ayref = 'y',
-                               xref = 'x',
-                               yref = 'y',
-                               text = "",
-                               showarrow = True,
-                               arrowsize = 2.5,
-                               arrowhead = 1,
-                               arrowwidth = 1.7,
-                               arrowcolor = 'rgb(255, 0, 0)')
+            fig.add_annotation(x=veh.p_gx.vel_v[i],
+                               y=veh.p_gy.vel_v[i],
+                               ax=veh.p_gx.cg[i],
+                               ay=veh.p_gy.cg[i],
+                               axref='x',
+                               ayref='y',
+                               xref='x',
+                               yref='y',
+                               text="",
+                               showarrow=True,
+                               arrowsize=2.5,
+                               arrowhead=1,
+                               arrowwidth=1.7,
+                               arrowcolor='rgb(255, 0, 0)')
 
         # x axis
-        fig.add_annotation(x = veh.p_gx.xaxis[i],
-                           y = veh.p_gy.xaxis[i],
-                           ax = veh.p_gx.cg[i],
-                           ay = veh.p_gy.cg[i],
-                           axref = 'x',
-                           ayref = 'y',
-                           xref = 'x',
-                           yref = 'y',
-                           text = "",
-                           showarrow = True,
-                           arrowsize = 2,
-                           arrowhead = 1,
-                           arrowwidth = 1.5,
-                           arrowcolor = 'rgb(0, 0, 0)')
+        fig.add_annotation(x=veh.p_gx.xaxis[i],
+                           y=veh.p_gy.xaxis[i],
+                           ax=veh.p_gx.cg[i],
+                           ay=veh.p_gy.cg[i],
+                           axref='x',
+                           ayref='y',
+                           xref='x',
+                           yref='y',
+                           text="",
+                           showarrow=True,
+                           arrowsize=2,
+                           arrowhead=1,
+                           arrowwidth=1.5,
+                           arrowcolor='rgb(0, 0, 0)')
 
         # y axis
-        fig.add_annotation(x = veh.p_gx.yaxis[i],
-                           y = veh.p_gy.yaxis[i],
-                           ax = veh.p_gx.cg[i],
-                           ay = veh.p_gy.cg[i],
-                           axref = 'x',
-                           ayref = 'y',
-                           xref = 'x',
-                           yref = 'y',
-                           text = "",
-                           showarrow = True,
-                           arrowsize = 2,
-                           arrowhead = 1,
-                           arrowwidth = 1.5,
-                           arrowcolor = 'rgb(0, 0, 255)')
+        fig.add_annotation(x=veh.p_gx.yaxis[i],
+                           y=veh.p_gy.yaxis[i],
+                           ax=veh.p_gx.cg[i],
+                           ay=veh.p_gy.cg[i],
+                           axref='x',
+                           ayref='y',
+                           xref='x',
+                           yref='y',
+                           text="",
+                           showarrow=True,
+                           arrowsize=2,
+                           arrowhead=1,
+                           arrowwidth=1.5,
+                           arrowcolor='rgb(0, 0, 255)')
 
         # tire center plot depends on lock condition
         def setmarker(x):
@@ -135,32 +138,32 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
         # plotly requires at least two rows to plot, so if i == 0, it will be set to 1
         gx = veh.p_gx[0:i]
         gy = veh.p_gy[0:i]
-        #print(gx)
+        # print(gx)
 
         if (tire_path):
-            fig.add_trace(go.Scatter(x = gx.lfw, y = gy.lfw,
-                                mode = 'markers',
-                                name = 'LF',
-                                marker = dict(color = 'rgb(0, 0, 255)', size = 2,
-                                symbol = list(map(setmarker, gx.lf_lock)))))
+            fig.add_trace(go.Scatter(x=gx.lfw, y=gy.lfw,
+                                     mode='markers',
+                                     name='LF',
+                                     marker=dict(color='rgb(0, 0, 255)', size=2,
+                                                 symbol=list(map(setmarker, gx.lf_lock)))))
 
-            fig.add_trace(go.Scatter(x = gx.rfw, y = gy.rfw,
-                                mode = 'markers',
-                                name = 'RF',
-                                marker = dict(color = 'rgb(0, 255, 0)', size = 2,
-                                symbol = list(map(setmarker, gx.rf_lock)))))
+            fig.add_trace(go.Scatter(x=gx.rfw, y=gy.rfw,
+                                     mode='markers',
+                                     name='RF',
+                                     marker=dict(color='rgb(0, 255, 0)', size=2,
+                                                 symbol=list(map(setmarker, gx.rf_lock)))))
 
-            fig.add_trace(go.Scatter(x = gx.rrw, y = gy.rrw,
-                                mode = 'markers',
-                                name = 'RR',
-                                marker = dict(color = 'rgb(153, 0, 204)', size = 2,
-                                symbol = list(map(setmarker, gx.rr_lock)))))
+            fig.add_trace(go.Scatter(x=gx.rrw, y=gy.rrw,
+                                     mode='markers',
+                                     name='RR',
+                                     marker=dict(color='rgb(153, 0, 204)', size=2,
+                                                 symbol=list(map(setmarker, gx.rr_lock)))))
 
-            fig.add_trace(go.Scatter(x = gx.lrw, y = gy.lrw,
-                                mode = 'markers',
-                                name = 'LR',
-                                marker = dict(color = 'rgb(255, 102, 0)', size = 2,
-                                symbol = list(map(setmarker, gx.lr_lock)))))
+            fig.add_trace(go.Scatter(x=gx.lrw, y=gy.lrw,
+                                     mode='markers',
+                                     name='LR',
+                                     marker=dict(color='rgb(255, 102, 0)', size=2,
+                                                 symbol=list(map(setmarker, gx.lr_lock)))))
 
         if veh.striking:
             # plot each impact plane
@@ -197,7 +200,6 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
                                      marker=dict(color='rgb(153, 0, 51)', size=7),
                                      ))
 
-
     dx_max = 15
     dx_min = -15
     dy_max = 10
@@ -209,34 +211,34 @@ def plot_impact(veh_list, i, impactIndex, tire_path=True, show_vector=False):
     if dx > dy:
         adj_x = aspect_ratio * dy / dx
         adj_y = 1
-        #print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
+        # print(f" dx > dy -> adj_x = {adj_x}, adj_y = {adj_y}")
         dx_min = round(dx_min * adj_x)
         dx_max = round(dx_max * adj_x)
-        #print(f"dx_min = {dx_min}, dx_max = {dx_max}")
-        #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+        # print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+        # print(f"dy_min = {dy_min}, dy_max = {dy_max}")
     else:
         adj_x = 1
         adj_y = (1 / aspect_ratio) * dx / dy
-        #print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
+        # print(f" dy > dx -> adj_x = {adj_x}, adj_y = {adj_y}")
         dy_min = round(dy_min * adj_y)
         dy_max = round(dy_max * adj_y)
-        #print(f"dx_min = {dx_min}, dx_max = {dx_max}")
-        #print(f"dy_min = {dy_min}, dy_max = {dy_max}")
+        # print(f"dx_min = {dx_min}, dx_max = {dx_max}")
+        # print(f"dy_min = {dy_min}, dy_max = {dy_max}")
 
     fig.update_layout(
-        showlegend = False,
-        autosize = False,
-        width = width,
-        height = width / aspect_ratio,
-        title = 'Vehicle Motion in Global Reference Frame',
-        template = 'plotly_white',
-        xaxis = dict(showgrid = False, title = 'x-axis - Forward (ft)', range = [2*dx_min, 2*dx_max], constrain="domain"),
-        yaxis = dict(showgrid = False, title = 'y-axis - Rightward (ft)', scaleanchor = "x", scaleratio = 1),
-        font = dict(family = 'Arial', size = font_size, color = 'black'))
+        showlegend=False,
+        autosize=False,
+        width=width,
+        height=width / aspect_ratio,
+        title='Vehicle Motion in Global Reference Frame',
+        template='plotly_white',
+        xaxis=dict(showgrid=False, title='x-axis - Forward (ft)', range=[2 * dx_min, 2 * dx_max], constrain="domain"),
+        yaxis=dict(showgrid=False, title='y-axis - Rightward (ft)', scaleanchor="x", scaleratio=1),
+        font=dict(family='Arial', size=font_size, color='black'))
 
     fig.update_xaxes(showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
 
-    fig.write_html(os.path.join(os.getcwd(), f'vehicles_at_impactNum_{plotImpactPoint}.html'), auto_open=True)
+    fig.write_html(os.path.join(os.getcwd(), f'{plot_name}_vehicles_at_impactNum_{plotImpactPoint}.html'), auto_open=True)

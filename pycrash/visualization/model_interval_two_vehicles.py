@@ -27,7 +27,7 @@ def get_impactNum(i, impactIndex):
         return max(impactIndex.values())
 
 
-def plot_motion_interval(veh_list, impactIndex, num_itter=10, imageDict=False, tire_path=True, show_vector=False):
+def plot_motion_interval(plot_name, veh_list, impactIndex, num_itter=10, imageDict=False, tire_path=True, show_vector=False):
     fig = go.Figure()
     for veh in veh_list:
         counter = np.arange(0, len(veh.p_gx.b_lfc), round(len(veh.p_gx.b_lfc) / num_itter))
@@ -265,4 +265,4 @@ def plot_motion_interval(veh_list, impactIndex, num_itter=10, imageDict=False, t
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
     fig.update_yaxes(autorange="reversed", showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, tickfont=dict(size=tick_font_size))
-    fig.write_html(os.path.join(os.getcwd(), 'interval_motion.html'), auto_open=True)
+    fig.write_html(os.path.join(os.getcwd(), f'{plot_name}_interval_motion.html'), auto_open=True)
