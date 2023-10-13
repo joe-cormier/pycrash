@@ -8,6 +8,7 @@ def detect(i, impactNum, vehicle_list, impPointEdge, strikingVehicle, struckVehi
     """
     detects impacts in sequence using impact location and contact plane lists
     """
+    crush_data = crush_data.copy()
     #print(f'Vehicle 1 time = {vehicle_list[0].model.t[i]}')
     # current location of impact point - vehicle 1
     cgx1 = vehicle_list[strikingVehicle].model.Dx[i]  # take last value in Dx
