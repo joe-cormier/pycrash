@@ -25,34 +25,34 @@ def position_data_motion(veh):
                               veh.p_vx,
                               pd.DataFrame(
                                           [{
-                                          'b_lfc': -1 * veh.width / 2,     # body outline
-                                          'b_rfc': veh.width / 2,
-                                          'b_rrc': veh.width / 2,
-                                          'b_lrc': -1 * veh.width / 2,
-                                          'lfw':   -1 * (veh.width / 2 - veh.tire_w / 2),                         # left front wheel
-                                          'lfw_a': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_b': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 *np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_c': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_d': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw':   (veh.width / 2 - veh.tire_w / 2),                         # Right front wheel
-                                          'rfw_a': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_b': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_c': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_d': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rrw':   (veh.width / 2 - veh.tire_w / 2),                          # Right rear wheel
-                                          'rrw_a': veh.width / 2 - veh.tire_w,
-                                          'rrw_b': veh.width / 2,
-                                          'rrw_c': veh.width / 2,
-                                          'rrw_d': veh.width / 2 - veh.tire_w,
-                                          'lrw':   -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
-                                          'lrw_a': -1 * veh.width / 2,
-                                          'lrw_b': -1 * veh.width / 2 + veh.tire_w,
-                                          'lrw_c': -1 * veh.width / 2 + veh.tire_w,
-                                          'lrw_d': -1 * veh.width / 2,
-                                          'cg':    0,                                         # CG
-                                          'xaxis': 0,                                         # line for x-axis
-                                          'yaxis': veh.width / 2 + 1.5,                     # line for y-axis
-                                          'vel_v': veh.model.vy[i]                          # line for velocity vector
+                                          'b_lfc': veh.lcgf + veh.f_hang,  # body outline
+                                          'b_rfc': veh.lcgf + veh.f_hang,
+                                          'b_rrc': -1 * (veh.lcgr + veh.r_hang),
+                                          'b_lrc': -1 * (veh.lcgr + veh.r_hang),
+                                          'lfw': veh.lcgf,  # left front wheel
+                                          'lfw_a': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'lfw_b': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'lfw_c': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'lfw_d': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'rfw': veh.lcgf,  # Right front wheel
+                                          'rfw_a': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'rfw_b': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'rfw_c': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'rfw_d': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
+                                          'rrw': -1 * veh.lcgr,  # Right rear wheel
+                                          'rrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                                          'rrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                                          'rrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                                          'rrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                                          'lrw': -1 * veh.lcgr,  # Left rear wheel
+                                          'lrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                                          'lrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                                          'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                                          'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                                          'cg': 0,  # CG
+                                          'xaxis': veh.lcgf + veh.f_hang + 1.5,  # line for x-axis
+                                          'yaxis': 0,  # line for y-axis
+                                          'vel_v': veh.model.vx[i]
                                           }]
                                           )
                                     ], ignore_index=True)
@@ -66,15 +66,15 @@ def position_data_motion(veh):
                                           'b_rrc': veh.width / 2,
                                           'b_lrc': -1 * veh.width / 2,
                                           'lfw':   -1 * (veh.width / 2 - veh.tire_w / 2),                         # left front wheel
-                                          'lfw_a': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_b': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 *np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_c': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_d': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'lfw_a': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'lfw_b': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 *np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'lfw_c': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'lfw_d': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
                                           'rfw':   (veh.width / 2 - veh.tire_w / 2),                         # Right front wheel
-                                          'rfw_a': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_b': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_c': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_d': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i,'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'rfw_a': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'rfw_b': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'rfw_c': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
+                                          'rfw_d': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
                                           'rrw':   (veh.width / 2 - veh.tire_w / 2),                          # Right rear wheel
                                           'rrw_a': veh.width / 2 - veh.tire_w,
                                           'rrw_b': veh.width / 2,
