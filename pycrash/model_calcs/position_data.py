@@ -225,11 +225,11 @@ def position_data_static(vehicle_list):
                 norm_length = veh.width
                 tang_length = veh.width / 2
 
-                veh.impact_norm_global.append((pimpact_X + norm_length * np.cos(impPoints[2] * np.pi / 180),
-                                              pimpact_Y + norm_length * np.sin(impPoints[2] * np.pi / 180)))
+                veh.impact_norm_global.append((pimpact_X + norm_length * np.cos(veh.head_angle + impPoints[2] * np.pi / 180),
+                                              pimpact_Y + norm_length * np.sin(veh.head_angle + impPoints[2] * np.pi / 180)))
 
-                veh.impact_tang_global.append((pimpact_X + tang_length * np.cos(impPoints[2] * np.pi / 180 + np.pi / 2),
-                                              pimpact_Y + tang_length * np.sin(impPoints[2] * np.pi / 180 + np.pi / 2)))
+                veh.impact_tang_global.append((pimpact_X + tang_length * np.cos(veh.head_angle + impPoints[2] * np.pi / 180 + np.pi / 2),
+                                              pimpact_Y + tang_length * np.sin(veh.head_angle + impPoints[2] * np.pi / 180 + np.pi / 2)))
 
 
     return vehicle_list
