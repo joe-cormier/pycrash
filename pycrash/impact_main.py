@@ -10,9 +10,6 @@ from .visualization.initial_positions import initial_position
 from .model_calcs.carpenter_momentum_calcs import impc
 from .visualization.kinematics import plot_model
 from .visualization.vehicles_at_impact import plot_impact
-# TODO: add ability to use force-displacement data
-# TODO: change self.sim_defaults to sim_settings
-# TODO: environment data
 
 # column list for vehicle model
 vehicle_data_columns = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -44,14 +41,13 @@ def create_impc_inputs(numImpacts):
         defined for each impact  """
     impc_inputs = {}
     for i in range(0, numImpacts):
-        mu = float(input(f"Enter intervehicular friction for impact {i}: "))
+        mu = float(input(f"Enter inter-vehicular friction for impact {i}: "))
         cor = float(input(f"Enter coefficient of restitution for impact {i}: "))
         impc_inputs[i] = {'vehicle_mu': mu,
                           'cor': cor}
 
     print(f'IMPC inputs defined as: {impc_inputs}')
     return impc_inputs
-
 
 
 """
