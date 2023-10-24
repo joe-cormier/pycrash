@@ -1,7 +1,3 @@
-# TODO: check properties of each input - use list of data types
-# TODO: option to save inputs and outputs to csv
-
-# %% modules
 from .visualization.vehicle import plot_driver_inputs
 import pandas as pd
 import numpy as np
@@ -100,8 +96,6 @@ veh_inputs = ["year",
 "notes"]
 
 
-
-
 class Vehicle:
     """
     Vehicle - contains all data assigned to a vehicle used to run various simulations
@@ -110,8 +104,6 @@ class Vehicle:
     can be useful to create mutiple iterations of the same vehicles
     Veh1_Weight1, Veh1_Weight2, etc.
     """
-
-    # TODO: create a loop through the input dictionary and assign to class
 
     def __init__(self, name, input_dict=None):
         self.name = str(name)
@@ -257,7 +249,6 @@ class Vehicle:
     def plot_driver_inputs(self):
             plot_driver_inputs(self)
 
-    # TODO: create ability to change inputs by distance
     def dist_inputs(self, filename):
         """
         Driver inputs | vehicle travel distance (ft) | brake (%) | steer (deg) |

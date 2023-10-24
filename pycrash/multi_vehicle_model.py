@@ -44,7 +44,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
 
     j = 0
 
-    print(f"Two vehicle simulation will run for {max(vehicle_list[0].driver_input.t)} s")
+    print(f"Simulation will run for {max(vehicle_list[0].driver_input.t)} s")
 
     for veh in vehicle_list:
         veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns=column_list)
@@ -155,9 +155,8 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             crush_data = None
 
         """
-        for multiple crashes, vehicles need to separate before second impact is allowed
+        for multiple crashes, vehicles need to separate before subsequent impact is allowed
         """
-
         if impc_complete == False:
             crush_data = detect(vehicle_list, i, crush_data)
 
@@ -167,7 +166,10 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             print(f'Impact detected at t = {veh.model.t[i]} seconds')
             print(f'i: {i}')
             if impact_type == 'IMPC':
-                vehicle_list, impc_energy = impc(i, crush_data.impactp_veh2x[i], crush_data.impactp_veh2y[i], vehicle_list=vehicle_list,
+                vehicle_list, impc_energy = impc(i,
+                                                 crush_data.impactp_veh2x[i],
+                                                 crush_data.impactp_veh2y[i],
+                                                 vehicle_list=vehicle_list,
                                                  sim_defaults=sim_defaults)  # run impc model - create inputs using vehicle class
                 veh.model.Fx[i] = 0
                 veh.model.Fy[i] = 0
@@ -180,6 +182,5 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 veh.model.Fx[i] = 0
                 veh.model.Fy[i] = 0
                 veh.model.Mz[i] = 0
-
 
     return vehicle_list, crush_data
