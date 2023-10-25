@@ -13,7 +13,7 @@ wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255
 # plot initial positions and any motion data to show vehicle paths
 def initial_position(vehicle_list, imageDict=False):
     # plot initial positions
-    # grid grid based on initial position of vehicle
+    # grid based on initial position of vehicle
     # scale x,y axes accordingly
     # static geometry from model_calcs.position_data
 
@@ -26,11 +26,28 @@ def initial_position(vehicle_list, imageDict=False):
         bdy_x = (veh.Px['b_lfc'], veh.Px['b_rfc'], veh.Px['b_rrc'], veh.Px['b_lrc'], veh.Px['b_lfc'])
         bdy_y = (veh.Py['b_lfc'], veh.Py['b_rfc'], veh.Py['b_rrc'], veh.Py['b_lrc'], veh.Py['b_lfc'])
 
-        lfw_x = (veh.Px['lfw_a'], veh.Px['lfw_b'], veh.Px['lfw_c'], veh.Px['lfw_d'], veh.Px['lfw_a'])
-        lfw_y = (veh.Py['lfw_a'], veh.Py['lfw_b'], veh.Py['lfw_c'], veh.Py['lfw_d'], veh.Py['lfw_a'])
+        # body outline
+        fig.add_trace(go.Scatter(x=bdy_x, y=bdy_y,
+                                 mode='lines',
+                                 name=f'{veh.name} - body',
+                                 line=dict(color='rgb(0, 0, 0)', width=2)))
 
-        rfw_x = (veh.Px['rfw_a'], veh.Px['rfw_b'], veh.Px['rfw_c'], veh.Px['rfw_d'], veh.Px['rfw_a'])
-        rfw_y = (veh.Py['rfw_a'], veh.Py['rfw_b'], veh.Py['rfw_c'], veh.Py['rfw_d'], veh.Py['rfw_a'])
+        if not veh.isTrailer:
+            lfw_x = (veh.Px['lfw_a'], veh.Px['lfw_b'], veh.Px['lfw_c'], veh.Px['lfw_d'], veh.Px['lfw_a'])
+            lfw_y = (veh.Py['lfw_a'], veh.Py['lfw_b'], veh.Py['lfw_c'], veh.Py['lfw_d'], veh.Py['lfw_a'])
+
+            rfw_x = (veh.Px['rfw_a'], veh.Px['rfw_b'], veh.Px['rfw_c'], veh.Px['rfw_d'], veh.Px['rfw_a'])
+            rfw_y = (veh.Py['rfw_a'], veh.Py['rfw_b'], veh.Py['rfw_c'], veh.Py['rfw_d'], veh.Py['rfw_a'])
+
+            # front wheel outlines
+            fig.add_trace(go.Scatter(x=lfw_x, y=lfw_y,
+                                     mode='lines',
+                                     name='LF',
+                                     line=dict(color=wheel_colors[0], width=1)))
+            fig.add_trace(go.Scatter(x=rfw_x, y=rfw_y,
+                                     mode='lines',
+                                     name='RF',
+                                     line=dict(color=wheel_colors[1], width=1)))
 
         rrw_x = (veh.Px['rrw_a'], veh.Px['rrw_b'], veh.Px['rrw_c'], veh.Px['rrw_d'], veh.Px['rrw_a'])
         rrw_y = (veh.Py['rrw_a'], veh.Py['rrw_b'], veh.Py['rrw_c'], veh.Py['rrw_d'], veh.Py['rrw_a'])
@@ -38,21 +55,7 @@ def initial_position(vehicle_list, imageDict=False):
         lrw_x = (veh.Px['lrw_a'], veh.Px['lrw_b'], veh.Px['lrw_c'], veh.Px['lrw_d'], veh.Px['lrw_a'])
         lrw_y = (veh.Py['lrw_a'], veh.Py['lrw_b'], veh.Py['lrw_c'], veh.Py['lrw_d'], veh.Py['lrw_a'])
 
-        # body outline
-        fig.add_trace(go.Scatter(x=bdy_x, y=bdy_y,
-                                 mode='lines',
-                                 name=f'{veh.name} - body',
-                                 line=dict(color='rgb(0, 0, 0)', width=2)))
-
-        # wheel outline
-        fig.add_trace(go.Scatter(x=lfw_x, y=lfw_y,
-                                 mode='lines',
-                                 name='LF',
-                                 line=dict(color=wheel_colors[0], width=1)))
-        fig.add_trace(go.Scatter(x=rfw_x, y=rfw_y,
-                                 mode='lines',
-                                 name='RF',
-                                 line=dict(color=wheel_colors[1], width=1)))
+        # rear wheel outlines
         fig.add_trace(go.Scatter(x=rrw_x, y=rrw_y,
                                  mode='lines',
                                  name='RR',

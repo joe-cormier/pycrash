@@ -142,64 +142,102 @@ def position_data_static(vehicle_list):
     """
 
     for veh in vehicle_list:
+        if veh.isTrailer:
+            veh.px = {'b_lfc': veh.lcgf + veh.f_hang,  # body outline
+                      'b_rfc': veh.lcgf + veh.f_hang,
+                      'b_rrc': -1 * (veh.lcgr + veh.r_hang),
+                      'b_lrc': -1 * (veh.lcgr + veh.r_hang),
+                      'rrw': -1 * veh.lcgr,  # Right rear wheel
+                      'rrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                      'rrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                      'rrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                      'rrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                      'lrw': -1 * veh.lcgr,  # Left rear wheel
+                      'lrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                      'lrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                      'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                      'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                      'cg': 0,  # CG
+                      'xaxis': veh.lcgf + veh.f_hang + 1.5,  # line for x-axis
+                      'yaxis': 0,  # line for y-axis
+                      'vel_v': veh.vx_initial}
 
-        veh.px = {'b_lfc': veh.lcgf + veh.f_hang,           # body outline
-                  'b_rfc': veh.lcgf + veh.f_hang,
-                  'b_rrc': -1 * (veh.lcgr + veh.r_hang),
-                  'b_lrc': -1 * (veh.lcgr + veh.r_hang),
-                  'lfw':   veh.lcgf,                         # left front wheel
-                  'lfw_a': veh.lcgf + veh.tire_d / 2,
-                  'lfw_b': veh.lcgf + veh.tire_d / 2,
-                  'lfw_c': veh.lcgf + -1 * veh.tire_d / 2,
-                  'lfw_d': veh.lcgf + -1 * veh.tire_d / 2,
-                  'rfw':   veh.lcgf,                         # Right front wheel
-                  'rfw_a': veh.lcgf + veh.tire_d / 2,
-                  'rfw_b': veh.lcgf + veh.tire_d / 2,
-                  'rfw_c': veh.lcgf + -1 * veh.tire_d / 2,
-                  'rfw_d': veh.lcgf + -1 * veh.tire_d / 2,
-                  'rrw':   -1 * veh.lcgr,                     # Right rear wheel
-                  'rrw_a': -1 * veh.lcgr + veh.tire_d / 2,
-                  'rrw_b': -1 * veh.lcgr + veh.tire_d / 2,
-                  'rrw_c': -1 * veh.lcgr - veh.tire_d / 2,
-                  'rrw_d': -1 * veh.lcgr - veh.tire_d / 2,
-                  'lrw':   -1 * veh.lcgr,                      # Left rear wheel
-                  'lrw_a': -1 * veh.lcgr + veh.tire_d / 2,
-                  'lrw_b': -1 * veh.lcgr + veh.tire_d / 2,
-                  'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
-                  'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
-                  'cg': 0,                                      # CG
-                  'xaxis': veh.lcgf + veh.f_hang + 1.5,         # line for x-axis
-                  'yaxis': 0,                                   # line for y-axis
-                  'vel_v': veh.vx_initial}
+            veh.py = {'b_lfc': -1 * veh.width / 2,  # body outline
+                      'b_rfc': veh.width / 2,
+                      'b_rrc': veh.width / 2,
+                      'b_lrc': -1 * veh.width / 2,
+                      'rrw': (veh.width / 2 - veh.tire_w / 2),  # Right rear wheel
+                      'rrw_a': veh.width / 2 - veh.tire_w,
+                      'rrw_b': veh.width / 2,
+                      'rrw_c': veh.width / 2,
+                      'rrw_d': veh.width / 2 - veh.tire_w,
+                      'lrw': -1 * (veh.width / 2 - veh.tire_w / 2),  # Left rear wheel
+                      'lrw_a': -1 * veh.width / 2,
+                      'lrw_b': -1 * veh.width / 2 + veh.tire_w,
+                      'lrw_c': -1 * veh.width / 2 + veh.tire_w,
+                      'lrw_d': -1 * veh.width / 2,
+                      'cg': 0,  # CG
+                      'xaxis': 0,  # line for x-axis
+                      'yaxis': veh.width / 2 + 1.5,  # line for y-axis
+                      'vel_v': veh.vy_initial}
+        else:
+            veh.px = {'b_lfc': veh.lcgf + veh.f_hang,           # body outline
+                      'b_rfc': veh.lcgf + veh.f_hang,
+                      'b_rrc': -1 * (veh.lcgr + veh.r_hang),
+                      'b_lrc': -1 * (veh.lcgr + veh.r_hang),
+                      'lfw':   veh.lcgf,                         # left front wheel
+                      'lfw_a': veh.lcgf + veh.tire_d / 2,
+                      'lfw_b': veh.lcgf + veh.tire_d / 2,
+                      'lfw_c': veh.lcgf + -1 * veh.tire_d / 2,
+                      'lfw_d': veh.lcgf + -1 * veh.tire_d / 2,
+                      'rfw':   veh.lcgf,                         # Right front wheel
+                      'rfw_a': veh.lcgf + veh.tire_d / 2,
+                      'rfw_b': veh.lcgf + veh.tire_d / 2,
+                      'rfw_c': veh.lcgf + -1 * veh.tire_d / 2,
+                      'rfw_d': veh.lcgf + -1 * veh.tire_d / 2,
+                      'rrw':   -1 * veh.lcgr,                     # Right rear wheel
+                      'rrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                      'rrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                      'rrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                      'rrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                      'lrw':   -1 * veh.lcgr,                      # Left rear wheel
+                      'lrw_a': -1 * veh.lcgr + veh.tire_d / 2,
+                      'lrw_b': -1 * veh.lcgr + veh.tire_d / 2,
+                      'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
+                      'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
+                      'cg': 0,                                      # CG
+                      'xaxis': veh.lcgf + veh.f_hang + 1.5,         # line for x-axis
+                      'yaxis': 0,                                   # line for y-axis
+                      'vel_v': veh.vx_initial}
 
-        veh.py = {'b_lfc': -1 * veh.width / 2,     # body outline
-                  'b_rfc': veh.width / 2,
-                  'b_rrc': veh.width / 2,
-                  'b_lrc': -1 * veh.width / 2,
-                  'lfw':   -1 * (veh.width / 2 - veh.tire_w / 2),                         # left front wheel
-                  'lfw_a': -1 * (veh.width / 2),
-                  'lfw_b': -1 * (veh.width / 2 - veh.tire_w),
-                  'lfw_c': -1 * (veh.width / 2 - veh.tire_w),
-                  'lfw_d': -1 * (veh.width / 2),
-                  'rfw':   (veh.width / 2 - veh.tire_w / 2),                         # Right front wheel
-                  'rfw_a': (veh.width / 2 - veh.tire_w),
-                  'rfw_b': (veh.width / 2),
-                  'rfw_c': (veh.width / 2),
-                  'rfw_d': (veh.width / 2 - veh.tire_w),
-                  'rrw':   (veh.width / 2 - veh.tire_w / 2),                          # Right rear wheel
-                  'rrw_a': veh.width / 2 - veh.tire_w,
-                  'rrw_b': veh.width / 2,
-                  'rrw_c': veh.width / 2,
-                  'rrw_d': veh.width / 2 - veh.tire_w,
-                  'lrw': -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
-                  'lrw_a': -1 * veh.width / 2,
-                  'lrw_b': -1 * veh.width / 2 + veh.tire_w,
-                  'lrw_c': -1 * veh.width / 2 + veh.tire_w,
-                  'lrw_d': -1 * veh.width / 2,
-                  'cg': 0,                                         # CG
-                  'xaxis': 0,   # line for x-axis
-                  'yaxis': veh.width / 2 + 1.5,                                      # line for y-axis
-                  'vel_v': veh.vy_initial}
+            veh.py = {'b_lfc': -1 * veh.width / 2,     # body outline
+                      'b_rfc': veh.width / 2,
+                      'b_rrc': veh.width / 2,
+                      'b_lrc': -1 * veh.width / 2,
+                      'lfw':   -1 * (veh.width / 2 - veh.tire_w / 2),                         # left front wheel
+                      'lfw_a': -1 * (veh.width / 2),
+                      'lfw_b': -1 * (veh.width / 2 - veh.tire_w),
+                      'lfw_c': -1 * (veh.width / 2 - veh.tire_w),
+                      'lfw_d': -1 * (veh.width / 2),
+                      'rfw':   (veh.width / 2 - veh.tire_w / 2),                         # Right front wheel
+                      'rfw_a': (veh.width / 2 - veh.tire_w),
+                      'rfw_b': (veh.width / 2),
+                      'rfw_c': (veh.width / 2),
+                      'rfw_d': (veh.width / 2 - veh.tire_w),
+                      'rrw':   (veh.width / 2 - veh.tire_w / 2),                          # Right rear wheel
+                      'rrw_a': veh.width / 2 - veh.tire_w,
+                      'rrw_b': veh.width / 2,
+                      'rrw_c': veh.width / 2,
+                      'rrw_d': veh.width / 2 - veh.tire_w,
+                      'lrw': -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
+                      'lrw_a': -1 * veh.width / 2,
+                      'lrw_b': -1 * veh.width / 2 + veh.tire_w,
+                      'lrw_c': -1 * veh.width / 2 + veh.tire_w,
+                      'lrw_d': -1 * veh.width / 2,
+                      'cg': 0,                                         # CG
+                      'xaxis': 0,   # line for x-axis
+                      'yaxis': veh.width / 2 + 1.5,                                      # line for y-axis
+                      'vel_v': veh.vy_initial}
 
         veh.Px = veh.px.copy()
         veh.Py = veh.py.copy()

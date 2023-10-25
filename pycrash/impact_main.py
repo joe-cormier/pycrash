@@ -108,7 +108,6 @@ class Impact():
 
         # load defaults
         if user_sim_defaults:
-            # TODO: create check for user sim_defaults_input
             self.sim_defaults = user_sim_defaults
         else:
             self.sim_defaults = {'dt_motion': 0.01,
@@ -116,19 +115,22 @@ class Impact():
                                  'alpha_max': 0.174533,  # 10 degrees
                                 }
 
-        # check for driver inputs
+        # check for driver inputs for non-trailers
         for veh in self.vehicles:
-            if hasattr(veh, 'driver_input'):
-                print(f"Driver input for {veh.name} of shape = {veh.driver_input.shape}")
+            if veh.isTrailer:
+                print(f"{veh.name} designated as a trailer")
             else:
-                print(f'Driver input for {veh.name} not provided - no braking or steering applied')
-                end_time = int(input('Enter duration for simulation (seconds):'))
-                t = list(np.arange(0, end_time + self.sim_defaults['dt_motion'], self.sim_defaults['dt_motion']))  # create time array from 0 to end time from user
-                throttle = [0] * len(t)
-                brake = [0] * len(t)
-                steer = [0] * len(t)
-                veh.driver_input = pd.DataFrame.from_dict({'t': t, 'throttle': throttle, 'brake': brake, 'steer': steer})
-                print(f'Driver inputs for {veh.name} set to zero for {end_time} seconds')
+                if hasattr(veh, 'driver_input'):
+                    print(f"Driver input for {veh.name} of shape = {veh.driver_input.shape}")
+                else:
+                    print(f'Driver input for {veh.name} not provided - no braking or steering applied')
+                    end_time = int(input('Enter duration for simulation (seconds):'))
+                    t = list(np.arange(0, end_time + self.sim_defaults['dt_motion'], self.sim_defaults['dt_motion']))  # create time array from 0 to end time from user
+                    throttle = [0] * len(t)
+                    brake = [0] * len(t)
+                    steer = [0] * len(t)
+                    veh.driver_input = pd.DataFrame.from_dict({'t': t, 'throttle': throttle, 'brake': brake, 'steer': steer})
+                    print(f'Driver inputs for {veh.name} set to zero for {end_time} seconds')
 
         # TODO: convert sideswipe to lists of tuples like impc
             # sideswipe will not have iplane=True
@@ -156,8 +158,6 @@ class Impact():
                     print(f'Total impacts for {veh.name} - total defined edges: {len(veh.edgeimpact_points)}')
 
         """ initialize vehicle motion dataframes """
-        # TODO: resolve differences between vehicle input time duration and simulation duration - input must be > than simulation?
-
         for veh in self.vehicles:
             if veh.type == 'Barrier':
                 # create vehicle with no motion for "Barrier" type
@@ -175,7 +175,7 @@ class Impact():
                 veh.model.vx[0] = veh.vx_initial * 1.46667  # convert input in mph to fps
                 veh.model.vy[0] = veh.vy_initial * 1.46667  # convert input in mph to fps
                 veh.model.theta_rad[0] = veh.head_angle * np.pi / 180  # initial heading angle
-                veh.model.oz_rad[0] = veh.omega_z * (np.pi / 180)  # initial angular rate (deg/s) - input
+                veh.model.oz_rad[0] = veh.omega_z * (np.pi / 180)      # initial angular rate (deg/s) - input
                 veh.model.Vx[0] = veh.vx_initial * 1.46667 * np.cos(veh.head_angle * np.pi / 180) - veh.vy_initial * 1.46667 * np.sin(veh.head_angle * np.pi / 180)
                 veh.model.Vy[0] = veh.vx_initial * 1.46667 * np.sin(veh.head_angle * np.pi / 180) + veh.vy_initial * 1.46667 * np.cos(veh.head_angle * np.pi / 180)
 

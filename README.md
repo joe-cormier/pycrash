@@ -26,7 +26,7 @@ pip install pycrash
 
 #### Validation
   - validation data are provided within the [Github](https://github.com/joe-cormier/pycrash) repo
-  - Initial publication in [2001 SAE](https://www.sae.org/publications/technical-papers/content/2021-01-0896/)
+  - Initial publication in [2021 SAE](https://www.sae.org/publications/technical-papers/content/2021-01-0896/)
 
 #### Modular Design
   - Model calculations divided into modules to allow for future improvements
