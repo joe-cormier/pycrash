@@ -113,10 +113,13 @@ def SingleDOFmodel(W1, v1_initial, v1_brake, W2, v2_initial, v2_brake, k, cor,
 
             # store initial data in dataframe
             data = [t, x1, x2, v1, v2, a1, a2, springF, dx, v1_brakeF, v2_brakeF]
-            spring_model = spring_model.append(pd.Series(data, index=columns), ignore_index=True)
+            new_row = pd.Series(dict(zip(columns, data)))
+            spring_model = pd.concat([
+                                      spring_model,
+                                      new_row.to_frame().T
+                                     ], ignore_index=True)
 
-
-        # this section will calculate forces based on closing or seperating phase
+        # this section will calculate forces based on closing or separating phase
         if i > 0:
 
             # calculate vehicle motion [ft] based on prior velocity
