@@ -16,7 +16,7 @@ click==7.1.2
 cookiecutter==2.1.1
 cycler==0.10.0
 dash==2.15.0
-dash-core-components==1.14.0
+dash-core-components==2.0.0
 dash-html-components==2.0.0
 dash-renderer==1.8.3
 dash-table==4.11.1
