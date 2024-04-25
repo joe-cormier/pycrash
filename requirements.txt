@@ -15,7 +15,7 @@ chardet==4.0.0
 click==7.1.2
 cookiecutter==2.1.1
 cycler==0.10.0
-dash==1.18.0
+dash==2.15.0
 dash-core-components==1.14.0
 dash-html-components==1.1.1
 dash-renderer==1.8.3
