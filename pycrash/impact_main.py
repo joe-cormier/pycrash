@@ -10,6 +10,7 @@ from .visualization.initial_positions import initial_position
 from .model_calcs.carpenter_momentum_calcs import impc
 from .visualization.kinematics import plot_model
 from .visualization.vehicles_at_impact import plot_impact
+pd.options.mode.copy_on_write = False
 
 # column list for vehicle model
 vehicle_data_columns = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
