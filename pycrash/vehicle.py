@@ -60,8 +60,8 @@ input_query = ["Model year",
 "notes"]
 
 veh_inputs = ["year",
-"make",
-"model",
+"vehmake",
+"vehmodel",
 "weight",
 "vin",
 "brake",
