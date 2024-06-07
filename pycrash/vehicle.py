@@ -60,8 +60,8 @@ input_query = ["Model year",
 "notes"]
 
 veh_inputs = ["year",
-"make",
-"model",
+"vehmake",
+"vehmodel",
 "weight",
 "vin",
 "brake",
@@ -112,7 +112,7 @@ class Vehicle:
         if input_dict != None:
             for key, value in input_dict.items():
                 if key in veh_inputs:
-                    if key in ['make', 'model', 'vin', 'notes']:
+                    if key in ['vehmake', 'vehmodel', 'vin', 'notes']:
                         setattr(self, key, str(value))
                     elif key in ['fwd', 'rwd', 'awd']:
                         setattr(self, key, bool(value))
@@ -150,8 +150,8 @@ class Vehicle:
 
     def input_dict(self):
         vehicle_input_dict = {"year":self.year,
-        "make":self.make,
-        "model":self.model,
+        "vehmake":self.vehmake,
+        "vehmodel":self.vehmodel,
         "weight":self.weight,
         "vin":self.vin,
         "brake":self.brake,
