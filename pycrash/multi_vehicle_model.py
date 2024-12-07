@@ -20,10 +20,6 @@ column_list = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehiclesli
                'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
                'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
 
-
-# TODO: ignore driver inputs after impact
-# TODO: disable tire after impact
-
 def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=False, kmutual=None, vehicle_mu=None):
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs

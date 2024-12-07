@@ -8,7 +8,7 @@ project_dir = os.path.dirname(os.getcwd())
 input_dir = os.path.join(project_dir, 'data', 'input')
 
 # load defaults
-sim_defaults = {'dt_motion': 0.001,
+sim_defaults = {'dt_motion': 0.01,
                 'mu_max': 0.8,
                 'alpha_max': 0.174533}
 

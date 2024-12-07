@@ -65,7 +65,7 @@ class SingleMotion:
             print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
             print(f'Current driver input of type: {type(self.veh.driver_input)}')
             end_time = int(input('Enter duration for simulation (seconds):'))
-            t = list(np.arange(0, end_time + dt_motion, dt_motion))  # create time array from 0 to end time from user
+            t = list(np.arange(0, end_time + self.dt_motion, self.dt_motion))  # create time array from 0 to end time from user
             throttle = [0] * len(t)
             brake = [0] * len(t)
             steer = [0] * len(t)
