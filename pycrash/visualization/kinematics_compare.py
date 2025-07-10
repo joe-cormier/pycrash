@@ -273,16 +273,16 @@ def compare_kinematics(model1, model2, name1, name2):
     fig.update_xaxes(showgrid=False, title_text='', row=3, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False)
-    fig.update_yaxes(showgrid=False, title_text='LF - Rightward Force (lb)', row=1, col=1,
+    fig.update_yaxes(showgrid=False, title_text='LF - Forward Force (lb)', row=1, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
-    fig.update_yaxes(showgrid=False, title_text='RF - Rightward Force (lb)', row=2, col=1,
+    fig.update_yaxes(showgrid=False, title_text='RF - Forward Force (lb)', row=2, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
-    fig.update_yaxes(showgrid=False, title_text='RR - Rightward Force (lb)', row=3, col=1,
+    fig.update_yaxes(showgrid=False, title_text='RR - Forward Force (lb)', row=3, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
-    fig.update_yaxes(showgrid=False, title_text='LR - Rightward Force (lb)', row=4, col=1,
+    fig.update_yaxes(showgrid=False, title_text='LR - Forward Force (lb)', row=4, col=1,
                      showline=True, linewidth=1, linecolor='black', ticks="outside",
                      tickwidth=1, tickcolor='black', ticklen=10, zeroline=False, titlefont=dict(size=y_titlefontSize))
     fig.show()

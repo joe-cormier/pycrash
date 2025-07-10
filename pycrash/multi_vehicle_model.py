@@ -1,6 +1,7 @@
 """
 vehicle motion for multiple vehicles
 """
+from . import tire
 from .model_calcs.sideswipe import ss
 from .model_calcs.tire_model import tire_forces
 from .model_calcs.impact_detect import detect
@@ -9,8 +10,6 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import math
-import csv
-import os
 
 # column list for vehicle model
 column_list = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -38,8 +37,6 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
 
-    j = 0
-
     print(f"Simulation will run for {max(vehicle_list[0].driver_input.t)} s")
 
     for veh in vehicle_list:
@@ -57,12 +54,23 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
         veh.model.Vy[0] = veh.model.vx[0] * math.sin(veh.model.theta_rad[0]) + veh.model.vy[0] * math.cos(veh.model.theta_rad[0])
 
     for i in (range(len(vehicle_list[0].driver_input.t))):
-
         # step through each vehicle
         for veh in vehicle_list:
             veh.model.t[i] = round(i * dt_motion, 4)  # assigning time
 
             # get tire forces for t = 0
+            # current steer angle
+            veh.model.delta_deg[i] = veh.driver_input.steer[i] / veh.steer_ratio  # steer angle (delta) will always be derived from driver input
+            veh.model.delta_rad[i] = veh.model.delta_deg[i] * (math.pi / 180)     # net steer angle
+            veh.model.lf_steer_angle[i], veh.model.rf_steer_angle[i] = 0, 0
+
+            # adjust steer angle using ackerman steering
+            if veh.model.delta_rad[i] != 0:
+                veh = tire.ackerman_steer(i, veh.model.delta_rad[i], veh)
+
+            # check for non-zero accelerations or inputs, otherwise, tire forces are zero
+
+
             veh = tire_forces(veh, i, sim_defaults)
 
             # setting vehicle forces to zero if no impact
@@ -100,7 +108,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                                                           -1 * veh.model.rr_fy[i] * veh.lcgr,
                                                           veh.model.lr_fx[i] * veh.track / 2,
                                                           -1 * veh.model.lr_fy[i] * veh.lcgr,
-                                                         veh.model.Mz[i]])
+                                                          veh.model.Mz[i]])
 
             if i == 0:
                 # vehicle acceleration in inertial frame
@@ -128,7 +136,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 # heading angle
                 veh.model.theta_rad[i] = veh.model.theta_rad[i - 1] + dt_motion * np.mean([veh.model.oz_rad[i], veh.model.oz_rad[i - 1]])
 
-                # inertial frame coorindates - capital letters
+                # inertial frame coordinates - capital letters
                 veh.model.Ax[i] = veh.model.au[i] * math.cos(veh.model.theta_rad[i]) - veh.model.av[i] * math.sin(veh.model.theta_rad[i])
                 veh.model.Ay[i] = veh.model.au[i] * math.sin(veh.model.theta_rad[i]) + veh.model.av[i] * math.cos(veh.model.theta_rad[i])
 
@@ -141,10 +149,10 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
             # vehicle position
             veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
             veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
-            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]  # move to seperate calc
-            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]  # move to seperate calc
-            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to seperate calc
-            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]  # move to seperate calc
+            veh.model.alphaz_deg = [row * 180 / math.pi for row in veh.model.alphaz]  # move to separate calc
+            veh.model.oz_deg = [row * 180 / math.pi for row in veh.model.oz_rad]  # move to separate calc
+            veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to separate calc
+            veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]  # move to separate calc
 
         # detect impact using current vehicle positions after first iterations
         if i == 0:
@@ -170,7 +178,7 @@ def multi_vehicle_model(vehicle_list, sim_defaults, impact_type, ignore_driver=F
                 veh.model.Fx[i] = 0
                 veh.model.Fy[i] = 0
                 veh.model.Mz[i] = 0
-                impc_complete = True  # <- only run IMPC model once
+                impc_complete = True    # <- only run IMPC model once
             elif impact_type == 'SS':
                 vehicle_list = ss(vehicle_list, crush_data, kmutual, vehicle_mu, i)
             else:

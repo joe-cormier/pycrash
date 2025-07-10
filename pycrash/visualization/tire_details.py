@@ -1,5 +1,5 @@
 """
-plots used witin vehicle class
+plots used within vehicle class
 """
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots

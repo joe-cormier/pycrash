@@ -10,7 +10,7 @@ impact related motion
 """
 
 # TODO: ignore driver inputs after impact
-# TODO: disable tire after impact
+# TODO: disable tire at specific time
 
 def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, kmutual=None, vehicle_mu=None):
     """
@@ -29,9 +29,9 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
     veh.model.t[i] = round(i * dt_motion, 4)  # assigning time
     #print(round(i * dt_motion, 4))
     #print(veh.model.t[i])
-    # get tire forces for t = 0
 
-    veh = tire_forces(veh, i, sim_defaults)
+    # add tire forces to veh model for index i
+    veh.calc_tire_forces(i, sim_defaults)
 
     # setting vehicle forces to zero if no impact
     # impact may occur as a result of vehicle 2 motion in which case, the forces for t=i will be
@@ -65,7 +65,7 @@ def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, 
                                                   veh.model.lr_fy[i],
                                                   veh.model.Fy[i]])
 
-    # rotation acceleration - alpha-z
+    # rotational acceleration - alpha-z
     veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
                                                   veh.model.lf_fy[i] * veh.lcgf,
                                                   -1 * veh.model.rf_fx[i] * veh.track / 2,
