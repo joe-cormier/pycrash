@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import math
+from .vehicle import resample_driver_input
 
 
 # column list for vehicle model
@@ -12,6 +13,7 @@ column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg'
            'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
            'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
            'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
+            'lf_vy', 'rf_vy', 'rr_vy', 'lr_vy',
            'theta_rad', 'theta_deg']
 
 def vehicle_model(veh, sim_defaults):
@@ -20,6 +22,7 @@ def vehicle_model(veh, sim_defaults):
     """
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
+    veh.driver_input = resample_driver_input(veh.driver_input, dt_motion)  # one row of driver input per time step
 
     print(f"Vehicle motion will be simulated for {max(veh.driver_input.t)} seconds")
     veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns = column_list)
@@ -41,7 +44,7 @@ def vehicle_model(veh, sim_defaults):
 
         # local vehicle acceleration
         veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
-                                                      veh.model.rf_fx[i],
+                                                       veh.model.rf_fx[i],
                                                       veh.model.rr_fx[i],
                                                       veh.model.lr_fx[i]])
 
@@ -53,7 +56,7 @@ def vehicle_model(veh, sim_defaults):
         # rotation acceleration - alpha-z
         veh.model.alphaz[i] = (1 / veh.izz) * np.sum([veh.model.lf_fx[i] * veh.track / 2,
                                                       veh.model.lf_fy[i] * veh.lcgf,
-                                                      -1 * veh.model.rf_fx[i] * veh.track / 2,
+                                                     -1 * veh.model.rf_fx[i] * veh.track / 2,
                                                       veh.model.rf_fy[i] * veh.lcgf,
                                                       -1 * veh.model.rr_fx[i] * veh.track / 2,
                                                       -1 * veh.model.rr_fy[i] * veh.lcgr,
@@ -112,8 +115,8 @@ def vehicle_model(veh, sim_defaults):
         veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to separate calc
 
     # vehicle position
-    veh.model['Dx'] = veh.init_x_pos + integrate.cumtrapz(list(veh.model.Vx), list(veh.model.t), initial=0)
-    veh.model['Dy'] = veh.init_y_pos + integrate.cumtrapz(list(veh.model.Vy), list(veh.model.t), initial=0)
+    veh.model['Dx'] = veh.init_x_pos + integrate.cumulative_trapezoid(list(veh.model.Vx), list(veh.model.t), initial=0)
+    veh.model['Dy'] = veh.init_y_pos + integrate.cumulative_trapezoid(list(veh.model.Vy), list(veh.model.t), initial=0)
 
     # converting to degrees
     # TODO: remove for speed
