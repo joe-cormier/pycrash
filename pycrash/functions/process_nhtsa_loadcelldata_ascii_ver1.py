@@ -116,10 +116,10 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
             filtered_accel = cfcfilt(60, data, time[1] - time[0])
             test_data[key]['Accel'] = filtered_accel  # filtered acceleration [g]
             accel_ = [x * accel_convert for x in filtered_accel]
-            velocity = integrate.cumtrapz(accel_, time, initial=0)
+            velocity = integrate.cumulative_trapezoid(accel_, time, initial=0)
             velocity = [x + impact_velocity for x in velocity]
             test_data[key]['Velocity'] = velocity  # velocity [fps / m/s]
-            test_data[key]['Displacement'] = integrate.cumtrapz(velocity, time, initial=0)
+            test_data[key]['Displacement'] = integrate.cumulative_trapezoid(velocity, time, initial=0)
 
     # create dictionary of filtered force
     forceDict = {}
