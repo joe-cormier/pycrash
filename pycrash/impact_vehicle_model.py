@@ -8,9 +8,6 @@ comprehensive vehicle model that can be used to run single vehicle motion as wel
 impact related motion
 """
 
-# TODO: ignore driver inputs after impact
-# TODO: disable tire at specific time
-
 def multi_vehicle_model(veh, i, sim_defaults, impact_type, ignore_driver=False, kmutual=None, vehicle_mu=None):
     """
     Calculate vehicle dynamics from driver inputs and environmental inputs
