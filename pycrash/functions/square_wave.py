@@ -20,8 +20,8 @@ x_initial = 0                   # initial position (ft)
 t = list(np.arange(0, dt_impact + end_time, dt_impact))  # create time array from 0 to max time in inputs, this will be end time for simulation
 t = [round(x, 4) for x in t]
 a = [constant_accel] * len(t)
-v = v_initial + integrate.cumtrapz(a, t, initial=0)     # integrate accel to get velocity
-x = x_initial + integrate.cumtrapz(v, t, initial=0)     # integrate velocity to get position
+v = v_initial + integrate.cumulative_trapezoid(a, t, initial=0)     # integrate accel to get velocity
+x = x_initial + integrate.cumulative_trapezoid(v, t, initial=0)     # integrate velocity to get position
 
 # calculate free particle relative displacement
 
@@ -41,8 +41,8 @@ x_relative_list = [None] * len(accel_list)
 
 for i in range(len(accel_list)):
     a = [accel_list[i]] * len(t)
-    v_list[i] = v_initial + integrate.cumtrapz(a, t, initial=0)
-    x_list[i] = x_initial + integrate.cumtrapz(v_list[i], t, initial=0)
+    v_list[i] = v_initial + integrate.cumulative_trapezoid(a, t, initial=0)
+    x_list[i] = x_initial + integrate.cumulative_trapezoid(v_list[i], t, initial=0)
     x_relative_list[i] = relative_disp(t, x_list[i], v_initial)
 
 # Plot Velocity

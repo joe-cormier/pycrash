@@ -100,17 +100,17 @@ def time_inputs(time, throttle, brake, steer, init_vel=0, dt_motion=0.01, show_p
     # integrate acceleration to get velocity
     print(f'Initial Velocity: {init_vel} mph')
     init_vel_fps = init_vel * 1.46667
-    df['vx'] = integrate.cumtrapz(list(df.accel_x_fps), list(df.t), initial=0)
-    df['vy'] = integrate.cumtrapz(list(df.accel_y_fps), list(df.t), initial=0)
-    df['v'] = init_vel_fps + integrate.cumtrapz(list(df.accel_fps), list(df.t), initial=0)
+    df['vx'] = integrate.cumulative_trapezoid(list(df.accel_x_fps), list(df.t), initial=0)
+    df['vy'] = integrate.cumulative_trapezoid(list(df.accel_y_fps), list(df.t), initial=0)
+    df['v'] = init_vel_fps + integrate.cumulative_trapezoid(list(df.accel_fps), list(df.t), initial=0)
 
     df['vx_mph'] = df.vx.mul(0.681818)
     df['vy_mph'] = df.vy.mul(0.681818)
     df['v_mph'] = df.v.mul(0.681818)
 
-    df['dx'] = integrate.cumtrapz(list(df.vx), list(df.t), initial=0)
-    df['dy'] = integrate.cumtrapz(list(df.vy), list(df.t), initial=0)
-    df['disp'] = integrate.cumtrapz(list(df.v), list(df.t), initial=0)
+    df['dx'] = integrate.cumulative_trapezoid(list(df.vx), list(df.t), initial=0)
+    df['dy'] = integrate.cumulative_trapezoid(list(df.vy), list(df.t), initial=0)
+    df['disp'] = integrate.cumulative_trapezoid(list(df.v), list(df.t), initial=0)
 
     # heading angle?
     df['heading_rad'] = [np.arctan2(dx, dy) for dx, dy in zip(df.dx, df.dy)]

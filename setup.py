@@ -19,5 +19,16 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.8',
+    install_requires=[
+        "numpy",
+        "scipy>=1.6",  # integrate.cumulative_trapezoid
+        "pandas>=1.2,<3",  # models assign by chained indexing, which pandas 3 copy-on-write silently ignores
+        "matplotlib",
+        "plotly",
+        "tabulate",
+        "tqdm",
+        "cookiecutter",
+    ],
+    extras_require={"test": ["pytest"]},
 )
