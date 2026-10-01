@@ -7,14 +7,15 @@ from .vehicle import resample_driver_input
 
 
 # column list for vehicle model
-column_list = ['t', 'vx','vy', 'Vx', 'Vy', 'Vr', 'oz_deg', 'oz_rad', 'delta_deg',
-           'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av',
-           'ax','ay', 'ar', 'Ax', 'Ay', 'Ar', 'alphaz', 'alphaz_deg',
-           'beta_deg','beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
-           'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
-           'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
-            'lf_vy', 'rf_vy', 'rr_vy', 'lr_vy',
-           'theta_rad', 'theta_deg']
+column_list = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
+               'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax', 'ay', 'ar', 'Ax', 'Ay', 'Ar',
+               'alphaz', 'alphaz_deg', 'beta_deg', 'beta_rad', 'lf_steer_angle', 'rf_steer_angle', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
+               'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
+               'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
+               'lf_lonf', 'lf_latf', 'lf_lock', 'rf_lonf', 'rf_latf', 'rf_lock', 'lr_lonf', 'lr_latf', 'lr_lock',
+               'rr_lonf', 'rr_latf', 'rr_lock',
+               'lf_vx', 'lf_vy', 'rf_vx', 'rf_vy', 'rr_vx', 'rr_vy', 'lr_vx', 'lr_vy',
+               'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
 
 def vehicle_model(veh, sim_defaults):
     """
@@ -39,8 +40,9 @@ def vehicle_model(veh, sim_defaults):
     for i in range(len(veh.driver_input.t)):
         veh.model.t[i] = round(i * dt_motion, 4)  # assigning time
 
-        # get tire forces for t = 0
-        veh = tire_forces(veh, i, sim_defaults)
+        # add tire forces to veh model for index i
+        veh.calc_tire_forces(i, sim_defaults)
+        #veh = tire_forces(veh, i, sim_defaults)
 
         # local vehicle acceleration
         veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],
