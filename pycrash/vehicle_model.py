@@ -1,4 +1,3 @@
-from .model_calcs.tire_model import tire_forces
 import pandas as pd
 import numpy as np
 from scipy import integrate
@@ -42,7 +41,6 @@ def vehicle_model(veh, sim_defaults):
 
         # add tire forces to veh model for index i
         veh.calc_tire_forces(i, sim_defaults)
-        #veh = tire_forces(veh, i, sim_defaults)
 
         # local vehicle acceleration
         veh.model.au[i] = 32.2 / veh.weight * np.sum([veh.model.lf_fx[i],

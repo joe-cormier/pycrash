@@ -45,3 +45,10 @@ def test_straight_line_stays_straight(braking_model):
 def test_stopping_distance_regression(braking_model):
     # reference value from this model on the tire-fix commit (94ba40b)
     assert braking_model.Dx.iloc[-1] == pytest.approx(112.12, rel=5e-3)
+
+
+def test_uses_shared_vehicle_tire_model(braking_model):
+    # per-tire velocities and tire-frame forces are only written by Vehicle.calc_tire_forces (tire.py),
+    # the same tire model the impact simulation uses
+    cols = [f"{t}_{c}" for t in ("lf", "rf", "rr", "lr") for c in ("vx", "vy", "lonf", "latf", "fz")]
+    assert not braking_model[cols].isna().any().any()

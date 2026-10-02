@@ -291,7 +291,7 @@ class Vehicle:
                                                                                          self.wb,
                                                                                          self.track)
 
-        # Forward / Rearward and lateral weight shift - same calculation as the single vehicle model
+        # Forward / Rearward and lateral weight shift
         # (the inline version here applied the full lateral transfer at every tire, doubling it)
         tire.vertical_load(i, j, self)
 
@@ -309,7 +309,7 @@ class Vehicle:
         self.model.lr_vx[i] = self.model.vx[j] + self.model.oz_rad[j] * (self.track / 2)
         self.model.lr_vy[i] = self.model.vy[j] - self.model.oz_rad[j] * self.lcgr
 
-        # max slip angle scaled by available friction - same as the single vehicle tire model
+        # max slip angle scaled by available friction
         alpha_max = sim_defaults['alpha_max'] * sim_defaults['mu_max']
 
         # tire forces in tire frame
