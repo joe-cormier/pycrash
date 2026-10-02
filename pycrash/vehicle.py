@@ -58,55 +58,40 @@ input_query = ["Model year",
                "notes"]
 
 veh_inputs = ["year",
-              "make",
-              "model",
-              "weight",
-              "vin",
-              "brake",
-              "steer_ratio",
-              "init_x_pos",
-              "init_y_pos",
-              "head_angle",
-              "width",
-              "length",
-              "hcg",
-              "lcgf",
-              "lcgr",
-              "wb",
-              "track",
-              "f_hang",
-              "r_hang",
-              "tire_d",
-              "tire_w",
-              "izz",
-              "fwd",
-              "rwd",
-              "awd",
-              "A",
-              "B",
-              "k",
-              "L",
-              "c",
-              "vx_initial",
-              "vy_initial",
-              "omega_z",
-              "striking",
-              "notes"]
-
-def resample_driver_input(driver_input, dt):
-    """
-    driver inputs are created at the time step defined above (dt_motion), but each simulation reads one row
-    of driver input per time step - interpolate the inputs to the simulation time step when they differ
-    """
-    t_in = driver_input['t'].to_numpy(dtype=float)
-    if len(t_in) < 2 or np.isclose(t_in[1] - t_in[0], dt):
-        return driver_input
-    t = np.round(np.arange(0, t_in[-1] + dt / 2, dt), 6)
-    resampled = pd.DataFrame({'t': t})
-    for col in ['throttle', 'brake', 'steer']:
-        resampled[col] = np.interp(t, t_in, driver_input[col].to_numpy(dtype=float))
-    print(f'Driver inputs interpolated from dt = {t_in[1] - t_in[0]:g} s to simulation dt = {dt:g} s')
-    return resampled
+"vehmake",
+"vehmodel",
+"weight",
+"vin",
+"brake",
+"steer_ratio",
+"init_x_pos",
+"init_y_pos",
+"head_angle",
+"width",
+"length",
+"hcg",
+"lcgf",
+"lcgr",
+"wb",
+"track",
+"f_hang",
+"r_hang",
+"tire_d",
+"tire_w",
+"izz",
+"fwd",
+"rwd",
+"awd",
+"A",
+"B",
+"k",
+"L",
+"c",
+"vx_initial",
+"vy_initial",
+"omega_z",
+"striking",
+"notes"]
 
 
 class Vehicle:
@@ -124,7 +109,7 @@ class Vehicle:
         if input_dict != None:
             for key, value in input_dict.items():
                 if key in veh_inputs:
-                    if key in ['make', 'model', 'vin', 'notes']:
+                    if key in ['vehmake', 'vehmodel', 'vin', 'notes']:
                         setattr(self, key, str(value))
                     elif key in ['fwd', 'rwd', 'awd']:
                         setattr(self, key, bool(value))
@@ -161,39 +146,39 @@ class Vehicle:
                     setattr(self, row[1], row[2])
 
     def input_dict(self):
-        vehicle_input_dict = {"year": self.year,
-                              "make": self.make,
-                              "model": self.model,
-                              "weight": self.weight,
-                              "vin": self.vin,
-                              "brake": self.brake,
-                              "steer_ratio": self.steer_ratio,
-                              "init_x_pos": self.init_x_pos,
-                              "init_y_pos": self.init_y_pos,
-                              "head_angle": self.head_angle,
-                              "width": self.width,
-                              "length": self.length,
-                              "hcg": self.hcg,
-                              "lcgf": self.lcgf,
-                              "lcgr": self.lcgr,
-                              "wb": self.wb,
-                              "track": self.track,
-                              "f_hang": self.f_hang,
-                              "r_hang": self.r_hang,
-                              "tire_d": self.tire_d,
-                              "tire_w": self.tire_w,
-                              "izz": self.izz,
-                              "fwd": self.fwd,
-                              "rwd": self.rwd,
-                              "awd": self.awd,
-                              "A": self.A,
-                              "B": self.B,
-                              "k": self.k,
-                              "L": self.L,
-                              "c": self.c,
-                              "vx_initial": self.vx_initial,
-                              "vy_initial": self.vy_initial,
-                              "omega_z": self.omega_z}
+        vehicle_input_dict = {"year":self.year,
+        "vehmake":self.vehmake,
+        "vehmodel":self.vehmodel,
+        "weight":self.weight,
+        "vin":self.vin,
+        "brake":self.brake,
+        "steer_ratio":self.steer_ratio,
+        "init_x_pos":self ,
+        "init_y_pos":self.init_y_pos,
+        "head_angle":self.head_angle,
+        "width":self.width,
+        "length":self.length,
+        "hcg":self.hcg,
+        "lcgf":self.lcgf,
+        "lcgr":self.lcgr,
+        "wb":self.wb,
+        "track":self.track,
+        "f_hang":self.f_hang,
+        "r_hang":self.r_hang,
+        "tire_d":self.tire_d,
+        "tire_w":self.tire_w,
+        "izz":self.izz,
+        "fwd":self.fwd,
+        "rwd":self.rwd,
+        "awd":self.awd,
+        "A":self.A,
+        "B":self.B,
+        "k":self.k,
+        "L":self.L,
+        "c":self.c,
+        "vx_initial":self.vx_initial,
+        "vy_initial":self.vy_initial,
+        "omega_z":self.omega_z}
 
         return vehicle_input_dict
 
