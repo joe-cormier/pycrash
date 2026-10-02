@@ -8,6 +8,9 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
     cof = impc_inputs['vehicle_mu']
     veh1 = vehicle_list[strikingVehicle]
     veh2 = vehicle_list[struckVehicle]
+    sliding_condition = None        # tracking sliding condition for output
+    compression_tension = None      # tracking compression / tension condition for output
+    slide_direction = None          # tracking sliding direction
     print('<--- IMPC Model --->')
     print(f"Striking vehicle: {veh1.name}")
     print(f"Struck vehicle: {veh2.name}")
@@ -57,6 +60,7 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
 
     if p_ratio > cof:
             print('Sliding Condition')
+            sliding_condition = True
             pn_s = (1+cor) * vcn21 / (A22 - cof * A12)
             pt_s = alpha * cof * pn_s
 
@@ -69,13 +73,16 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
                 pt = alpha * cof * pn
     else:
         print('No Sliding')                                                      # no sliding, original pt, pn are correct
+        sliding_condition = False
 
     print(f'alpha: {alpha}')
 
     if pn * dn1 < 0:
         print('Compression')
+        compression_tension = 'Compression'
     else:
         print('Tension')
+        compression_tension = 'Tension'
 
     # change in velocity in collision frame
     # Equation 16 - termination of restitution
@@ -119,8 +126,10 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
 
     if vmct21 * vct21 < 0:
         print('Reverse Slide')
+        slide_direction = 'Reverse'
     else:
         print('Forward Slide')
+        slide_direction = 'Forward'
 
     vt1_ = vt1 + dvt1
     vt2_ = vt2 + dvt2
@@ -146,7 +155,8 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
     veh1_impc_result = {'vx_post': vx1_, 'vy_post': vy1_, 'oz_rad_post': oz_rad1_, 'dvx': dvx1, 'dvy': dvy1, 'dv': dveh1}
     veh2_impc_result = {'vx_post': vx2_, 'vy_post': vy2_, 'oz_rad_post': oz_rad2_, 'dvx': dvx2, 'dvy': dvy2, 'dv': dveh2}
     impc_energy = {'t_effects_dis': t_effects_dis, 'n_effects_dis': n_effects_dis, 'tn_total_dis': tn_total_dis}
-    impc_results = {'veh1_impc_result': veh1_impc_result, 'veh2_impc_result': veh2_impc_result, 'impc_energy': impc_energy}
+    impc_conditions = {'Sliding': sliding_condition, 'Slide Direction': slide_direction, 'Compression Tension': compression_tension}
+    impc_results = {'veh1_impc_result': veh1_impc_result, 'veh2_impc_result': veh2_impc_result, 'impc_energy': impc_energy, 'impc_conditions': impc_conditions}
 
     # assign vehicle kinematics to results from IMPC
     # ---- Vehicle 1 ---------- #
@@ -191,5 +201,8 @@ def impc(i, impactNum, poi_veh2x, poi_veh2y, impPointEdge, vehicle_list,
         print(impc_energy)
         print(f'Veh1 DVx: {dvx1 * 0.681818:0.1f} mph, DVy: {dvy1 * 0.681818:0.1f} mph')
         print(f'Veh2 DVx: {dvx2 * 0.681818:0.1f} mph, DVy: {dvy2 * 0.681818:0.1f} mph')
+
+        print("")
+        print(impc_conditions)
 
     return vehicle_list, impc_results

@@ -3,7 +3,6 @@ plotting functions for vehicle model data
 """
 import plotly.graph_objects as go
 import numpy as np
-from plotly.subplots import make_subplots
 import plotly.io as pio
 pio.renderers.default = "browser"
 
@@ -15,7 +14,7 @@ aspect_ratio = 16 / 9
 figure_size = (width, width / aspect_ratio)
 wheel_colors = ['rgb(0, 0, 255)', 'rgb(0, 255, 0)', 'rgb(153, 0, 204)', 'rgb(255, 102, 0)']
 
-def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
+def plot_motion_interval(veh, num_itter=10, tire_path=True, imageDict=False, show_vector=False):
         counter = np.arange(0, len(veh.p_gx.b_lfc), round(len(veh.p_gx.b_lfc)/num_itter))
 
         fig = go.Figure()
@@ -119,6 +118,22 @@ def plot_motion_interval(veh, num_itter=10, tire_path=True, show_vector=False):
                                arrowhead = 1,
                                arrowwidth = 1.5,
                                arrowcolor = 'rgb(0, 0, 255)')
+
+            # add background image
+            if imageDict:
+                fig.add_layout_image(
+                    dict(
+                        source=imageDict['image'],
+                        xref="x",
+                        yref="y",
+                        x=imageDict['xOffset'],
+                        y=imageDict['yOffset'],
+                        sizex=imageDict['image'].size[0] / imageDict['pixelsPerFoot'],
+                        sizey=imageDict['image'].size[1] / imageDict['pixelsPerFoot'],
+                        # sizing="fill",
+                        opacity=imageDict['opacity'],
+                        layer="below")
+                )
 
         # tire center plot depends on lock condition
         def setmarker(x):

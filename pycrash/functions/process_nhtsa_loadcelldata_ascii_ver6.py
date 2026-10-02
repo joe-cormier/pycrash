@@ -5,23 +5,7 @@ import numpy as np
 from scipy import integrate
 from pycrash.functions.CFCFilter import cfcfilt
 
-
 def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, english=True):
-    """
-
-    this version using the keyword "BARRIER" to locate load cell data within the .EV5 file
-    if you file does not have this, try ver2
-    download the NHTSA asii data into a single directory
-    test_num -> NHTSA test number
-    path -> path to directory containing asii files, including the .EV5 file
-    row_list -> list containing row names (alphabetical) to be including in processing
-    num_columns -> number of columns (integer)
-    impact_velocity - barrier impact speed [kph]
-    outputs will be saved in same directory
-    defaults to English units, can be set to False
-    will print cells that are missing data
-
-    """
 
     format_file = f'v{test_num}.EV5'  # file containing channel info
     if english:
@@ -40,21 +24,25 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
                 print(f'Instrumentation data found at line: {num}')
                 instStart = num
             elif '- END -' in line:
-                print(f'Instrumentation data found at line: {num}')
+                print(f'Instrumentation - END - found at line: {num}')
                 instEnd = num
 
     # find info for barrier data Fx
     test_data = {}  # <- dictionary of load cell data
     with open(os.path.join(path, format_file)) as myFile:
         for num, line in enumerate(myFile, 1):
-            # search for load cell barrier channels
-            if (num > instStart) & (num < instEnd) & ('Fx' in line) & ('BARRIER' in line):
+            # search for load cell barrier channels may need to be "XG" or "FX"
+            if (num > instStart) & (num < instEnd) & ('LC' in line) & ('BARRIER' in line) & ('XG' in line):
                 # print(line.split('|'))
-                channel_name = line.split('|')[-1].replace('\n', '')
+                channel_name = str(line.split('|')[4])
                 channel_num = int(line.split('|')[1])
-                lc_row = channel_name[8]
-                lc_col = int(channel_name[10:12])
+                row_col = str(line.split('|')[4])
+                lc_row = str(row_col[2:4])
+                lc_col = str(row_col[4:6])
                 print(f'Channel: {channel_name} #{channel_num} at row: {lc_row}, col: {lc_col}')
+                if channel_num < 100:
+                    channel_num = f'0{channel_num}'
+
                 test_data[channel_name] = {'type': 'LC',
                                            'num': channel_num,
                                            'row': lc_row,
@@ -62,7 +50,8 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
                                            'fileName': f'v{test_num}.{channel_num}'}
 
             # search for vehicle crossmember acceleration data Ax
-            elif (num > instStart) & (num < instEnd) & ('REAR SEAT CROSSMEMBER X' in line):
+            # may be "REAR SEAT CROSSMEMBER X" or "CROSSMEMBER LEFT REAR X" and "CROSSMEMBER RIGHT REAR X"
+            elif (num > instStart) & (num < instEnd) & (('LEFT REAR SEAT CROSSMEMBER X' in line) | ('RIGHT REAR SEAT CROSSMEMBER X' in line)):
                 channel_name = line.split('|')[-1].replace('\n', '')
                 channel_num = int(line.split('|')[1])
                 print(f'Channel: {channel_name} #{channel_num}')
@@ -72,16 +61,18 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
                     fileName = f'v{test_num}.0{channel_num}'
                 elif channel_num <= 9:
                     fileName = f'v{test_num}.00{channel_num}'
-                test_data[channel_name] = {'type': 'Accel',
-                                           'name': channel_name,
-                                           'num': channel_num,
-                                           'loc': 'Crossmember',
-                                           'dir': 'x',
-                                           'fileName': fileName}
-
+                if channel_num not in [94, 99]:
+                    test_data[channel_name] = {'type': 'Accel',
+                                               'name': channel_name,
+                                               'num': channel_num,
+                                               'loc': 'REAR SILL',
+                                               'dir': 'x',
+                                               'fileName': fileName}
+    print(test_data)
     # load data and load cell data for desired rows
     for key, value in test_data.items():
         if value['type'] == 'LC':
+            print(f'Loading Type {value["type"]}, row: {value["row"]}')
             if (value['row'] in row_list) & ('No valid data' in key):
                 print(f'No valid data: {key}')
                 test_data[key]['colName'] = f'{value["row"]}_{value["col"]}'
@@ -123,15 +114,17 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
 
     # create dictionary of filtered force
     forceDict = {}
-    forceDict['time'] = test_data[next(iter(test_data))]['time']
+    #forceDict['time'] = test_data[next(iter(test_data))]['time']
+    forceDict['time'] = time
+    print(f'row_list: {row_list}')
     for key, value in test_data.items():
         if value['type'] == 'LC':
-            # print(value['colName'])
-            forceDict[value['colName']] = value['force']  # filtered force data
+            print(f"value['row']: {value['row']}")
+            if value['row'] in row_list:
+                forceDict[value['colName']] = value['force']    # filtered force data
 
     # convert to dataframe
     forceDF = pd.DataFrame.from_dict(forceDict)
-    print(f'Column Names in Force data: {list(forceDF)}')
     # fix columns with missing data
     for label, content in forceDF.items():
         if sum(content) == 0:
@@ -143,14 +136,16 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
             else:
                 forceDF.loc[:, label] = forceDF[average_list].mean(axis=1)
 
+    """
     column_list = list(np.arange(1, num_columns))
     for row in row_list:
         sum_columns = [row + "_" + str(s) for s in column_list]
         forceDF[f'{row}_Sum'] = forceDF[sum_columns].sum(axis=1)
-
+    """
     # get velocity / displacement data
     AccelDict = {}
-    AccelDict['time'] = test_data[next(iter(test_data))]['time']
+    #AccelDict['time'] = test_data[next(iter(test_data))]['time']
+    AccelDict['time'] = time
     for key, value in test_data.items():
         if value['type'] == 'Accel':
             print(value['colName'])
@@ -159,28 +154,6 @@ def process_loadcell_asii(test_num, path, row_list, num_columns, impact_speed, e
             AccelDict[f"{value['colName']} Disp"] = value['Displacement']  # displacement [ft, m]
 
     AccelDF = pd.DataFrame.from_dict(AccelDict)
-
-    # %% Combined data by columns -
-    # sum by row
-    rowForce = {}
-    rowForce['time'] = test_data[next(iter(test_data))]['time']
-    rowSum = [0] * len(test_data[next(iter(test_data))]['time'])
-    currentRow = 'K'
-    for key, value in test_data.items():
-        if value['type'] == 'LC':
-            if value['row'] == currentRow:
-                rowSum = [a + b for a, b in zip(rowSum, value['force'])]
-                rowForce[value['row']] = rowSum
-            else:
-                rowSum = [0] * len(test_data[next(iter(test_data))]['time'])
-                rowSum = [a + b for a, b in zip(rowSum, value['force'])]
-                rowForce[value['row']] = rowSum
-                currentRow = value['row']
-
-    RowForcedf = pd.DataFrame.from_dict(rowForce)
-    # merge summed forces and displacement df
-    Fdx = pd.merge(RowForcedf, AccelDF, how='left', on='time')
-    Fdx.to_pickle(os.path.join(path, f'RowSum_ProcessedNHTSA_Test_{test_num}.pkl'))
 
     # all force data with accel / displacement df
     test_data_accel = pd.merge(forceDF, AccelDF, how='left', on='time')

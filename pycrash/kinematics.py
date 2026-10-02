@@ -10,18 +10,6 @@ from .visualization.tire_details import tire_details, vertical_forces
 
 figure_size = (16, 9)
 
-# TODO: add environmental data inputs (slope, bank, friction)
-""" 
-if os.path.isfile(os.path.join(os.getcwd(), "data", "input", "environment.csv")):
-    enviro = pd.read_csv(os.path.join(os.getcwd(), "data", "input", "environment.csv"))
-    if len(enviro) == 0:
-        print('Environment file appears blank - no terrian data used')
-        print(f'Constant friction {mu_max} used throughout')
-    else:
-        print('TODO - process terrain data')
-else:
-    print('No Environment File Provided')
-"""
 
 class SingleMotion:
     """
@@ -65,7 +53,7 @@ class SingleMotion:
             print(f'Driver input for {self.veh.name} not provided - no braking or steering applied')
             print(f'Current driver input of type: {type(self.veh.driver_input)}')
             end_time = int(input('Enter duration for simulation (seconds):'))
-            t = list(np.arange(0, end_time + dt_motion, dt_motion))  # create time array from 0 to end time from user
+            t = list(np.arange(0, end_time + self.dt_motion, self.dt_motion))  # create time array from 0 to end time from user
             throttle = [0] * len(t)
             brake = [0] * len(t)
             steer = [0] * len(t)

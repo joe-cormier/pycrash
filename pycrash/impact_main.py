@@ -10,17 +10,20 @@ from .visualization.initial_positions import initial_position
 from .model_calcs.carpenter_momentum_calcs import impc
 from .visualization.kinematics import plot_model
 from .visualization.vehicles_at_impact import plot_impact
+from .vehicle import resample_driver_input
 pd.options.mode.copy_on_write = False
 
 # column list for vehicle model
 vehicle_data_columns = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
                         'delta_rad', 'turn_rX', 'turn_rY', 'turn_rR', 'au', 'av', 'ax', 'ay', 'ar', 'Ax', 'Ay', 'Ar',
-                        'alphaz', 'alphaz_deg', 'beta_deg', 'beta_rad', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
+                        'alphaz', 'alphaz_deg', 'beta_deg', 'beta_rad', 'lf_steer_angle', 'rf_steer_angle', 'lf_fx', 'lf_fy', 'rf_fx', 'rf_fy',
                         'rr_fx', 'rr_fy', 'lr_fx', 'lr_fy', 'lf_alpha', 'rf_alpha', 'rr_alpha', 'lr_alpha',
-                        'lf_lock', 'rf_lock', 'rr_lock', 'lr_lock', 'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
+                        'lf_fz', 'rf_fz', 'rr_fz', 'lr_fz',
+                        'lf_lonf', 'lf_latf', 'lf_lock', 'rf_lonf', 'rf_latf', 'rf_lock', 'lr_lonf', 'lr_latf', 'lr_lock',
+                        'rr_lonf', 'rr_latf', 'rr_lock',
+                        'lf_vx', 'lf_vy', 'rf_vx', 'rf_vy', 'rr_vx', 'rr_vy', 'lr_vx', 'lr_vy',
                         'theta_rad', 'theta_deg', 'Fx', 'Fy', 'Mz']
 
-#model = pd.DataFrame(np.zeros(shape=(1, len(vehicle_data_columns))), columns=vehicle_data_columns)
 
 """ create inputs for impact """
 def create_impact_order():
@@ -54,7 +57,6 @@ def create_impc_inputs(numImpacts):
 """
 main file for controlling vehicle motion simulation and impact
 """
-
 class Impact():
     def __init__(self, name, endTime, impact_type, vehicle_list, impact_order=None, impc_inputs=None, user_sim_defaults=None):
         """ impact_order defines the [striking , struck] vehicle using a list of lists
@@ -114,7 +116,7 @@ class Impact():
             self.sim_defaults = {'dt_motion': 0.01,
                                  'mu_max': 0.76,
                                  'alpha_max': 0.174533,  # 10 degrees
-                                }
+                                 }
 
         # check for driver inputs for non-trailers
         for veh in self.vehicles:
@@ -122,6 +124,8 @@ class Impact():
                 print(f"{veh.name} designated as a trailer")
             else:
                 if hasattr(veh, 'driver_input'):
+                    # one row of driver input per simulation time step
+                    veh.driver_input = resample_driver_input(veh.driver_input, self.sim_defaults['dt_motion'])
                     print(f"Driver input for {veh.name} of shape = {veh.driver_input.shape}")
                 else:
                     print(f'Driver input for {veh.name} not provided - no braking or steering applied')
@@ -160,7 +164,7 @@ class Impact():
 
         """ initialize vehicle motion dataframes """
         for veh in self.vehicles:
-            if veh.type == 'Barrier':
+            if veh.type.lower() == 'barrier':
                 # create vehicle with no motion for "Barrier" type
                 veh.model = pd.DataFrame(np.nan, index=np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion']))), columns=vehicle_data_columns)
                 veh.model['Dx'] = veh.init_x_pos
@@ -179,6 +183,7 @@ class Impact():
                 veh.model.oz_rad[0] = veh.omega_z * (np.pi / 180)      # initial angular rate (deg/s) - input
                 veh.model.Vx[0] = veh.vx_initial * 1.46667 * np.cos(veh.head_angle * np.pi / 180) - veh.vy_initial * 1.46667 * np.sin(veh.head_angle * np.pi / 180)
                 veh.model.Vy[0] = veh.vx_initial * 1.46667 * np.sin(veh.head_angle * np.pi / 180) + veh.vy_initial * 1.46667 * np.cos(veh.head_angle * np.pi / 180)
+
 
         self.detect_data = pd.DataFrame(np.nan, index=np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion']))),
                                    columns=['impact', 'edge_loc', 'normal_crush', 'impactp_veh2x', 'impactp_veh2y', 'ImpactNumber'])
@@ -246,7 +251,7 @@ class Impact():
             #print(i)
             for veh in self.vehicles:
                 """ calculate current position of each vehicle """
-                if veh.type != 'Barrier':
+                if veh.type.lower() != 'barrier':
                     veh = multi_vehicle_model(veh, i, self.sim_defaults, self.impact_type)
 
             if not impactsComplete:
