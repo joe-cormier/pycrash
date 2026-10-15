@@ -93,6 +93,28 @@ veh_inputs = ["year",
               "striking",
               "notes"]
 
+def interpolate_driver_inputs(time, throttle, brake, steer, dt):
+    """
+    driver inputs on the simulation time grid (0, dt, 2dt ...): piecewise-linear between the user's input points, whatever their times
+    (they do not have to be multiples of dt); before the first / after the last point the end value is held
+    """
+    time = np.asarray(time, dtype=float)
+    cols = {'throttle': throttle, 'brake': brake, 'steer': steer}
+    cols = {k: np.asarray(v, dtype=float) for k, v in cols.items()}
+    if any(len(v) != len(time) for v in cols.values()):
+        raise ValueError('time, throttle, brake and steer must have the same length')
+    order = np.argsort(time, kind='stable')
+    time = time[order]
+    if np.any(np.diff(time) <= 0):
+        raise ValueError('input times must be strictly increasing (duplicate times found)')
+    n = int(np.ceil(time[-1] / dt - 1e-9)) + 1  # grid runs to the first step at or after the last input time
+    t = np.round(np.arange(n) * dt, 3)
+    df = pd.DataFrame({'t': t})
+    for k, v in cols.items():
+        df[k] = np.interp(t, time, v[order])
+    return df[['throttle', 'brake', 'steer', 't']]
+
+
 def resample_driver_input(driver_input, dt):
     """
     driver inputs are created at the time step defined above (dt_motion), but each simulation reads one row
@@ -212,21 +234,7 @@ class Vehicle:
             print('Input data for time has zero length')
             print('No driver input applied to vehicle')
         else:
-            inputdf = pd.DataFrame(list(zip(throttle, brake, steer)), columns=['throttle', 'brake', 'steer'])
-            t = list(np.arange(0, max(time) + dt_motion,
-                               dt_motion))  # create time array from 0 to max time in inputs, does not mean simulation will stop at this time_inputs
-            t = [float(i) for i in t]
-            df = pd.DataFrame()  # create dataframe for vehicle input with interpolated values
-            df['t'] = t
-            inputdf['input_t'] = [float(num) for num in time]
-            df.t = df.t.round(3).astype(float)
-            df = pd.merge(df, inputdf, how='left', left_on='t',
-                          right_on='input_t')  # merge input data with time data at specified time step
-            df = df.interpolate(method='linear', axis=0)  # interpolate NaN values left after merging
-            df.drop(columns=['input_t', 't'], inplace=True)  # drop input time column
-            df['t'] = t  # reset time column due to interpolating
-            df['t'] = df.t.round(3)  # reset significant digits
-            df = df.reset_index(drop=True)
+            df = interpolate_driver_inputs(time, throttle, brake, steer, dt_motion)
             self.driver_input = df
             print(f'Driver inputs applied to {self.name}')
             if show_plot:
@@ -247,19 +255,7 @@ class Vehicle:
             if len(time_inputs) == 0:
                 print('Time input file appears blank')
             else:
-                t = list(np.arange(0, dt_motion + time_inputs.loc[len(time_inputs.time) - 1, 'time'],
-                                   dt_motion))  # create time array from 0 to max time in inputs, this will be end time for simulation
-                df = pd.DataFrame()  # create dataframe for vehicle input with interpolated values
-                df['t'] = t
-                time_inputs['input_t'] = time_inputs.time.round(3)
-                df.t = df.t.round(3)
-                df = pd.merge(df, time_inputs, how='left', left_on='t',
-                              right_on='input_t')  # merge input data with time data at specified time step
-                df = df.interpolate(method='linear')  # interpolate NaN values left after merging
-                df.drop(columns=['input_t', 't'], inplace=True)  # drop input time column
-                df['t'] = t  # reset time column due to interpolating
-                df['t'] = df.t.round(3)  # reset signficant digits
-                df = df.reset_index(drop=True)
+                df = interpolate_driver_inputs(time_inputs.time, time_inputs.throttle, time_inputs.brake, time_inputs.steer, dt_motion)
                 self.driver_input = df
                 print(f'Driver inputs applied to {self.name}')
         else:
