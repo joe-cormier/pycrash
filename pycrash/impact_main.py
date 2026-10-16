@@ -10,7 +10,7 @@ from .visualization.initial_positions import initial_position
 from .model_calcs.carpenter_momentum_calcs import impc
 from .visualization.kinematics import plot_model
 from .visualization.vehicles_at_impact import plot_impact
-from .vehicle import resample_driver_input
+from .vehicle import interpolate_driver_inputs
 pd.options.mode.copy_on_write = False
 
 # column list for vehicle model
@@ -125,7 +125,12 @@ class Impact():
             else:
                 if hasattr(veh, 'driver_input'):
                     # one row of driver input per simulation time step
-                    veh.driver_input = resample_driver_input(veh.driver_input, self.sim_defaults['dt_motion'])
+
+                    veh.driver_input = interpolate_driver_inputs(veh.driver_input.time,
+                                                                 veh.driver_input.throttle,
+                                                                 veh.driver_input.brake,
+                                                                 veh.driver_input.steer,
+                                                                 self.sim_defaults['dt_motion'])
                     print(f"Driver input for {veh.name} of shape = {veh.driver_input.shape}")
                 else:
                     print(f'Driver input for {veh.name} not provided - no braking or steering applied')
