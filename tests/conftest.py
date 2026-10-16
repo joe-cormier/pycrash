@@ -22,3 +22,9 @@ def rose_vehicle_data():
 @pytest.fixture(scope="session")
 def rose_test_data():
     return _load_module("test_inputs_rose", IMPACT_VALIDATION_SRC / "test_inputs_rose.py").test_data
+
+
+# vehicle specs used by the Impact simulation test
+@pytest.fixture(scope="session")
+def project_vehicle_data():
+    return _load_module("project_vehicle_data", REPO_ROOT / "projects" / "data" / "vehicle_data_collection.py").vehicle_data
