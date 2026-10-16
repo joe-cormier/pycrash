@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import math
-from .vehicle import resample_driver_input
+from .vehicle import interpolate_driver_inputs
 
 
 # column list for vehicle model
@@ -22,7 +22,7 @@ def vehicle_model(veh, sim_defaults):
     """
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
-    veh.driver_input = resample_driver_input(veh.driver_input, dt_motion)  # one row of driver input per time step
+    veh.driver_input = interpolate_driver_inputs(veh.driver_input, dt_motion)  # one row of driver input per time step
 
     print(f"Vehicle motion will be simulated for {max(veh.driver_input.t)} seconds")
     veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns = column_list)
