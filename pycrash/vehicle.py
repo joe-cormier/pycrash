@@ -114,22 +114,6 @@ def interpolate_driver_inputs(time, throttle, brake, steer, dt):
         df[k] = np.interp(t, time, v[order])
     return df[['throttle', 'brake', 'steer', 't']]
 
-
-def resample_driver_input(driver_input, dt):
-    """
-    driver inputs are created at the time step defined above (dt_motion), but each simulation reads one row
-    of driver input per time step - interpolate the inputs to the simulation time step when they differ
-    """
-    t_in = driver_input['t'].to_numpy(dtype=float)
-    if len(t_in) < 2 or np.isclose(t_in[1] - t_in[0], dt):
-        return driver_input
-    t = np.round(np.arange(0, t_in[-1] + dt / 2, dt), 6)
-    resampled = pd.DataFrame({'t': t})
-    for col in ['throttle', 'brake', 'steer']:
-        resampled[col] = np.interp(t, t_in, driver_input[col].to_numpy(dtype=float))
-    print(f'Driver inputs interpolated from dt = {t_in[1] - t_in[0]:g} s to simulation dt = {dt:g} s')
-    return resampled
-
 # older input files use "make" / "model"
 legacy_input_keys = {"make": "vehmake",
                      "model": "vehmodel"}
