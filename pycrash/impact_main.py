@@ -125,8 +125,7 @@ class Impact():
             else:
                 if hasattr(veh, 'driver_input'):
                     # one row of driver input per simulation time step
-
-                    veh.driver_input = interpolate_driver_inputs(veh.driver_input.time,
+                    veh.driver_input = interpolate_driver_inputs(veh.driver_input.t,
                                                                  veh.driver_input.throttle,
                                                                  veh.driver_input.brake,
                                                                  veh.driver_input.steer,
