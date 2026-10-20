@@ -1,129 +1,110 @@
 import pandas as pd
 import numpy as np
 
-# columns for vehicle motion DataFrame
+# columns for vehicle motion DataFrame ([fast/pandas3] no longer used by position_data_motion, kept for reference)
 column_list = ['b_lfc', 'b_rfc', 'b_rrc', 'b_lrc', 'lfw', 'lfw_a', 'lfw_b',
                'lfw_c', 'lfw_d', 'rfw', 'rfw_a', 'rfw_b', 'rfw_c', 'rfw_d',
-               'rrw', 'rrw_a',	'rrw_b', 'rrw_c', 'rrw_d', 'lrw',  'lrw_a',
+               'rrw', 'rrw_a',  'rrw_b', 'rrw_c', 'rrw_d', 'lrw',  'lrw_a',
                'lrw_b', 'lrw_c', 'lrw_d', 'cg', 'xaxis', 'yaxis', 'vel_v']
 
 def position_data_motion(veh):
     """
     set striking to True to return location of impact point in vehicle 1
+    [fast/pandas3] rewritten with whole-column numpy math - same tables as before (p_vx, p_vy, p_gx, p_gy)
+    the previous version grew the tables one row at a time with pd.concat and then filled p_gx / p_gy
+    cell by cell, which was about half of an Impact simulation's run time
     """
-    # initialize empty dataframe
-    veh.p_vx = pd.DataFrame(columns=column_list)    # time variant vehicle geometry for plotting in vehicle frame
-    veh.p_vy = pd.DataFrame(columns=column_list)    # time variant vehicle geometry for plotting in vehicle frame
+    m = veh.model
+    n = len(m)
+    ones = np.ones(n)
+    d = m['delta_rad'].to_numpy(dtype=float)    # steer angle at each time step
+    cd, sd = np.cos(d), np.sin(d)
+    hd, hw = veh.tire_d / 2, veh.tire_w / 2
+    lfy = -1 * (veh.width / 2 - veh.tire_w / 2)  # front wheel centres, lateral
+    rfy = veh.width / 2 - veh.tire_w / 2
 
-    # loop for creating separate dataframes for X and Y components of vehicle drawing in vehicle frame
-    for i in (range(len(veh.model.t))):
-        """
-        vehicle frame coordinates for body geometry, tire positions and velocity vector
-        if MV = True - impact point and edge points will be transformed here as well
-        """
-        veh.p_vx = pd.concat([
-                              veh.p_vx,
-                              pd.DataFrame(
-                                          [{
-                                          'b_lfc': veh.lcgf + veh.f_hang,  # body outline
-                                          'b_rfc': veh.lcgf + veh.f_hang,
-                                          'b_rrc': -1 * (veh.lcgr + veh.r_hang),
-                                          'b_lrc': -1 * (veh.lcgr + veh.r_hang),
-                                          'lfw': veh.lcgf,  # left front wheel
-                                          'lfw_a': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'lfw_b': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'lfw_c': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'lfw_d': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'rfw': veh.lcgf,  # Right front wheel
-                                          'rfw_a': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'rfw_b': veh.lcgf + veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'rfw_c': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'rfw_d': veh.lcgf + -1 * veh.tire_d / 2 * np.cos(veh.model.loc[i, 'delta_rad']) - -1 * veh.tire_w / 2 * np.sin(veh.model.loc[i, 'delta_rad']),
-                                          'rrw': -1 * veh.lcgr,  # Right rear wheel
-                                          'rrw_a': -1 * veh.lcgr + veh.tire_d / 2,
-                                          'rrw_b': -1 * veh.lcgr + veh.tire_d / 2,
-                                          'rrw_c': -1 * veh.lcgr - veh.tire_d / 2,
-                                          'rrw_d': -1 * veh.lcgr - veh.tire_d / 2,
-                                          'lrw': -1 * veh.lcgr,  # Left rear wheel
-                                          'lrw_a': -1 * veh.lcgr + veh.tire_d / 2,
-                                          'lrw_b': -1 * veh.lcgr + veh.tire_d / 2,
-                                          'lrw_c': -1 * veh.lcgr - veh.tire_d / 2,
-                                          'lrw_d': -1 * veh.lcgr - veh.tire_d / 2,
-                                          'cg': 0,  # CG
-                                          'xaxis': veh.lcgf + veh.f_hang + 1.5,  # line for x-axis
-                                          'yaxis': 0,  # line for y-axis
-                                          'vel_v': veh.model.vx[i]
-                                          }]
-                                          )
-                                    ], ignore_index=True)
+    # vehicle frame coordinates for body geometry, tire positions and velocity vector - x components
+    p_vx = {'b_lfc': (veh.lcgf + veh.f_hang) * ones,  # body outline
+            'b_rfc': (veh.lcgf + veh.f_hang) * ones,
+            'b_rrc': -1 * (veh.lcgr + veh.r_hang) * ones,
+            'b_lrc': -1 * (veh.lcgr + veh.r_hang) * ones,
+            'lfw': veh.lcgf * ones,  # left front wheel
+            'lfw_a': veh.lcgf + hd * cd - -1 * hw * sd,
+            'lfw_b': veh.lcgf + hd * cd - hw * sd,
+            'lfw_c': veh.lcgf + -1 * hd * cd - hw * sd,
+            'lfw_d': veh.lcgf + -1 * hd * cd - -1 * hw * sd,
+            'rfw': veh.lcgf * ones,  # Right front wheel
+            'rfw_a': veh.lcgf + hd * cd - -1 * hw * sd,
+            'rfw_b': veh.lcgf + hd * cd - hw * sd,
+            'rfw_c': veh.lcgf + -1 * hd * cd - hw * sd,
+            'rfw_d': veh.lcgf + -1 * hd * cd - -1 * hw * sd,
+            'rrw': -1 * veh.lcgr * ones,  # Right rear wheel
+            'rrw_a': (-1 * veh.lcgr + hd) * ones,
+            'rrw_b': (-1 * veh.lcgr + hd) * ones,
+            'rrw_c': (-1 * veh.lcgr - hd) * ones,
+            'rrw_d': (-1 * veh.lcgr - hd) * ones,
+            'lrw': -1 * veh.lcgr * ones,  # Left rear wheel
+            'lrw_a': (-1 * veh.lcgr + hd) * ones,
+            'lrw_b': (-1 * veh.lcgr + hd) * ones,
+            'lrw_c': (-1 * veh.lcgr - hd) * ones,
+            'lrw_d': (-1 * veh.lcgr - hd) * ones,
+            'cg': 0 * ones,  # CG
+            'xaxis': (veh.lcgf + veh.f_hang + 1.5) * ones,  # line for x-axis
+            'yaxis': 0 * ones,  # line for y-axis
+            'vel_v': m['vx'].to_numpy(dtype=float)}
 
-        veh.p_vy = pd.concat([
-                              veh.p_vy,
-                              pd.DataFrame(
-                                          [{
-                                          'b_lfc': -1 * veh.width / 2,     # body outline
-                                          'b_rfc': veh.width / 2,
-                                          'b_rrc': veh.width / 2,
-                                          'b_lrc': -1 * veh.width / 2,
-                                          'lfw':   -1 * (veh.width / 2 - veh.tire_w / 2),                         # left front wheel
-                                          'lfw_a': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_b': -1 * (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 *np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_c': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'lfw_d': -1 * (veh.width / 2 - veh.tire_w / 2) + -1 * veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw':   (veh.width / 2 - veh.tire_w / 2),                         # Right front wheel
-                                          'rfw_a': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_b': (veh.width / 2 - veh.tire_w / 2) + veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_c': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rfw_d': (veh.width / 2 - veh.tire_w / 2) + -1*veh.tire_d / 2 * np.sin(veh.model.loc[i, 'delta_rad']) + -1 * veh.tire_w / 2 * np.cos(veh.model.loc[i,'delta_rad']),
-                                          'rrw':   (veh.width / 2 - veh.tire_w / 2),                          # Right rear wheel
-                                          'rrw_a': veh.width / 2 - veh.tire_w,
-                                          'rrw_b': veh.width / 2,
-                                          'rrw_c': veh.width / 2,
-                                          'rrw_d': veh.width / 2 - veh.tire_w,
-                                          'lrw':   -1 * (veh.width / 2 - veh.tire_w / 2),                          # Left rear wheel
-                                          'lrw_a': -1 * veh.width / 2,
-                                          'lrw_b': -1 * veh.width / 2 + veh.tire_w,
-                                          'lrw_c': -1 * veh.width / 2 + veh.tire_w,
-                                          'lrw_d': -1 * veh.width / 2,
-                                          'cg':    0,                                         # CG
-                                          'xaxis': 0,                                         # line for x-axis
-                                          'yaxis': veh.width / 2 + 1.5,                     # line for y-axis
-                                          'vel_v': veh.model.vy[i]                          # line for velocity vector
-                                          }]
-                                          )
-                                    ], ignore_index=True)
-
-    cgx = veh.model[['Dx']].copy()                          # CG location in inertial frame
-    cgy = veh.model[['Dy']].copy()
-
-
+    # y components
+    p_vy = {'b_lfc': -1 * veh.width / 2 * ones,  # body outline
+            'b_rfc': veh.width / 2 * ones,
+            'b_rrc': veh.width / 2 * ones,
+            'b_lrc': -1 * veh.width / 2 * ones,
+            'lfw': lfy * ones,  # left front wheel
+            'lfw_a': lfy + hd * sd + -1 * hw * cd,
+            'lfw_b': lfy + hd * sd + hw * cd,
+            'lfw_c': lfy + -1 * hd * sd + hw * cd,
+            'lfw_d': lfy + -1 * hd * sd + -1 * hw * cd,
+            'rfw': rfy * ones,  # Right front wheel
+            'rfw_a': rfy + hd * sd + -1 * hw * cd,
+            'rfw_b': rfy + hd * sd + hw * cd,
+            'rfw_c': rfy + -1 * hd * sd + hw * cd,
+            'rfw_d': rfy + -1 * hd * sd + -1 * hw * cd,
+            'rrw': rfy * ones,  # Right rear wheel
+            'rrw_a': (veh.width / 2 - veh.tire_w) * ones,
+            'rrw_b': veh.width / 2 * ones,
+            'rrw_c': veh.width / 2 * ones,
+            'rrw_d': (veh.width / 2 - veh.tire_w) * ones,
+            'lrw': lfy * ones,  # Left rear wheel
+            'lrw_a': -1 * veh.width / 2 * ones,
+            'lrw_b': (-1 * veh.width / 2 + veh.tire_w) * ones,
+            'lrw_c': (-1 * veh.width / 2 + veh.tire_w) * ones,
+            'lrw_d': -1 * veh.width / 2 * ones,
+            'cg': 0 * ones,  # CG
+            'xaxis': 0 * ones,  # line for x-axis
+            'yaxis': (veh.width / 2 + 1.5) * ones,  # line for y-axis
+            'vel_v': m['vy'].to_numpy(dtype=float)}  # line for velocity vector
 
     if veh.striking:  # impact point (veh1 - striking vehicle)
         # add impact point locations in vehicle frame
-        i=0
-        for impPoint in veh.impact_points:
-            veh.p_vx[f'POI_{i}'] = impPoint[0]
-            veh.p_vy[f'POI_{i}'] = impPoint[1]
+        norm_length = veh.width
+        tang_length = veh.width / 2
+        for i, impPoint in enumerate(veh.impact_points):
+            p_vx[f'POI_{i}'] = impPoint[0] * ones
+            p_vy[f'POI_{i}'] = impPoint[1] * ones
+            p_vx[f'impact_{i}_norm'] = (impPoint[0] + norm_length * np.cos(impPoint[2] * np.pi / 180)) * ones
+            p_vy[f'impact_{i}_norm'] = (impPoint[1] + norm_length * np.sin(impPoint[2] * np.pi / 180)) * ones
+            p_vx[f'impact_{i}_tang'] = (impPoint[0] + tang_length * np.cos(impPoint[2] * np.pi / 180 + np.pi / 2)) * ones
+            p_vy[f'impact_{i}_tang'] = (impPoint[1] + tang_length * np.sin(impPoint[2] * np.pi / 180 + np.pi / 2)) * ones
 
-            norm_length = veh.width
-            tang_length = veh.width / 2
+    veh.p_vx = pd.DataFrame(p_vx)    # time variant vehicle geometry for plotting in vehicle frame
+    veh.p_vy = pd.DataFrame(p_vy)
 
-            veh.p_vx[f'impact_{i}_norm'] = impPoint[0] + norm_length * np.cos(impPoint[2] * np.pi / 180)
-            veh.p_vy[f'impact_{i}_norm'] = impPoint[1] + norm_length * np.sin(impPoint[2] * np.pi / 180)
-
-            veh.p_vx[f'impact_{i}_tang'] = impPoint[0] + tang_length * np.cos(impPoint[2] * np.pi / 180 + np.pi / 2)
-            veh.p_vy[f'impact_{i}_tang'] = impPoint[1] + tang_length * np.sin(impPoint[2] * np.pi / 180 + np.pi / 2)
-
-            i+=1
-
-    veh.p_gx = veh.p_vx.copy()    # time variant vehicle geometry for plotting motion in inertial frame
-    veh.p_gy = veh.p_vy.copy()    # time variant vehicle geometry for plotting motion in inertial frame
-
-    for i in range(0, len(veh.p_gx)):
-           for j in range(0, len(veh.p_vx.columns)):
-              # coordinate transformation - rotating vehicle frame to draw vehicle
-              veh.p_gx.iloc[i, j] = cgx.Dx[i] + veh.p_vx.iloc[i, j] * np.cos(veh.model.loc[i, 'theta_rad']) - veh.p_vy.iloc[i, j] * np.sin(veh.model.loc[i, 'theta_rad'])
-              veh.p_gy.iloc[i, j] = cgy.Dy[i] + veh.p_vx.iloc[i, j] * np.sin(veh.model.loc[i, 'theta_rad']) + veh.p_vy.iloc[i, j] * np.cos(veh.model.loc[i, 'theta_rad'])
+    # coordinate transformation - rotating vehicle frame to draw vehicle in the inertial frame
+    theta = m['theta_rad'].to_numpy(dtype=float)[:, None]
+    cgx = m['Dx'].to_numpy(dtype=float)[:, None]     # CG location in inertial frame
+    cgy = m['Dy'].to_numpy(dtype=float)[:, None]
+    vx, vy = veh.p_vx.to_numpy(), veh.p_vy.to_numpy()
+    veh.p_gx = pd.DataFrame(cgx + vx * np.cos(theta) - vy * np.sin(theta), columns=veh.p_vx.columns)
+    veh.p_gy = pd.DataFrame(cgy + vx * np.sin(theta) + vy * np.cos(theta), columns=veh.p_vy.columns)
 
     # copy locked info from vehicle model
     veh.p_gx['lf_lock'] = veh.model.lf_lock.copy()
