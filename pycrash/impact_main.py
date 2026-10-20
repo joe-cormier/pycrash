@@ -11,7 +11,7 @@ from .model_calcs.carpenter_momentum_calcs import impc
 from .visualization.kinematics import plot_model
 from .visualization.vehicles_at_impact import plot_impact
 from .vehicle import interpolate_driver_inputs
-pd.options.mode.copy_on_write = False
+from .model_arrays import ModelArrays, as_frame
 
 # column list for vehicle model
 vehicle_data_columns = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -141,8 +141,7 @@ class Impact():
                     veh.driver_input = pd.DataFrame.from_dict({'t': t, 'throttle': throttle, 'brake': brake, 'steer': steer})
                     print(f'Driver inputs for {veh.name} set to zero for {end_time} seconds')
 
-        # TODO: convert sideswipe to lists of tuples like impc
-            # sideswipe will not have iplane=True
+
         """ IMPC model - impact points and edge detection """
         # TODO: test for total Impacts = number of impact points / edges
         if self.impact_type in ['IMPC', 'impc']:
@@ -189,8 +188,8 @@ class Impact():
                 veh.model.Vy[0] = veh.vx_initial * 1.46667 * np.sin(veh.head_angle * np.pi / 180) + veh.vy_initial * 1.46667 * np.cos(veh.head_angle * np.pi / 180)
 
 
-        self.detect_data = pd.DataFrame(np.nan, index=np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion']))),
-                                   columns=['impact', 'edge_loc', 'normal_crush', 'impactp_veh2x', 'impactp_veh2y', 'ImpactNumber'])
+        self.detect_data = ModelArrays(['impact', 'edge_loc', 'normal_crush', 'impactp_veh2x', 'impactp_veh2y', 'ImpactNumber'],
+                                       1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion'])), object_columns=('impact',))
 
         """ dictionaries for storing impact related data """
         self._impactList = list(range(0, len(self.impact_order)))
@@ -251,6 +250,12 @@ class Impact():
         separation = True   # vehicles are separated / not engaged
         impactsComplete = False  # all impacts have occurred
 
+        # driver inputs are read every step - use numpy arrays while simulating, restored below
+        driver_inputs = [veh.driver_input for veh in self.vehicles]
+        for veh in self.vehicles:
+            if veh.type.lower() != 'barrier':
+                veh.driver_input = ModelArrays(veh.driver_input)
+
         for i in list(np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion'])))):
             #print(i)
             for veh in self.vehicles:
@@ -302,6 +307,12 @@ class Impact():
 
             if self.impactNum == len(self.impact_order):
                 impactsComplete = True
+
+        # simulation complete - convert results back to DataFrames and restore driver inputs
+        self.detect_data = as_frame(self.detect_data)
+        for veh, driver_input in zip(self.vehicles, driver_inputs):
+            veh.driver_input = driver_input
+            veh.model = as_frame(veh.model)
 
         """ convert and calculate position data for plots """
         for veh in self.vehicles:
