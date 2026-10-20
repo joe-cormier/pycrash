@@ -88,8 +88,6 @@ def define_impact_edge(veh, iplane = False):
     of impact
     """
 
-    veh.striking = False
-
     # test for required inputs
     if not veh.lcgf:
         veh.lcgf = float(input("Enter CG to front axle (ft)"))
@@ -109,33 +107,25 @@ def define_impact_edge(veh, iplane = False):
     # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
     # option 5 = custom location
 
-
     veh.edgeimpact_points = []   # store x,y values for edge points - moving clockwise
-    veh.edgeimpact = []    # defines location of edge
-
     plot_impact_edge(veh)
 
 
-    for i in range(0, veh.impactTotal):
-        impact_option = int(input("Choose impact edge for the corresponding impact point on striking vehicle: "))
+    for edge_num in range(0, veh.edgeimpact):
 
-        if impact_option not in [0, 1, 2, 3]:
+        if edge_num not in [0, 1, 2, 3]:
             raise ValueError("Invalid impact edge option - enter 0, 1, 2, 3")
         else:
-            if impact_option == 0:
-                veh.edgeimpact.append(0)
+            if edge_num == 0:
                 veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, -1 * veh.width / 2,
                                               veh.lcgf + veh.f_hang, veh.width / 2))
-            elif impact_option == 1:
-                veh.edgeimpact.append(1)
+            elif edge_num == 1:
                 veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, veh.width / 2,
                                               -1 * veh.lcgr - veh.r_hang, veh.width / 2))
-            elif impact_option == 2:
-                veh.edgeimpact.append(2)
+            elif edge_num == 2:
                 veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, veh.width / 2,
                                               -1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2))
-            elif impact_option == 3:
-                veh.edgeimpact.append(3)
+            elif edge_num == 3:
                 veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2,
                                               veh.lcgf + veh.f_hang, -1 * veh.width / 2))
 
