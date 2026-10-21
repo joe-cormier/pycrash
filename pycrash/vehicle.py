@@ -25,6 +25,7 @@ input_query = ["Model year",
                "Vehicle make",
                "Vehicle model",
                "Vehicle weight (lb)",
+               "GVWR (lb)",
                "Vehicle Identification Number (VIN)",
                "Percent Braking",
                "Steering ratio",
@@ -55,12 +56,14 @@ input_query = ["Model year",
                "Initial lateral velocity Vy (mph)",
                "Initial Yaw Rate (deg/s)",
                "Striking Vehicle? (True/False)",
+               "Trailer? (True/False)"
                "notes"]
 
 veh_inputs = ["year",
               "vehmake",
               "vehmodel",
               "weight",
+              "gvwr",
               "vin",
               "brake",
               "steer_ratio",
@@ -91,6 +94,7 @@ veh_inputs = ["year",
               "vy_initial",
               "omega_z",
               "striking",
+              "isTrailer",
               "notes"]
 
 def interpolate_driver_inputs(time, throttle, brake, steer, dt):
