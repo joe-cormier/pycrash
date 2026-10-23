@@ -169,12 +169,11 @@ class Impact():
         for veh in self.vehicles:
             if veh.type.lower() == 'barrier':
                 # create vehicle with no motion for "Barrier" type
-                veh.model = pd.DataFrame(np.nan, index=np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion']))), columns=vehicle_data_columns)
+                veh.model = ModelArrays(vehicle_data_columns, 1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion'])), fill=0)
                 veh.model['Dx'] = veh.init_x_pos
                 veh.model['Dy'] = veh.init_y_pos
-                veh.model = veh.model.fillna(0)
             else:
-                veh.model = pd.DataFrame(np.nan, index=np.arange(1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion']))), columns=vehicle_data_columns)
+                veh.model = ModelArrays(vehicle_data_columns, 1+len(np.arange(0, self.endTime, self.sim_defaults['dt_motion'])))
                 veh.model.Fx[0] = 0
                 veh.model.Fy[0] = 0
                 veh.model.Mz[0] = 0

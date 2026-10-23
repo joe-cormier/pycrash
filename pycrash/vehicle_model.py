@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 from scipy import integrate
 import math
-from .vehicle import interpolate_driver_inputs
-
+from .vehicle import resample_driver_input
+from .model_arrays import ModelArrays
 
 # column list for vehicle model
 column_list = ['t', 'vx', 'vy', 'Vx', 'Vy', 'Vr', 'vehicleslip_deg', 'vehicleslip_rad', 'oz_deg', 'oz_rad', 'delta_deg',
@@ -22,14 +22,12 @@ def vehicle_model(veh, sim_defaults):
     """
     # load defaults
     dt_motion = sim_defaults['dt_motion']  # iteration time step
-    veh.driver_input = interpolate_driver_inputs(veh.driver_input.t,
-                                                 veh.driver_input.throttle,
-                                                 veh.driver_input.brake,
-                                                 veh.driver_input.steer,
-                                                 dt_motion)  # one row of driver input per time step
+    veh.driver_input = resample_driver_input(veh.driver_input, dt_motion)
 
     print(f"Vehicle motion will be simulated for {max(veh.driver_input.t)} seconds")
-    veh.model = pd.DataFrame(np.nan, index=np.arange(len(veh.driver_input.t)), columns = column_list)
+    veh.model = ModelArrays(column_list, len(veh.driver_input.t))
+    driver_input = veh.driver_input
+    veh.driver_input = ModelArrays(driver_input)
 
     veh.model.au[0] = 0         # no initial vehicle pitch
     veh.model.av[0] = 0         # no initial vehicle roll
@@ -119,8 +117,8 @@ def vehicle_model(veh, sim_defaults):
         veh.model.beta_rad[i] = math.atan2(veh.model.Vy[i], veh.model.Vx[i])    # move to separate calc
 
     # vehicle position
-    veh.model['Dx'] = veh.init_x_pos + integrate.cumulative_trapezoid(list(veh.model.Vx), list(veh.model.t), initial=0)
-    veh.model['Dy'] = veh.init_y_pos + integrate.cumulative_trapezoid(list(veh.model.Vy), list(veh.model.t), initial=0)
+    veh.model['Dx'] = veh.init_x_pos + integrate.cumulative_trapezoid(veh.model.Vx, veh.model.t, initial=0)
+    veh.model['Dy'] = veh.init_y_pos + integrate.cumulative_trapezoid(veh.model.Vy, veh.model.t, initial=0)
 
     # converting to degrees
     # TODO: remove for speed
@@ -129,4 +127,7 @@ def vehicle_model(veh, sim_defaults):
     veh.model.theta_deg = [row * 180 / math.pi for row in veh.model.theta_rad]  # move to separate calc
     veh.model.beta_deg = [row * 180 / math.pi for row in veh.model.beta_rad]    # move to separate calc
 
+    veh.model = veh.model.to_frame()
+    veh.driver_input = driver_input
+    
     return veh
