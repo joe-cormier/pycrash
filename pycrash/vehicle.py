@@ -56,7 +56,7 @@ input_query = ["Model year",
                "Initial lateral velocity Vy (mph)",
                "Initial Yaw Rate (deg/s)",
                "Striking Vehicle? (True/False)",
-               "Trailer? (True/False)"
+               "Trailer? (True/False)",
                "notes"]
 
 veh_inputs = ["year",

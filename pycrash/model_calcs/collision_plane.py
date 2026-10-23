@@ -87,46 +87,47 @@ def define_impact_edge(veh, iplane = False):
     impact momentum model - impact edge will be used along with the impact plane to determine time
     of impact
     """
+    if veh.striking == True:
+        print(f'Vehicle {veh.name} is set to STRIKING - no edge points needed')
+    else:
+        if isinstance(veh.edgeimpact, list):
+            # test for required inputs
+            if not veh.lcgf:
+                veh.lcgf = float(input("Enter CG to front axle (ft)"))
 
-    # test for required inputs
-    if not veh.lcgf:
-        veh.lcgf = float(input("Enter CG to front axle (ft)"))
+            if not veh.lcgr:
+                veh.lcgr = float(input("Enter CG to rear axle (ft)"))
 
-    if not veh.lcgr:
-        veh.lcgr = float(input("Enter CG to rear axle (ft)"))
+            if not veh.f_hang:
+                veh.f_hang = float(input("Enter front overhang (ft)"))
 
-    if not veh.f_hang:
-        veh.f_hang = float(input("Enter front overhang (ft)"))
+            if not veh.r_hang:
+                veh.r_hang = float(input("Enter rear overhang (ft)"))
 
-    if not veh.r_hang:
-        veh.r_hang = float(input("Enter rear overhang (ft)"))
+            if not veh.width:
+                veh.width = float(input("Enter vehicle width (ft)"))
 
-    if not veh.width:
-        veh.width = float(input("Enter vehicle width (ft)"))
+            # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
+            # option 5 = custom location
 
-    # create figure of vehicle 1 with scale / grid and p1, p2, p3, p4 labeled when function is called
-    # option 5 = custom location
+            veh.edgeimpact_points = []   # store x,y values for edge points - moving clockwise
+            plot_impact_edge(veh)
 
-    veh.edgeimpact_points = []   # store x,y values for edge points - moving clockwise
-    plot_impact_edge(veh)
+            for edge_num in veh.edgeimpact:
+                if edge_num not in [0, 1, 2, 3]:
+                    raise ValueError("Invalid impact edge option - enter 0, 1, 2, 3")
+                else:
+                    if edge_num == 0:
+                        veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, -1 * veh.width / 2,
+                                                      veh.lcgf + veh.f_hang, veh.width / 2))
+                    elif edge_num == 1:
+                        veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, veh.width / 2,
+                                                      -1 * veh.lcgr - veh.r_hang, veh.width / 2))
+                    elif edge_num == 2:
+                        veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, veh.width / 2,
+                                                      -1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2))
+                    elif edge_num == 3:
+                        veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2,
+                                                      veh.lcgf + veh.f_hang, -1 * veh.width / 2))
 
-
-    for edge_num in range(0, veh.edgeimpact):
-
-        if edge_num not in [0, 1, 2, 3]:
-            raise ValueError("Invalid impact edge option - enter 0, 1, 2, 3")
-        else:
-            if edge_num == 0:
-                veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, -1 * veh.width / 2,
-                                              veh.lcgf + veh.f_hang, veh.width / 2))
-            elif edge_num == 1:
-                veh.edgeimpact_points.append((veh.lcgf + veh.f_hang, veh.width / 2,
-                                              -1 * veh.lcgr - veh.r_hang, veh.width / 2))
-            elif edge_num == 2:
-                veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, veh.width / 2,
-                                              -1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2))
-            elif edge_num == 3:
-                veh.edgeimpact_points.append((-1 * veh.lcgr - veh.r_hang, -1 * veh.width / 2,
-                                              veh.lcgf + veh.f_hang, -1 * veh.width / 2))
-
-    return veh
+            return veh
