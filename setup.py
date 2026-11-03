@@ -23,7 +23,7 @@ setuptools.setup(
     install_requires=[
         "numpy",
         "scipy>=1.6",  # integrate.cumulative_trapezoid
-        "pandas>=1.2,<3",  # models assign by chained indexing, which pandas 3 copy-on-write silently ignores
+        "pandas>=1.2",  # models write into numpy arrays (pycrash/model_arrays.py) while simulating
         "matplotlib",
         "plotly",
         "tabulate",
