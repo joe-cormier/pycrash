@@ -8,8 +8,8 @@ Babel==2.9.1
 backcall==0.2.0
 binaryornot==0.4.4
 bleach>=3.3.0
-Brotli==1.2.1
-certifi==2024.7.4
+Brotli==1.2.0
+certifi==2026.10.19
 cffi==1.14.4
 chardet==4.0.0
 click==7.1.2
@@ -57,7 +57,7 @@ missingno==0.4.2
 mistune==3.3.3
 nbclassic==0.2.6
 nbclient==0.5.1
-nbconvert==7.17.1
+nbconvert==7.17.2
 nbformat==5.0.8
 nest-asyncio==1.4.3
 notebook==6.4.12
